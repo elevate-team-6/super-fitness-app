@@ -1,0 +1,45 @@
+name: Quality Assurance (Lint & Analyze)
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches:
+      - develop
+      - master
+
+# Cancel old runs if a new commit is pushed to the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze_and_lint:
+    name: Analyze & Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📚 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: 📦 Install Dependencies
+        run: flutter pub get
+
+      - name: 🏗️ Run Code Generation
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: ✨ Check Formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: 🔍 Run Analyzer
+        run: flutter analyze --fatal-infos --fatal-warnings
