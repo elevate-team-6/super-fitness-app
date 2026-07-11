@@ -1,0 +1,59 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+
+class AppScaffold extends StatelessWidget {
+  final Widget body;
+  final String backgroundImage;
+  final PreferredSizeWidget? appBar;
+  final Widget? bottomNavigationBar;
+  final Widget? drawer;
+  final bool extendBody;
+  final bool extendBodyBehindAppBar;
+  final double blurSigma;
+  final Color? overlayColor;
+
+  const AppScaffold({
+    super.key,
+    required this.backgroundImage,
+    required this.body,
+    this.appBar,
+    this.bottomNavigationBar,
+    this.drawer,
+    this.extendBody = true,
+    this.extendBodyBehindAppBar = true,
+    this.blurSigma = 15.0,
+    this.overlayColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: appBar,
+      bottomNavigationBar: bottomNavigationBar,
+      drawer: drawer,
+      extendBody: extendBody,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              backgroundImage,
+              fit: BoxFit.fitHeight, // Fits the height as requested
+              alignment: Alignment.center,
+            ),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+              child: Container(
+                color: overlayColor ?? Colors.black.withValues(alpha: 0.4),
+              ),
+            ),
+          ),
+          SafeArea(child: body),
+        ],
+      ),
+    );
+  }
+}
