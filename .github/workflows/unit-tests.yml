@@ -2,9 +2,8 @@ name: Validate Unit Tests
 
 on:
   pull_request:
-    branches:
-      - develop
-      - master
+    types: [ opened, edited, synchronize, reopened ]
+
 
 # Cancel old runs if a new commit is pushed to the same branch/PR
 concurrency:
