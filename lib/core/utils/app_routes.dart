@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:super_fitness/core/utils/app_text_styles.dart';
 
-import '../../onboarding_screen.dart';
+import '../../features/onboarding/screens/onboarding_screen.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -29,8 +30,14 @@ abstract class AppRoutes {
 
   static MaterialPageRoute<dynamic> _unDefinedRoute(String? name) {
     return MaterialPageRoute(
-      builder: (_) =>
-          Scaffold(body: Center(child: Text('No route defined for $name'))),
+      builder: (_) => Scaffold(
+        body: Center(
+          child: Text(
+            'No route defined for $name',
+            style: AppTextStyles.white16500,
+          ),
+        ),
+      ),
     );
   }
 
@@ -40,6 +47,7 @@ abstract class AppRoutes {
         body: Center(
           child: Text(
             'Something went wrong\n$message',
+            style: AppTextStyles.white16500,
             textAlign: TextAlign.center,
           ),
         ),

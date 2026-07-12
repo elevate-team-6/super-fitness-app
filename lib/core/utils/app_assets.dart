@@ -33,6 +33,9 @@ abstract class AppImages {
   static const String homeBackground = '${_imagesPath}home_background.jpg';
   static const String onboardingBackground =
       '${_imagesPath}onboarding_background.jpg';
+  static const String onboarding1 = '${_imagesPath}onboarding1.png';
+  static const String onboarding2 = '${_imagesPath}onboarding2.png';
+  static const String onboarding3 = '${_imagesPath}onboarding3.png';
 }
 
 abstract class AppLottie {
