@@ -44,7 +44,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } else {
       await AuthService.setOnboardingCompleted();
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      }
     }
   }
 
