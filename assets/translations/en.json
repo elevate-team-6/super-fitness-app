@@ -56,5 +56,15 @@
   "idNumberRequired": "National ID number is required",
   "invalidIdNumber": "National ID must be 14 digits",
   "pleaseUploadNationalId": "Please upload National ID image",
-  "pleaseUploadDrivingLicense": "Please upload Driving License image"
+  "pleaseUploadDrivingLicense": "Please upload Driving License image",
+  "onboardingTitle1": "The Price Of Excellence\nIs Discipline",
+  "onboardingDesc1": "Lorem Ipsum Dolor Sit Amet Consectetur. Eu Urna\nUt Gravida Quis Id Pretium Purus. Mauris Massa",
+  "onboardingTitle2": "Fitness Has Never Been So\nMuch Fun",
+  "onboardingDesc2": "Lorem Ipsum Dolor Sit Amet Consectetur. Eu Urna\nUt Gravida Quis Id Pretium Purus. Mauris Massa",
+  "onboardingTitle3": "NO MORE EXCUSES\nDo It Now",
+  "onboardingDesc3": "Lorem Ipsum Dolor Sit Amet Consectetur. Eu Urna\nUt Gravida Quis Id Pretium Purus. Mauris Massa",
+  "skip": "Skip",
+  "back": "Back",
+  "next": "Next",
+  "doIt": "Do IT"
 }
