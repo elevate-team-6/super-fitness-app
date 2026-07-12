@@ -76,7 +76,9 @@ class _FitnessSnackBar extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isSuccess ? AppStrings.success.tr() : AppStrings.oops.tr(),
+                          isSuccess
+                              ? AppStrings.success.tr()
+                              : AppStrings.oops.tr(),
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w700,
@@ -122,7 +124,9 @@ class _FitnessSnackBar extends StatelessWidget {
       ),
       child: Center(
         child: Icon(
-          isSuccess ? Icons.offline_bolt_rounded : Icons.report_gmailerrorred_rounded,
+          isSuccess
+              ? Icons.offline_bolt_rounded
+              : Icons.report_gmailerrorred_rounded,
           color: color,
           size: 24.sp,
         ),
