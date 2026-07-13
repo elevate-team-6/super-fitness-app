@@ -72,4 +72,16 @@ abstract class AppStrings {
   static const String yes = 'yes';
   static const String no = 'no';
   static const String cancel = 'cancel';
+
+  // Onboarding
+  static const String onboardingTitle1 = 'onboardingTitle1';
+  static const String onboardingDesc1 = 'onboardingDesc1';
+  static const String onboardingTitle2 = 'onboardingTitle2';
+  static const String onboardingDesc2 = 'onboardingDesc2';
+  static const String onboardingTitle3 = 'onboardingTitle3';
+  static const String onboardingDesc3 = 'onboardingDesc3';
+  static const String skip = 'skip';
+  static const String back = 'back';
+  static const String next = 'next';
+  static const String doIt = 'doIt';
 }

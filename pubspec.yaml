@@ -76,3 +76,23 @@ flutter:
     - assets/icons/
     - assets/lottie_files/
     - assets/translations/
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/lancher_logo.png"
+  adaptive_icon_background: "#1A1A1A"
+  adaptive_icon_foreground: "assets/images/lancher_logo.png"
+
+flutter_native_splash:
+  color: "1A1A1A"
+  image: assets/images/splash_logo.png
+
+  # إعدادات Android 12+
+  android_12:
+    image: assets/images/splash_logo.png
+    color: "1A1A1A"
+
+  android: true
+  ios: true
