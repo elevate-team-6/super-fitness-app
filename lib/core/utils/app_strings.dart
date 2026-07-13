@@ -84,4 +84,40 @@ abstract class AppStrings {
   static const String back = 'back';
   static const String next = 'next';
   static const String doIt = 'doIt';
+
+  // Signup
+  static const String signupFailed = 'signupFailed';
+
+  // Auth Flow UI
+  static const String loginWelcome = 'loginWelcome';
+  static const String login = 'login';
+  static const String email = 'email';
+  static const String password = 'password';
+  static const String forgotPassword = 'forgotPassword';
+  static const String registerPrompt = 'registerPrompt';
+  static const String signupWelcome = 'signupWelcome';
+  static const String register = 'register';
+  static const String firstName = 'firstName';
+  static const String lastName = 'lastName';
+  static const String loginPrompt = 'loginPrompt';
+  static const String tellUsAboutYourself = 'tellUsAboutYourself';
+  static const String genderTitle = 'genderTitle';
+  static const String male = 'male';
+  static const String female = 'female';
+  static const String ageTitle = 'ageTitle';
+  static const String personalizationDesc = 'personalizationDesc';
+  static const String weightTitle = 'weightTitle';
+  static const String heightTitle = 'heightTitle';
+  static const String done = 'done';
+  static const String goalTitle = 'goalTitle';
+  static const String gainWeight = 'gainWeight';
+  static const String loseWeight = 'loseWeight';
+  static const String getFitter = 'getFitter';
+  static const String stayHealthy = 'stayHealthy';
+  static const String activityLevelTitle = 'activityLevelTitle';
+  static const String sedentary = 'sedentary';
+  static const String lightlyActive = 'lightlyActive';
+  static const String moderatelyActive = 'moderatelyActive';
+  static const String veryActive = 'veryActive';
+  static const String extraActive = 'extraActive';
 }
