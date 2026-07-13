@@ -92,11 +92,12 @@ abstract class AppTheme {
 
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.black90,
-        indicatorColor: Colors.transparent,
+        backgroundColor: AppColors.black80,
         elevation: 0,
+        height: 80.h,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-
+        labelPadding: EdgeInsets.zero,
+        indicatorColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return AppTextStyles.primary13500;
@@ -107,10 +108,9 @@ abstract class AppTheme {
 
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: AppColors.primary);
+            return const IconThemeData(color: AppColors.primary, size: 40);
           }
-
-          return const IconThemeData(color: AppColors.white);
+          return const IconThemeData(color: AppColors.white, size: 40);
         }),
       ),
 

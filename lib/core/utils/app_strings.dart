@@ -84,4 +84,8 @@ abstract class AppStrings {
   static const String back = 'back';
   static const String next = 'next';
   static const String doIt = 'doIt';
+  static const String explore = 'explore';
+  static const String workouts = 'workouts';
+  static const String chat = 'chat';
+  static const String profile = 'profile';
 }

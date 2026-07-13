@@ -66,5 +66,9 @@
   "skip": "Skip",
   "back": "Back",
   "next": "Next",
-  "doIt": "Do IT"
+  "doIt": "Do IT",
+  "explore": "Explore",
+  "workouts": "Workouts",
+  "chat": "Chat",
+  "profile": "Profile"
 }
