@@ -1,12 +1,11 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:super_fitness/config/services/auth_service.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
-import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
-import 'package:super_fitness/features/onboarding/widgets/onboarding_info.dart';
+import 'package:super_fitness/features/onboarding/models/onboarding_model.dart';
+import 'package:super_fitness/features/onboarding/widgets/onboarding_content.dart';
 import 'package:super_fitness/features/onboarding/widgets/onboarding_skip_button.dart';
 
 import '../../../config/services/exit_app_dialog.dart';
@@ -96,7 +95,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
 
             // Bottom Content
-            OnboardingInfo(
+            OnboardingContent(
               model: _onboardingData[_currentIndex],
               itemCount: _onboardingData.length,
               currentIndex: _currentIndex,
@@ -109,33 +108,3 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-
-class OnboardingModel {
-  final String title;
-  final String description;
-  final String image;
-
-  OnboardingModel({
-    required this.title,
-    required this.description,
-    required this.image,
-  });
-}
-
-List<OnboardingModel> onBoardingList = [
-  OnboardingModel(
-    title: AppStrings.onboardingTitle1.tr(),
-    description: AppStrings.onboardingDesc1.tr(),
-    image: AppImages.onboarding1,
-  ),
-  OnboardingModel(
-    title: AppStrings.onboardingTitle2.tr(),
-    description: AppStrings.onboardingDesc2.tr(),
-    image: AppImages.onboarding2,
-  ),
-  OnboardingModel(
-    title: AppStrings.onboardingTitle3.tr(),
-    description: AppStrings.onboardingDesc3.tr(),
-    image: AppImages.onboarding3,
-  ),
-];
