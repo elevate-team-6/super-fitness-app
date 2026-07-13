@@ -37,13 +37,13 @@ class OnboardingContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            model.title,
+            model.title.tr(),
             textAlign: TextAlign.center,
             style: AppTextStyles.white24700,
           ),
           SizedBox(height: 12.h),
           Text(
-            model.description,
+            model.description.tr(),
             textAlign: TextAlign.center,
             style: AppTextStyles.white13400,
           ),
