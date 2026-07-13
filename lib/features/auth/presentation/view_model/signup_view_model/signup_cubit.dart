@@ -1,0 +1,126 @@
+import 'package:injectable/injectable.dart';
+
+import '../../../../../config/base_cubit/base_cubit.dart';
+import '../../../../../config/base_response/base_response.dart';
+import '../../../../../config/base_state/base_state.dart';
+import '../../../../../config/base_ui_event/base_ui_event.dart';
+import '../../../data/models/request/signup_request.dart';
+import '../../../domain/entities/user_entity.dart';
+import '../../../domain/use_cases/signup_use_case.dart';
+import 'register_event.dart';
+import 'register_state.dart';
+
+@injectable
+class SignupCubit extends BaseCubit<RegisterState, BaseUiEvent> {
+  final SignupUseCase _signupUseCase;
+
+  SignupCubit(this._signupUseCase) : super(const RegisterState());
+
+  void doEvent(RegisterEvent event) {
+    switch (event) {
+      case UpdateAccountInfoEvent():
+        _updateAccountInfo(event);
+      case SelectGenderEvent():
+        _selectGender(event);
+      case UpdateAgeEvent():
+        _updateAge(event);
+      case UpdateWeightEvent():
+        _updateWeight(event);
+      case UpdateHeightEvent():
+        _updateHeight(event);
+      case SelectGoalEvent():
+        _selectGoal(event);
+      case SelectActivityLevelEvent():
+        _selectActivityLevel(event);
+      case NextStepEvent():
+        _onNextStep();
+      case PreviousStepEvent():
+        _onPreviousStep();
+      case SubmitSignupEvent():
+        _onSubmit();
+    }
+  }
+
+  void _updateAccountInfo(UpdateAccountInfoEvent event) {
+    emit(
+      state.copyWith(
+        firstName: event.firstName,
+        lastName: event.lastName,
+        email: event.email,
+        password: event.password,
+      ),
+    );
+  }
+
+  void _selectGender(SelectGenderEvent event) {
+    emit(state.copyWith(gender: event.gender));
+  }
+
+  void _updateAge(UpdateAgeEvent event) {
+    emit(state.copyWith(age: event.age));
+  }
+
+  void _updateWeight(UpdateWeightEvent event) {
+    emit(state.copyWith(weight: event.weight));
+  }
+
+  void _updateHeight(UpdateHeightEvent event) {
+    emit(state.copyWith(height: event.height));
+  }
+
+  void _selectGoal(SelectGoalEvent event) {
+    emit(state.copyWith(goal: event.goal));
+  }
+
+  void _selectActivityLevel(SelectActivityLevelEvent event) {
+    emit(state.copyWith(activityLevel: event.level));
+  }
+
+  void _onNextStep() {
+    if (state.currentStep < 6) {
+      emit(state.copyWith(currentStep: state.currentStep + 1));
+    }
+  }
+
+  void _onPreviousStep() {
+    if (state.currentStep > 0) {
+      emit(state.copyWith(currentStep: state.currentStep - 1));
+    }
+  }
+
+  Future<void> _onSubmit() async {
+    emit(state.copyWith(signupStatus: const BaseState(isLoading: true)));
+    emitUiEvent(ShowLoadingEvent());
+
+    final request = SignupRequest(
+      firstName: state.firstName,
+      lastName: state.lastName,
+      email: state.email,
+      password: state.password,
+      rePassword:
+          state.password, // Assuming rePassword matches password for now
+      gender: state.gender,
+      height: state.height,
+      weight: state.weight,
+      age: state.age,
+      goal: state.goal,
+      activityLevel: state.activityLevel,
+    );
+
+    final result = await _signupUseCase(request);
+
+    emitUiEvent(HideLoadingEvent());
+
+    if (result is SuccessBaseResponse<UserEntity>) {
+      emit(state.copyWith(signupStatus: BaseState(data: result.data)));
+      emitUiEvent(DisplaySuccessEvent('Success'));
+    } else if (result is ErrorBaseResponse<UserEntity>) {
+      emit(
+        state.copyWith(
+          signupStatus: BaseState(errorMessage: result.errorMessage),
+        ),
+      );
+      emitUiEvent(DisplayErrorEvent(result.errorMessage));
+    }
+  }
+}
