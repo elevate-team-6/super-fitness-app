@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
+import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/core/widgets/custom_loading.dart';
 import 'package:super_fitness/core/widgets/custom_snack_bar.dart';
@@ -21,11 +24,16 @@ class OnboardingScreen extends StatelessWidget {
 
         final shouldExit = await ExitAppDialog.show(context);
         if (shouldExit == true) {
-          SystemNavigator.pop();
+          await SystemNavigator.pop();
         }
       },
       child: AppScaffold(
         backgroundImage: AppImages.authBackground,
+        appBar: CustomAppBar(
+          onBackPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         body: Center(
           child: CustomGlassContainer(
             padding: const EdgeInsets.all(24),
