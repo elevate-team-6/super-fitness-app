@@ -38,14 +38,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _onNext() async {
     if (_currentIndex < _onboardingData.length - 1) {
-      _pageController.nextPage(
+      await _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
       await AuthService.setOnboardingCompleted();
       if (mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.login);
+        await Navigator.pushReplacementNamed(context, AppRoutes.login);
       }
     }
   }
@@ -68,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           return;
         }
         final shouldExit = await ExitAppDialog.show(context);
-        if (shouldExit == true) SystemNavigator.pop();
+        if (shouldExit == true) await SystemNavigator.pop();
       },
       child: AppScaffold(
         backgroundImage: AppImages.onboardingBackground,
