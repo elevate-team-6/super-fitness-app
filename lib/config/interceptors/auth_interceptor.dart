@@ -11,7 +11,7 @@ class AuthInterceptor extends Interceptor {
   AuthInterceptor(this.cache);
 
   @override
-  void onRequest(
+  Future<void> onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
