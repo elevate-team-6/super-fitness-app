@@ -10,7 +10,7 @@ abstract class AppIcons {
   static const String _iconsPath = 'assets/icons/';
 
   // Example: static const String yourIcon = '${_iconsPath}icon_name.svg';
-  static const String fitnessAppIcon = '${_iconsPath}fitness_app_icon.svg';
+  static const String fitnessAppIcon = '${_iconsPath}fitness_app_icon.png';
   static const String home = '${_iconsPath}home.svg';
   static const String arrowLeft = '${_iconsPath}arrow_left.svg';
   static const String back = '${_iconsPath}back.svg';

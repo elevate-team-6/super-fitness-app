@@ -9,6 +9,42 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.mocks.dart"
+    - "scripts/**"
+  errors:
+    # Treat all lints as errors
+    invalid_annotation_target: ignore
+    missing_required_param: error
+    missing_return: error
+    dead_code: warning
+    unused_import: warning
+    unused_local_variable: warning
+  plugins:
+    - restrict_raw_flutter
+
+restrict_raw_flutter:
+  diagnostics:
+    ban_colors: true
+    ban_color: true
+    ban_text_widget: false
+    ban_container_widget: false
+    ban_elevated_button_widget: false
+    ban_text_button_widget: false
+    ban_outlined_button_widget: false
+    ban_icon_widget: false
+    ban_image_widget: false
+    ban_scaffold_widget: false
+    ban_appbar_widget: false
+    ban_listview_widget: false
+    ban_gridview_widget: false
+    ban_textfield_widget: false
+    ban_textformfield_widget: false
+    ban_card_widget: false
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
@@ -21,8 +57,77 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
-    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
-    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
+    # Style rules (Most important for code consistency)
+    prefer_const_declarations: true
+    avoid_print: true
+    prefer_final_fields: true
+    use_key_in_widget_constructors: true
+    
+    # Error prevention (Critical for avoiding bugs)
+    avoid_dynamic_calls: true
+    avoid_empty_else: true
+    avoid_relative_lib_imports: true
+    cancel_subscriptions: true
+    close_sinks: true
+    no_duplicate_case_values: true
+    unnecessary_statements: true
+    unrelated_type_equality_checks: true
+    
+    # Flutter specific (Best practices for Flutter)
+    avoid_web_libraries_in_flutter: true
+    no_logic_in_create_state: true
+    prefer_const_constructors_in_immutables: true
+    use_build_context_synchronously: true
+    use_decorated_box: true
+    
+    # Code quality (Important for maintainability)
+    always_declare_return_types: true
+    annotate_overrides: true
+    avoid_function_literals_in_foreach_calls: true
+    avoid_multiple_declarations_per_line: true
+    avoid_unused_constructor_parameters: true
+    avoid_void_async: true
+    camel_case_extensions: true
+    camel_case_types: true
+    constant_identifier_names: true
+    curly_braces_in_flow_control_structures: true
+    exhaustive_cases: true
+    file_names: true
+    implementation_imports: true
+    library_names: true
+    library_prefixes: true
+    non_constant_identifier_names: true
+    only_throw_errors: true
+    package_names: true
+    prefer_collection_literals: true
+    prefer_conditional_assignment: true
+    prefer_contains: true
+    prefer_function_declarations_over_variables: true
+    prefer_if_null_operators: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+    prefer_null_aware_operators: true
+    prefer_spread_collections: true
+    recursive_getters: true
+    tighten_type_of_initializing_formals: true
+    type_annotate_public_apis: true
+    unawaited_futures: true
+    unnecessary_brace_in_string_interps: true
+    unnecessary_null_checks: true
+    unnecessary_overrides: true
+    unnecessary_parenthesis: true
+    unnecessary_string_interpolations: true
+    unnecessary_this: true
+    use_enums: true
+    use_super_parameters: true
+    use_to_and_as_if_applicable: true
+    
+    # Performance rules (Improve app performance)
+    prefer_const_literals_to_create_immutables: true
+    sized_box_for_whitespace: true
+    sized_box_shrink_expand: true
+    avoid_slow_async_io: true
+    unnecessary_late: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
