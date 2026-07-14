@@ -1,11 +1,13 @@
-sealed class BaseResponse<T> {}
+sealed class BaseResponse<T> {
+  const BaseResponse();
+}
 
 class SuccessBaseResponse<T> extends BaseResponse<T> {
   final T? data;
-  SuccessBaseResponse(this.data);
+  const SuccessBaseResponse(this.data);
 }
 
 class ErrorBaseResponse<T> extends BaseResponse<T> {
   final String errorMessage;
-  ErrorBaseResponse(this.errorMessage);
+  const ErrorBaseResponse(this.errorMessage);
 }
