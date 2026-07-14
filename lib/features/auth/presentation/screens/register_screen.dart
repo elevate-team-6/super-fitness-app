@@ -8,8 +8,8 @@ import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 
-import '../view_model/signup_view_model/register_event.dart';
-import '../view_model/signup_view_model/signup_cubit.dart';
+import '../view_model/register_view_model/register_cubit.dart';
+import '../view_model/register_view_model/register_event.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -24,7 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
   @override
   void initState() {
     super.initState();
-    _uiEventSubscription = context.read<SignupCubit>().eventStream.listen(
+    _uiEventSubscription = context.read<RegisterCubit>().eventStream.listen(
       handleUiEvent,
     );
   }
@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            context.read<SignupCubit>().doEvent(NextStepEvent());
+            context.read<RegisterCubit>().doEvent(NextStepEvent());
           },
           child: Text(AppStrings.register.tr()),
         ),

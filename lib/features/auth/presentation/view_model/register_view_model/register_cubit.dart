@@ -13,10 +13,10 @@ import 'register_event.dart';
 import 'register_state.dart';
 
 @lazySingleton
-class SignupCubit extends BaseCubit<RegisterState, BaseUiEvent> {
+class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
   final SignupUseCase _signupUseCase;
 
-  SignupCubit(this._signupUseCase) : super(const RegisterState());
+  RegisterCubit(this._signupUseCase) : super(const RegisterState());
 
   void doEvent(RegisterEvent event) {
     switch (event) {
