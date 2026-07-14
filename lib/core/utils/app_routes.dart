@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
 
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
@@ -20,6 +21,8 @@ abstract class AppRoutes {
       switch (settings.name) {
         case onboarding:
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
+        case  forgetPassword:
+          return MaterialPageRoute(builder: (_) => ForgotPasswordScreen());
         default:
           return _unDefinedRoute(settings.name);
       }
