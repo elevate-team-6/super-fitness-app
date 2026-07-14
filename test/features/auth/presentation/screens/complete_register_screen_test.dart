@@ -9,12 +9,12 @@ import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/features/auth/presentation/screens/complete_register_screen.dart';
-import 'package:super_fitness/features/auth/presentation/view_model/signup_view_model/register_event.dart';
-import 'package:super_fitness/features/auth/presentation/view_model/signup_view_model/register_state.dart';
-import 'package:super_fitness/features/auth/presentation/view_model/signup_view_model/signup_cubit.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_cubit.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_state.dart';
 
-// Manual Mock for SignupCubit using Mockito
-class MockSignupCubit extends Mock implements SignupCubit {
+// Manual Mock for RegisterCubit using Mockito
+class MockRegisterCubit extends Mock implements RegisterCubit {
   @override
   RegisterState get state =>
       super.noSuchMethod(
@@ -57,16 +57,16 @@ class MockSignupCubit extends Mock implements SignupCubit {
 }
 
 void main() {
-  late MockSignupCubit mockSignupCubit;
+  late MockRegisterCubit mockRegisterCubit;
 
   setUp(() {
-    mockSignupCubit = MockSignupCubit();
+    mockRegisterCubit = MockRegisterCubit();
   });
 
   Widget createWidgetUnderTest(RegisterState state) {
-    when(mockSignupCubit.state).thenReturn(state);
-    when(mockSignupCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(mockSignupCubit.eventStream).thenAnswer((_) => const Stream.empty());
+    when(mockRegisterCubit.state).thenReturn(state);
+    when(mockRegisterCubit.stream).thenAnswer((_) => const Stream.empty());
+    when(mockRegisterCubit.eventStream).thenAnswer((_) => const Stream.empty());
 
     return ScreenUtilInit(
       designSize: const Size(1000, 2000),
@@ -75,8 +75,8 @@ void main() {
           DefaultMaterialLocalizations.delegate,
           DefaultWidgetsLocalizations.delegate,
         ],
-        home: BlocProvider<SignupCubit>.value(
-          value: mockSignupCubit,
+        home: BlocProvider<RegisterCubit>.value(
+          value: mockRegisterCubit,
           child: const CompleteRegisterScreen(),
         ),
       ),
@@ -100,7 +100,7 @@ void main() {
       await tester.tap(maleFinder);
 
       verify(
-        mockSignupCubit.doEvent(argThat(isA<SelectGenderEvent>())),
+        mockRegisterCubit.doEvent(argThat(isA<SelectGenderEvent>())),
       ).called(1);
     });
 
@@ -123,7 +123,7 @@ void main() {
 
       await tester.tap(goalOption, warnIfMissed: false);
       verify(
-        mockSignupCubit.doEvent(argThat(isA<SelectGoalEvent>())),
+        mockRegisterCubit.doEvent(argThat(isA<SelectGoalEvent>())),
       ).called(1);
     });
 
@@ -136,7 +136,7 @@ void main() {
 
       await tester.tap(find.text(AppStrings.done), warnIfMissed: false);
       verify(
-        mockSignupCubit.doEvent(argThat(isA<SubmitSignupEvent>())),
+        mockRegisterCubit.doEvent(argThat(isA<SubmitSignupEvent>())),
       ).called(1);
     });
 
@@ -154,7 +154,7 @@ void main() {
       await tester.tap(backButton);
 
       verify(
-        mockSignupCubit.doEvent(argThat(isA<PreviousStepEvent>())),
+        mockRegisterCubit.doEvent(argThat(isA<PreviousStepEvent>())),
       ).called(1);
     });
 
@@ -179,7 +179,7 @@ void main() {
 
       await tester.tap(femaleFinder);
       verify(
-        mockSignupCubit.doEvent(argThat(isA<SelectGenderEvent>())),
+        mockRegisterCubit.doEvent(argThat(isA<SelectGenderEvent>())),
       ).called(1);
     });
 
@@ -317,7 +317,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(AppStrings.next));
-      verify(mockSignupCubit.doEvent(argThat(isA<NextStepEvent>()))).called(1);
+      verify(
+        mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
+      ).called(1);
     });
 
     testWidgets('Navigation: Next button triggers NextStepEvent - Step 2', (
@@ -328,7 +330,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(AppStrings.next));
-      verify(mockSignupCubit.doEvent(argThat(isA<NextStepEvent>()))).called(1);
+      verify(
+        mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
+      ).called(1);
     });
 
     testWidgets('Navigation: Next button triggers NextStepEvent - Step 3', (
@@ -339,7 +343,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(AppStrings.next));
-      verify(mockSignupCubit.doEvent(argThat(isA<NextStepEvent>()))).called(1);
+      verify(
+        mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
+      ).called(1);
     });
 
     testWidgets('Navigation: Next button triggers NextStepEvent - Step 4', (
@@ -350,7 +356,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(AppStrings.next));
-      verify(mockSignupCubit.doEvent(argThat(isA<NextStepEvent>()))).called(1);
+      verify(
+        mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
+      ).called(1);
     });
 
     testWidgets('Navigation: Next button triggers NextStepEvent - Step 5', (
@@ -364,7 +372,9 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.tap(find.text(AppStrings.next));
-      verify(mockSignupCubit.doEvent(argThat(isA<NextStepEvent>()))).called(1);
+      verify(
+        mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
+      ).called(1);
     });
 
     testWidgets('Navigation: Back button from Step 1 navigates back', (
@@ -381,7 +391,7 @@ void main() {
       await tester.tap(backButton);
 
       verify(
-        mockSignupCubit.doEvent(argThat(isA<PreviousStepEvent>())),
+        mockRegisterCubit.doEvent(argThat(isA<PreviousStepEvent>())),
       ).called(1);
     });
 

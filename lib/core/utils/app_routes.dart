@@ -36,7 +36,7 @@ abstract class AppRoutes {
         case completeRegister:
           return MaterialPageRoute(
             builder: (_) => BlocProvider.value(
-              value: getIt<SignupCubit>(),
+              value: getIt<RegisterCubit>(),
               child: const CompleteRegisterScreen(),
             ),
           );

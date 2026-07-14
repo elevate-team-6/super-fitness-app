@@ -13,9 +13,9 @@ import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 
-import '../view_model/signup_view_model/register_event.dart';
-import '../view_model/signup_view_model/register_state.dart';
-import '../view_model/signup_view_model/signup_cubit.dart';
+import '../view_model/register_view_model/register_cubit.dart';
+import '../view_model/register_view_model/register_event.dart';
+import '../view_model/register_view_model/register_state.dart';
 import '../widgets/custom_horizontal_wheel_picker.dart';
 import '../widgets/gender_selection_view.dart';
 import '../widgets/selectable_option_list.dart';
@@ -36,7 +36,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
   @override
   void initState() {
     super.initState();
-    final cubit = context.read<SignupCubit>();
+    final cubit = context.read<RegisterCubit>();
     _uiEventSubscription = cubit.eventStream.listen(handleUiEvent);
 
     final currentStep = cubit.state.currentStep;
@@ -54,7 +54,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SignupCubit, RegisterState>(
+    return BlocListener<RegisterCubit, RegisterState>(
       listenWhen: (previous, current) =>
           previous.currentStep != current.currentStep,
       listener: (context, state) {
@@ -72,7 +72,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
         backgroundImage: AppImages.authBackground,
         appBar: CustomAppBar(
           onBackPressed: () {
-            final cubit = context.read<SignupCubit>();
+            final cubit = context.read<RegisterCubit>();
             if (cubit.state.currentStep > 1) {
               cubit.doEvent(PreviousStepEvent());
             } else {
@@ -81,7 +81,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
             }
           },
         ),
-        body: BlocBuilder<SignupCubit, RegisterState>(
+        body: BlocBuilder<RegisterCubit, RegisterState>(
           builder: (context, state) {
             return Column(
               children: [
@@ -110,7 +110,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                             GenderSelectionView(
                               selectedGender: state.gender,
                               onGenderSelected: (gender) {
-                                context.read<SignupCubit>().doEvent(
+                                context.read<RegisterCubit>().doEvent(
                                   SelectGenderEvent(gender),
                                 );
                               },
@@ -121,7 +121,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                               selectedValue: state.age,
                               unit: AppStrings.year.tr(),
                               onValueChanged: (age) {
-                                context.read<SignupCubit>().doEvent(
+                                context.read<RegisterCubit>().doEvent(
                                   UpdateAgeEvent(age),
                                 );
                               },
@@ -132,7 +132,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                               selectedValue: state.weight,
                               unit: AppStrings.kg.tr(),
                               onValueChanged: (weight) {
-                                context.read<SignupCubit>().doEvent(
+                                context.read<RegisterCubit>().doEvent(
                                   UpdateWeightEvent(weight),
                                 );
                               },
@@ -143,7 +143,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                               selectedValue: state.height,
                               unit: AppStrings.cm.tr(),
                               onValueChanged: (height) {
-                                context.read<SignupCubit>().doEvent(
+                                context.read<RegisterCubit>().doEvent(
                                   UpdateHeightEvent(height),
                                 );
                               },
@@ -158,7 +158,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                               ],
                               selectedOption: state.goal,
                               onOptionSelected: (goal) {
-                                context.read<SignupCubit>().doEvent(
+                                context.read<RegisterCubit>().doEvent(
                                   SelectGoalEvent(goal),
                                 );
                               },
@@ -173,7 +173,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                               ],
                               selectedOption: state.activityLevel,
                               onOptionSelected: (level) {
-                                context.read<SignupCubit>().doEvent(
+                                context.read<RegisterCubit>().doEvent(
                                   SelectActivityLevelEvent(level),
                                 );
                               },
@@ -186,11 +186,11 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
                         onPressed: _isStepValid(state)
                             ? () {
                                 if (state.currentStep < 6) {
-                                  context.read<SignupCubit>().doEvent(
+                                  context.read<RegisterCubit>().doEvent(
                                     NextStepEvent(),
                                   );
                                 } else {
-                                  context.read<SignupCubit>().doEvent(
+                                  context.read<RegisterCubit>().doEvent(
                                     SubmitSignupEvent(),
                                   );
                                 }
