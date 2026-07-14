@@ -133,6 +133,12 @@ abstract class AppTextStyles {
     color: AppColors.white,
   );
 
+  static TextStyle get white18400 => GoogleFonts.balooThambi2(
+    fontSize: _sp(18),
+    fontWeight: FontWeight.w400,
+    color: AppColors.white,
+  );
+
   static TextStyle get white13400 => GoogleFonts.balooThambi2(
     fontSize: _sp(13),
     fontWeight: FontWeight.w400,
@@ -148,6 +154,12 @@ abstract class AppTextStyles {
   static TextStyle get white24500 => GoogleFonts.balooThambi2(
     fontSize: _sp(24),
     fontWeight: FontWeight.w500,
+    color: AppColors.white,
+  );
+
+  static TextStyle get white20800 => GoogleFonts.balooThambi2(
+    fontSize: _sp(20),
+    fontWeight: FontWeight.w800,
     color: AppColors.white,
   );
 

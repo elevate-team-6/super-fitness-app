@@ -22,6 +22,8 @@ abstract class AppIcons {
   static const String person = '${_iconsPath}person.svg';
   static const String profile = '${_iconsPath}profile.svg';
   static const String workOut = '${_iconsPath}work_out.svg';
+  static const String male = '${_iconsPath}male.svg';
+  static const String female = '${_iconsPath}female.svg';
 }
 
 abstract class AppImages {
