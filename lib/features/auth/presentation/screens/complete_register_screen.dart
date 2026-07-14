@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +31,15 @@ class CompleteRegisterScreen extends StatefulWidget {
 class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
     with UiEventHandler {
   late final PageController _pageController;
+  late final StreamSubscription _uiEventSubscription;
 
   @override
   void initState() {
     super.initState();
-    final currentStep = context.read<SignupCubit>().state.currentStep;
+    final cubit = context.read<SignupCubit>();
+    _uiEventSubscription = cubit.eventStream.listen(handleUiEvent);
+
+    final currentStep = cubit.state.currentStep;
     _pageController = PageController(
       initialPage: currentStep > 0 ? currentStep - 1 : 0,
     );
@@ -42,6 +48,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
   @override
   void dispose() {
     _pageController.dispose();
+    _uiEventSubscription.cancel();
     super.dispose();
   }
 
