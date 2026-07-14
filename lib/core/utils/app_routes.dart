@@ -27,8 +27,8 @@ abstract class AppRoutes {
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
         case registerScreen:
           return MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (context) => getIt<SignupCubit>(),
+            builder: (_) => BlocProvider.value(
+              value: getIt<SignupCubit>(),
               child: const RegisterScreen(),
             ),
           );
