@@ -4,7 +4,7 @@ import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/auth/presentation/view_model/signup_view_model/signup_cubit.dart';
+import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
 abstract class AppRoutes {
@@ -28,7 +28,7 @@ abstract class AppRoutes {
         case registerScreen:
           return MaterialPageRoute(
             builder: (_) => BlocProvider.value(
-              value: getIt<SignupCubit>(),
+              value: getIt<RegisterCubit>(),
               child: const RegisterScreen(),
             ),
           );
