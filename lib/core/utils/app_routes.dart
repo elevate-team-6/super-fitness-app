@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 
+import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/view_model/signup_view_model/signup_cubit.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
 abstract class AppRoutes {
@@ -10,6 +14,7 @@ abstract class AppRoutes {
   static const String onboarding = 'onboarding';
   static const String login = 'login';
   static const String registerScreen = 'register';
+  static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
   static const String changePassword = '/changePassword';
   static const String verifyResetCode = '/VerifyResetCode';
@@ -20,6 +25,13 @@ abstract class AppRoutes {
       switch (settings.name) {
         case onboarding:
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
+        case registerScreen:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (context) => getIt<SignupCubit>(),
+              child: const RegisterScreen(),
+            ),
+          );
         default:
           return _unDefinedRoute(settings.name);
       }

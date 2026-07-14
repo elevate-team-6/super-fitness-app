@@ -28,7 +28,7 @@ class AuthRepoImpl implements AuthRepoContract {
     switch (response) {
       case SuccessBaseResponse<SignupResponse>():
         if (response.data?.user == null) {
-          return ErrorBaseResponse(AppStrings.signupFailed.tr());
+          return ErrorBaseResponse(AppStrings.registerFailed.tr());
         }
         await _secureCacheHelper.writeData(
           key: AppKeys.tokenKey,

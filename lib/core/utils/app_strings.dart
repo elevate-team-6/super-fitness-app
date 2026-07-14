@@ -86,7 +86,8 @@ abstract class AppStrings {
   static const String doIt = 'doIt';
 
   // Signup
-  static const String signupFailed = 'signupFailed';
+  static const String registerFailed = 'registerFailed';
+  static const String registerSuccess = 'registerSuccess';
 
   // Auth Flow UI
   static const String loginWelcome = 'loginWelcome';
@@ -108,12 +109,16 @@ abstract class AppStrings {
   static const String personalizationDesc = 'personalizationDesc';
   static const String weightTitle = 'weightTitle';
   static const String heightTitle = 'heightTitle';
+  static const String year = 'year';
+  static const String kg = 'kg';
+  static const String cm = 'cm';
   static const String done = 'done';
   static const String goalTitle = 'goalTitle';
   static const String gainWeight = 'gainWeight';
   static const String loseWeight = 'loseWeight';
   static const String getFitter = 'getFitter';
-  static const String stayHealthy = 'stayHealthy';
+  static const String gainMoreFlexible = 'gainMoreFlexible';
+  static const String learnTheBasic = 'learnTheBasic';
   static const String activityLevelTitle = 'activityLevelTitle';
   static const String sedentary = 'sedentary';
   static const String lightlyActive = 'lightlyActive';

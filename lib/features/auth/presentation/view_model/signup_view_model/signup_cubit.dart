@@ -4,13 +4,15 @@ import '../../../../../config/base_cubit/base_cubit.dart';
 import '../../../../../config/base_response/base_response.dart';
 import '../../../../../config/base_state/base_state.dart';
 import '../../../../../config/base_ui_event/base_ui_event.dart';
+import '../../../../../core/utils/app_routes.dart';
+import '../../../../../core/utils/app_strings.dart';
 import '../../../data/models/request/signup_request.dart';
 import '../../../domain/entities/user_entity.dart';
 import '../../../domain/use_cases/signup_use_case.dart';
 import 'register_event.dart';
 import 'register_state.dart';
 
-@injectable
+@lazySingleton
 class SignupCubit extends BaseCubit<RegisterState, BaseUiEvent> {
   final SignupUseCase _signupUseCase;
 
@@ -78,6 +80,14 @@ class SignupCubit extends BaseCubit<RegisterState, BaseUiEvent> {
 
   void _onNextStep() {
     if (state.currentStep < 6) {
+      if (state.currentStep == 0) {
+        emitUiEvent(
+          NavigateEvent(
+            AppRoutes.completeRegister,
+            navigationType: NavigationType.push,
+          ),
+        );
+      }
       emit(state.copyWith(currentStep: state.currentStep + 1));
     }
   }
@@ -97,8 +107,7 @@ class SignupCubit extends BaseCubit<RegisterState, BaseUiEvent> {
       lastName: state.lastName,
       email: state.email,
       password: state.password,
-      rePassword:
-          state.password, // Assuming rePassword matches password for now
+      rePassword: state.password,
       gender: state.gender,
       height: state.height,
       weight: state.weight,
@@ -106,14 +115,13 @@ class SignupCubit extends BaseCubit<RegisterState, BaseUiEvent> {
       goal: state.goal,
       activityLevel: state.activityLevel,
     );
-
     final result = await _signupUseCase(request);
 
     emitUiEvent(HideLoadingEvent());
 
     if (result is SuccessBaseResponse<UserEntity>) {
       emit(state.copyWith(signupStatus: BaseState(data: result.data)));
-      emitUiEvent(DisplaySuccessEvent('Success'));
+      emitUiEvent(DisplaySuccessEvent(AppStrings.registerSuccess));
     } else if (result is ErrorBaseResponse<UserEntity>) {
       emit(
         state.copyWith(
