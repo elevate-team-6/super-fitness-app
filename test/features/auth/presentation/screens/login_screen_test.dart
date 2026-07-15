@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/google_auth_service.dart';
 import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
@@ -38,10 +39,11 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([SignInUseCase, SecureCacheHelper])
+@GenerateMocks([SignInUseCase, SecureCacheHelper, GoogleAuthService])
 void main() {
   late MockSignInUseCase mockUseCase;
   late MockSecureCacheHelper mockCache;
+  late MockGoogleAuthService mockGoogleAuthService;
   late LoginCubit cubit;
   late Map<String, Map<String, dynamic>> translations;
 
@@ -77,12 +79,12 @@ void main() {
   setUp(() {
     mockUseCase = MockSignInUseCase();
     mockCache = MockSecureCacheHelper();
-
+    mockGoogleAuthService = MockGoogleAuthService();
     when(
       mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
     ).thenAnswer((_) async {});
 
-    cubit = LoginCubit(mockUseCase, mockCache);
+    cubit = LoginCubit(mockUseCase, mockCache, mockGoogleAuthService);
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });
@@ -408,7 +410,11 @@ void main() {
       // Re-render with the Arabic locale. A fresh cubit is used because the
       // event stream is single-subscription and the first screen already
       // listened to the shared one.
-      final arabicCubit = LoginCubit(mockUseCase, mockCache);
+      final arabicCubit = LoginCubit(
+        mockUseCase,
+        mockCache,
+        mockGoogleAuthService,
+      );
       addTearDown(() async {
         if (!arabicCubit.isClosed) await arabicCubit.close();
       });
