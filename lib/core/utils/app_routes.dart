@@ -6,11 +6,12 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
+import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState>();
 
   static const String onboarding = 'onboarding';
   static const String login = 'login';
@@ -26,19 +27,23 @@ abstract class AppRoutes {
       switch (settings.name) {
         case onboarding:
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
+        case mainLayout:
+          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
         case registerScreen:
           return MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: getIt<RegisterCubit>(),
-              child: const RegisterScreen(),
-            ),
+            builder: (_) =>
+                BlocProvider.value(
+                  value: getIt<RegisterCubit>(),
+                  child: const RegisterScreen(),
+                ),
           );
         case completeRegister:
           return MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: getIt<RegisterCubit>(),
-              child: const CompleteRegisterScreen(),
-            ),
+            builder: (_) =>
+                BlocProvider.value(
+                  value: getIt<RegisterCubit>(),
+                  child: const CompleteRegisterScreen(),
+                ),
           );
         default:
           return _unDefinedRoute(settings.name);
@@ -50,28 +55,30 @@ abstract class AppRoutes {
 
   static MaterialPageRoute<dynamic> _unDefinedRoute(String? name) {
     return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        body: Center(
-          child: Text(
-            'No route defined for $name',
-            style: AppTextStyles.white16500,
+      builder: (_) =>
+          Scaffold(
+            body: Center(
+              child: Text(
+                'No route defined for $name',
+                style: AppTextStyles.white16500,
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
   static MaterialPageRoute<dynamic> _errorRoute(String message) {
     return MaterialPageRoute(
-      builder: (_) => Scaffold(
-        body: Center(
-          child: Text(
-            'Something went wrong\n$message',
-            style: AppTextStyles.white16500,
-            textAlign: TextAlign.center,
+      builder: (_) =>
+          Scaffold(
+            body: Center(
+              child: Text(
+                'Something went wrong\n$message',
+                style: AppTextStyles.white16500,
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 }

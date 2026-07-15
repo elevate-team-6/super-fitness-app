@@ -92,25 +92,24 @@ abstract class AppTheme {
 
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.black90,
-        indicatorColor: Colors.transparent,
+        backgroundColor: AppColors.black80,
         elevation: 0,
+        height: 55.h,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-
+        labelPadding: EdgeInsets.zero,
+        indicatorColor: Colors.transparent,
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return AppTextStyles.primary13500;
           }
-
           return AppTextStyles.white13500;
         }),
-
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: AppColors.primary);
+            return IconThemeData(color: AppColors.primary, size: 40.sp);
           }
-
-          return const IconThemeData(color: AppColors.white);
+          return IconThemeData(color: AppColors.white, size: 46.sp);
         }),
       ),
 
