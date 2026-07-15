@@ -96,4 +96,8 @@ abstract class AppStrings {
   static const String orText = 'or';
   static const String dontHaveAccount = 'dont_have_account';
   static const String register = 'register';
+  static const String explore = 'explore';
+  static const String workouts = 'workouts';
+  static const String chat = 'chat';
+  static const String profile = 'profile';
 }

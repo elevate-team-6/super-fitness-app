@@ -4,8 +4,7 @@ import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
-import 'package:super_fitness/features/main_layout_screen.dart';
-
+import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
 abstract class AppRoutes {
@@ -36,7 +35,6 @@ abstract class AppRoutes {
 
         case mainLayout:
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
-
         default:
           return _unDefinedRoute(settings.name);
       }

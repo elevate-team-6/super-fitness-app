@@ -76,5 +76,9 @@
   "or": "Or",
   "dont_have_account": "Don't Have An Account Yet ?",
   "register": "Register",
-  "login_success": "Logged in successfully"
+  "login_success": "Logged in successfully",
+  "explore": "Explore",
+  "workouts": "Workouts",
+  "chat": "Chat",
+  "profile": "Profile"
 }

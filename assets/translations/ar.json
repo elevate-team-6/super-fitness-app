@@ -76,5 +76,9 @@
   "or": "أو",
   "dont_have_account": "ليس لديك حساب؟",
   "register": "إنشاء حساب",
-  "login_success": "تم تسجيل الدخول بنجاح"
+  "login_success": "تم تسجيل الدخول بنجاح",
+  "explore": "اكتشف",
+  "workouts": "التمارين",
+  "chat": "الكوتش",
+  "profile": "الملف الشخصي"
 }
