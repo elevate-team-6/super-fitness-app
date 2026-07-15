@@ -76,6 +76,7 @@ flutter:
     - assets/icons/
     - assets/lottie_files/
     - assets/translations/
+    - shorebird.yaml
 
 
 flutter_launcher_icons:

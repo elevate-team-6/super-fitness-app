@@ -1,0 +1,25 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build APK and upload to Firebase App Distribution"
+  lane :firebase_dist do
+    # 1. Build the release APK
+    # We use flutter build instead of gradle to ensure all flutter assets are included correctly
+    sh("flutter build apk --release")
+
+    # 2. Upload to Firebase
+    # Requires 'firebase_app_distribution' plugin: fastlane add_plugin firebase_app_distribution
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID_ANDROID"],
+      firebase_cli_token: ENV["FIREBASE_TOKEN"],
+      groups: "testers", # Ensure this group exists in Firebase Console
+      release_notes: "New build from GitHub Actions",
+      apk_path: "../build/app/outputs/flutter-apk/app-release.apk"
+    )
+  end
+
+  desc "Build and Release with Shorebird"
+  lane :shorebird_release do
+    sh("shorebird release android")
+  end
+end

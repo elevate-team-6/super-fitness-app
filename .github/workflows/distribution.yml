@@ -1,0 +1,53 @@
+name: Android Distribution (Firebase)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  distribute:
+    name: Build & Distribute
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 🦜 Setup Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      - name: 💎 Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: 📦 Install dependencies
+        run: |
+          flutter pub get
+          cd android && gem install fastlane && fastlane add_plugin firebase_app_distribution
+
+      - name: 🏗️ Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: 🚀 Run Fastlane Distribute
+        env:
+          FIREBASE_APP_ID_ANDROID: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+        run: |
+          cd android
+          # Run shorebird release first if it's the first time or if you want it tracked by shorebird
+          shorebird release android -- --release
+          # Then upload to Firebase via Fastlane
+          bundle exec fastlane firebase_dist
