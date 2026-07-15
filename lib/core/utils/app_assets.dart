@@ -22,12 +22,15 @@ abstract class AppIcons {
   static const String person = '${_iconsPath}person.svg';
   static const String profile = '${_iconsPath}profile.svg';
   static const String workOut = '${_iconsPath}work_out.svg';
+  static const String google = '${_iconsPath}Google.png';
+  static const String facebook = '${_iconsPath}Vector.png';
 }
 
 abstract class AppImages {
   static const String _imagesPath = 'assets/images/';
 
   // Example: static const String yourIcon = '${_imagesPath}image_name.svg';
+  static const String fitnessAppLogo = '${_imagesPath}lancher_logo.png';
   static const String authBackground = '${_imagesPath}auth_background.png';
   static const String chatBackground = '${_imagesPath}chat_background.jpg';
   static const String homeBackground = '${_imagesPath}home_background.jpg';

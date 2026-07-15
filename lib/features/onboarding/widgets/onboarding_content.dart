@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
-import 'package:super_fitness/features/onboarding/widgets/onboarding_indicator.dart';
 
+import '../../../core/utils/app_colors.dart';
 import '../../../core/widgets/custom_glass_container.dart';
-import '../screens/onboarding_screen.dart';
+import '../models/onboarding_model.dart';
 
-class OnboardingInfo extends StatelessWidget {
+class OnboardingContent extends StatelessWidget {
   final OnboardingModel model;
   final int itemCount;
   final int currentIndex;
   final VoidCallback onNext;
   final VoidCallback onBack;
 
-  const OnboardingInfo({
+  const OnboardingContent({
     super.key,
     required this.model,
     required this.itemCount,
@@ -37,18 +37,21 @@ class OnboardingInfo extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            model.title,
+            model.title.tr(),
             textAlign: TextAlign.center,
             style: AppTextStyles.white24700,
           ),
           SizedBox(height: 12.h),
           Text(
-            model.description,
+            model.description.tr(),
             textAlign: TextAlign.center,
             style: AppTextStyles.white13400,
           ),
           SizedBox(height: 24.h),
-          OnboardingIndicator(itemCount: itemCount, currentIndex: currentIndex),
+          _OnboardingIndicator(
+            itemCount: itemCount,
+            currentIndex: currentIndex,
+          ),
           SizedBox(height: 32.h),
           isFirst
               ? ElevatedButton(
@@ -73,7 +76,7 @@ class OnboardingInfo extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       SizedBox(
                         width: 93,
                         child: ElevatedButton(
@@ -93,6 +96,36 @@ class OnboardingInfo extends StatelessWidget {
                 ),
         ],
       ),
+    );
+  }
+}
+
+class _OnboardingIndicator extends StatelessWidget {
+  final int itemCount;
+  final int currentIndex;
+
+  const _OnboardingIndicator({
+    required this.itemCount,
+    required this.currentIndex,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(itemCount, (index) {
+        final isActive = index == currentIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          margin: EdgeInsets.symmetric(horizontal: 4.w),
+          height: 8.h,
+          width: isActive ? 24.w : 8.w,
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.primary : AppColors.white40,
+            borderRadius: BorderRadius.circular(100.r),
+          ),
+        );
+      }),
     );
   }
 }
