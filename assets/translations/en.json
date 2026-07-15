@@ -66,5 +66,15 @@
   "skip": "Skip",
   "back": "Back",
   "next": "Next",
-  "doIt": "Do IT"
+  "doIt": "Do IT",
+  "hey_there": "Hey There",
+  "welcome_back": "WELCOME BACK",
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "forget_password": "Forget Password ?",
+  "or": "Or",
+  "dont_have_account": "Don't Have An Account Yet ?",
+  "register": "Register",
+  "login_success": "Logged in successfully"
 }
