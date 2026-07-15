@@ -102,6 +102,22 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
     emit(state.copyWith(signupStatus: const BaseState(isLoading: true)));
     emitUiEvent(ShowLoadingEvent());
 
+    final String activityLevel;
+    switch (state.activityLevel) {
+      case AppStrings.sedentary:
+        activityLevel = 'level1';
+      case AppStrings.lightlyActive:
+        activityLevel = 'level2';
+      case AppStrings.moderatelyActive:
+        activityLevel = 'level3';
+      case AppStrings.veryActive:
+        activityLevel = 'level4';
+      case AppStrings.extraActive:
+        activityLevel = 'level5';
+      default:
+        activityLevel = state.activityLevel;
+    }
+
     final request = SignupRequest(
       firstName: state.firstName,
       lastName: state.lastName,
@@ -113,7 +129,7 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
       weight: state.weight,
       age: state.age,
       goal: state.goal,
-      activityLevel: state.activityLevel,
+      activityLevel: activityLevel,
     );
     final result = await _signupUseCase(request);
 
