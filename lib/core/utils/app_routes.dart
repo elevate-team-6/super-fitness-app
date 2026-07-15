@@ -6,6 +6,7 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
+import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
 abstract class AppRoutes {
@@ -26,6 +27,8 @@ abstract class AppRoutes {
       switch (settings.name) {
         case onboarding:
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
+        case mainLayout:
+          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
         case registerScreen:
           return MaterialPageRoute(
             builder: (_) => BlocProvider.value(

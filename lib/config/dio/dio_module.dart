@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:super_fitness/core/utils/app_keys.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:super_fitness/core/utils/app_keys.dart';
 
 import '../../core/utils/app_end_points.dart';
 import '../interceptors/auth_interceptor.dart';
-import '../interceptors/logging_interceptor.dart';
 
 @module
 abstract class DioModule {
@@ -13,30 +14,37 @@ abstract class DioModule {
   CacheStore get cacheStore => MemCacheStore();
 
   @lazySingleton
-  Dio dio(
-    AuthInterceptor authInterceptor,
-    LoggingInterceptor loggingInterceptor,
-    CacheStore cacheStore,
-  ) {
+  Dio dio(AuthInterceptor authInterceptor, CacheStore cacheStore) {
     final dio = Dio();
-    _configureDio(dio, authInterceptor, loggingInterceptor, cacheStore);
+    _configureDio(dio, authInterceptor, cacheStore);
     return dio;
   }
 
   @Named('external')
   @lazySingleton
-  Dio externalDio(LoggingInterceptor loggingInterceptor) {
+  Dio externalDio() {
     final dio = Dio();
     dio.options.connectTimeout = const Duration(seconds: 30);
     dio.options.receiveTimeout = const Duration(seconds: 30);
-    dio.interceptors.add(loggingInterceptor);
+    if (kDebugMode) {
+      dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: false,
+          error: true,
+          compact: true,
+          maxWidth: 90,
+        ),
+      );
+    }
     return dio;
   }
 
   void _configureDio(
     Dio dio,
     AuthInterceptor authInterceptor,
-    LoggingInterceptor loggingInterceptor,
     CacheStore cacheStore,
   ) {
     dio.options.baseUrl = AppEndPoints.baseUrl;
@@ -59,12 +67,25 @@ abstract class DioModule {
     // Add interceptors in correct order:
     // 1. AuthInterceptor - adds authorization headers
     // 2. DioCacheInterceptor - handles caching
-    // 3. LoggingInterceptor - logs requests/responses
+    // 3. PrettyDioLogger - logs requests/responses (in debug mode)
     dio.interceptors.addAll([
       authInterceptor,
       DioCacheInterceptor(options: cacheOptions),
-      loggingInterceptor,
     ]);
+
+    if (kDebugMode) {
+      dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: false,
+          error: true,
+          compact: true,
+          maxWidth: 90,
+        ),
+      );
+    }
 
     // Add cache duration logic
     dio.interceptors.add(
