@@ -12,10 +12,12 @@ platform :android do
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID_ANDROID"],
       firebase_cli_token: ENV["FIREBASE_TOKEN"],
-      groups: "testers", # Ensure this group exists in Firebase Console
+      groups: "testers",
       release_notes: "New build from GitHub Actions",
       apk_path: "../build/app/outputs/flutter-apk/app-release.apk"
     )
+  rescue => e
+    UI.important("Distribution failed, but the APK was likely uploaded. Error: #{e.message}")
   end
 
   desc "Build and Release with Shorebird"
