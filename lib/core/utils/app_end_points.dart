@@ -3,7 +3,8 @@ abstract class AppEndPoints {
   static const String baseUrl = "https://fitness.elevateegy.com/api/v1";
 
   // API EndPoints:-
-
+  // Auth
+  static const String signin = "$baseUrl/auth/signin";
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
   // 1. Group them by feature (e.g., // Products, // Cart).
