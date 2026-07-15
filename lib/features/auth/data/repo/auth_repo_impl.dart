@@ -13,7 +13,6 @@ import '../data_sources/auth_remote_data_source_contract.dart';
 
 @Injectable(as: AuthRepoContract)
 class AuthRepoImpl implements AuthRepoContract {
-  // ignore: unused_field
   final AuthRemoteDataSourceContract _remoteDataSource;
   final AuthRemoteDataSourceContract? _mockDataSource;
 

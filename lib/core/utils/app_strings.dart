@@ -105,4 +105,10 @@ abstract class AppStrings {
   static const String verificationCodeIsCorrect = 'verificationCodeIsCorrect';
   static const String passwordResetSuccessfully = 'passwordResetSuccessfully';
   static const String otpCodeInvalid = 'otpCodeInvalid';
+
+  // Onboarding
+  static const String explore = 'explore';
+  static const String workouts = 'workouts';
+  static const String chat = 'chat';
+  static const String profile = 'profile';
 }

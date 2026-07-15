@@ -12,7 +12,6 @@ import 'package:super_fitness/features/auth/data/models/response/verify_reset_co
 
 @Injectable(as: AuthRemoteDataSourceContract)
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSourceContract {
-  // ignore: unused_field
   final AuthApiClient _apiClient;
 
   const AuthRemoteDataSourceImpl(this._apiClient);
