@@ -22,7 +22,7 @@ class AppScaffold extends StatelessWidget {
     this.drawer,
     this.extendBody = true,
     this.extendBodyBehindAppBar = true,
-    this.blurSigma = 15.0,
+    this.blurSigma = 12.5,
     this.overlayColor,
   });
 
@@ -35,11 +35,12 @@ class AppScaffold extends StatelessWidget {
       extendBody: extendBody,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       body: Stack(
+        fit: StackFit.expand,
         children: [
           Positioned.fill(
             child: Image.asset(
               backgroundImage,
-              fit: BoxFit.fitHeight, // Fits the height as requested
+              fit: BoxFit.cover,
               alignment: Alignment.center,
             ),
           ),
@@ -47,7 +48,7 @@ class AppScaffold extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
               child: Container(
-                color: overlayColor ?? Colors.black.withValues(alpha: 0.4),
+                color: overlayColor ?? Colors.black.withValues(alpha: 0.2),
               ),
             ),
           ),
