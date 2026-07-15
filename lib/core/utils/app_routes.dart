@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/features/auth/presentation/widgets/google_signup_args.dart';
 
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
@@ -51,7 +52,9 @@ abstract class AppRoutes {
           return MaterialPageRoute(
             builder: (_) => BlocProvider.value(
               value: getIt<RegisterCubit>(),
-              child: const CompleteRegisterScreen(),
+              child: CompleteRegisterScreen(
+                googleArgs: settings.arguments as GoogleSignupArgs?,
+              ),
             ),
           );
         default:

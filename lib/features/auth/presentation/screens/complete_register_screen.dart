@@ -12,7 +12,7 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
-
+import 'package:super_fitness/features/auth/presentation/widgets/google_signup_args.dart';
 import '../view_model/register_view_model/register_cubit.dart';
 import '../view_model/register_view_model/register_event.dart';
 import '../view_model/register_view_model/register_state.dart';
@@ -22,7 +22,8 @@ import '../widgets/selectable_option_list.dart';
 import '../widgets/step_header.dart';
 
 class CompleteRegisterScreen extends StatefulWidget {
-  const CompleteRegisterScreen({super.key});
+  final GoogleSignupArgs? googleArgs;
+  const CompleteRegisterScreen({super.key, this.googleArgs});
 
   @override
   State<CompleteRegisterScreen> createState() => _CompleteRegisterScreenState();
@@ -37,6 +38,17 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
   void initState() {
     super.initState();
     final cubit = context.read<RegisterCubit>();
+    final args = widget.googleArgs;
+    if (args != null) {
+      cubit.doEvent(
+        PrefillFromGoogleEvent(
+          firstName: args.firstName,
+          lastName: args.lastName,
+          email: args.email,
+          password: args.password,
+        ),
+      );
+    }
     _uiEventSubscription = cubit.eventStream.listen(handleUiEvent);
 
     final currentStep = cubit.state.currentStep;

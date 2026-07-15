@@ -56,3 +56,19 @@ class PreviousStepEvent extends RegisterEvent {
 class SubmitSignupEvent extends RegisterEvent {
   const SubmitSignupEvent();
 }
+
+/// Fills the account step from a Google account and jumps straight to the
+/// first fitness question — the user never sees the email/password step.
+class PrefillFromGoogleEvent extends RegisterEvent {
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String password;
+
+  PrefillFromGoogleEvent({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.password,
+  });
+}

@@ -40,6 +40,8 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
         _onPreviousStep();
       case SubmitSignupEvent():
         _onSubmit();
+      case PrefillFromGoogleEvent():
+        _prefillFromGoogle(event);
     }
   }
 
@@ -146,5 +148,17 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
       );
       emitUiEvent(DisplayErrorEvent(result.errorMessage));
     }
+  }
+
+  void _prefillFromGoogle(PrefillFromGoogleEvent event) {
+    emit(
+      state.copyWith(
+        firstName: event.firstName,
+        lastName: event.lastName,
+        email: event.email,
+        password: event.password,
+        currentStep: 1, // skip the account step; Google already gave us it
+      ),
+    );
   }
 }

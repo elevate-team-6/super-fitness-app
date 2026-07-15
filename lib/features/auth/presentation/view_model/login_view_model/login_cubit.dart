@@ -7,6 +7,7 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/config/services/google_auth_service.dart';
+import 'package:super_fitness/config/services/google_password_derivation.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
@@ -16,6 +17,7 @@ import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart'
 import 'package:super_fitness/features/auth/domain/use_cases/sign_in_use_case.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_state.dart';
+import 'package:super_fitness/features/auth/presentation/widgets/google_signup_args.dart';
 
 @injectable
 class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
@@ -67,27 +69,65 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
     }
   }
 
+  /// Signs in with Google.
+  ///
+  /// Our backend has no Google endpoint yet, so we bridge it with the regular
+  /// email/password endpoints and a password derived from the Google uid
+  /// (see [GooglePasswordDerivation]). Signin doubles as the "does this user
+  /// exist?" check: the API returns the same 401 for an unknown email and a
+  /// wrong password, so a failure is treated as a first-time user and sends
+  /// them into the register flow to fill in the fitness details Google can't
+  /// provide.
+  ///
+  /// TODO(SF-XX): replace all of this with POST /auth/google once the backend
+  /// can trade a Firebase ID token for one of our tokens.
   Future<void> _signInWithGoogle() async {
     emitUiEvent(ShowLoadingEvent());
 
     try {
       final account = await _googleAuthService.signIn();
 
+      // The user dismissed the account picker — nothing to report.
+      if (account == null) {
+        emitUiEvent(HideLoadingEvent());
+        return;
+      }
+
+      final password = GooglePasswordDerivation.fromUid(account.uid);
+      final result = await _signInUseCase(
+        SignInRequestModel(email: account.email, password: password),
+      );
+
       emitUiEvent(HideLoadingEvent());
 
-      // The user dismissed the account picker — nothing to report.
-      if (account == null) return;
+      switch (result) {
+        // Returning user — straight into the app.
+        case SuccessBaseResponse<SignInEntity>():
+          final entity = result.data ?? const SignInEntity();
+          await _cacheUserSession(entity);
+          emitUiEvent(DisplaySuccessEvent(AppStrings.loginSuccess.tr()));
+          emitUiEvent(
+            NavigateEvent(
+              AppRoutes.mainLayout,
+              navigationType: NavigationType.pushAndRemoveUntil,
+            ),
+          );
 
-      // TODO(SF-XX): replace with POST /auth/google once the backend exposes
-      // it, then cache the returned session and navigate to mainLayout.
-      // New users will also need the onboarding screens (gender, age, weight,
-      // height, goal, activityLevel) before signup can be completed.
-      emitUiEvent(
-        DisplaySuccessEvent(
-          'Google: ${account.firstName ?? ''} — ${account.email}',
-        ),
-      );
-    } catch (e) {
+        // First time with this Google account — collect the rest and sign up.
+        case ErrorBaseResponse<SignInEntity>():
+          emitUiEvent(
+            NavigateEvent(
+              AppRoutes.completeRegister,
+              arguments: GoogleSignupArgs(
+                firstName: account.firstName ?? '',
+                lastName: account.lastName ?? '',
+                email: account.email,
+                password: password,
+              ),
+            ),
+          );
+      }
+    } catch (_) {
       emitUiEvent(HideLoadingEvent());
       emitUiEvent(DisplayErrorEvent(AppStrings.somethingWentWrong.tr()));
     }

@@ -19,6 +19,7 @@ import 'package:super_fitness/features/auth/presentation/view_model/login_view_m
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:super_fitness/features/auth/presentation/widgets/login_form.dart';
 import 'package:super_fitness/features/auth/presentation/widgets/social_login_button.dart';
+import 'package:super_fitness/features/auth/presentation/widgets/social_login_buttons.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -132,48 +133,12 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
                         ),
                       ),
                       SizedBox(height: 16.h),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 56),
-                            child: Row(
-                              children: [
-                                const Expanded(child: Divider()),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16.w,
-                                  ),
-                                  child: Text(
-                                    AppStrings.orText.tr(),
-                                    style: AppTextStyles.white13400.copyWith(
-                                      fontSize: 12.sp,
-                                    ),
-                                  ),
-                                ),
-                                const Expanded(child: Divider()),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 16.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SocialLoginButton(assetPath: AppIcons.facebook),
-                              SizedBox(width: 16.w),
-                              SocialLoginButton(
-                                assetPath: AppIcons.google,
-                                onTap: () => context
-                                    .read<LoginCubit>()
-                                    .doIntent(const GoogleLoginEvent()),
-                              ),
-                              SizedBox(width: 16.w),
-                              SocialLoginButton(icon: Icons.apple),
-                            ],
-                          ),
-                        ],
+                      SocialLoginButtons(
+                        onGoogleTap: () => context.read<LoginCubit>().doIntent(
+                          const GoogleLoginEvent(),
+                        ),
                       ),
                       SizedBox(height: 24.h),
-                      // Login button — enabled only when the form is valid.
                       AnimatedBuilder(
                         animation: Listenable.merge([
                           _emailController,
@@ -209,7 +174,13 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
                             ),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                AppRoutes.registerScreen,
+                                (route) => false,
+                              );
+                            },
                             child: Text(
                               AppStrings.register.tr(),
                               style: AppTextStyles.primary13500.copyWith(
