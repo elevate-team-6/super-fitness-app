@@ -80,5 +80,6 @@
   "explore": "Explore",
   "workouts": "Workouts",
   "chat": "Chat",
-  "profile": "Profile"
+  "profile": "Profile",
+  "exit_confirmation": "Are You Sure To Close The Application?"
 }

@@ -13,6 +13,7 @@ import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
+import 'package:super_fitness/core/widgets/exit_confirmation_dialog.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
@@ -68,145 +69,158 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
 
   @override
   Widget build(BuildContext context) {
-    return AppScaffold(
-      backgroundImage: AppImages.authBackground,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Image.asset(AppImages.fitnessAppLogo, height: 64.h),
-              SizedBox(height: 56.h),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    AppStrings.heyThere.tr(),
-                    style: AppTextStyles.white16500.copyWith(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 18.sp,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12.w),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    AppStrings.welcomeBack.tr(),
-                    style: AppTextStyles.white24700.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20.sp,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16.h),
-              CustomGlassContainer(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-                child: Column(
-                  children: [
-                    Text(
-                      AppStrings.login.tr(),
-                      style: AppTextStyles.white24700,
-                    ),
-                    SizedBox(height: 16.h),
-                    LoginForm(
-                      formKey: _formKey,
-                      emailController: _emailController,
-                      passwordController: _passwordController,
-                      onForgetPasswordTap: () => Navigator.pushNamed(
-                        context,
-                        AppRoutes.forgetPassword,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        ExitConfirmationDialog.show(context);
+      },
+      child: AppScaffold(
+        backgroundImage: AppImages.authBackground,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Image.asset(AppImages.fitnessAppLogo, height: 64.h),
+                SizedBox(height: 56.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      AppStrings.heyThere.tr(),
+                      style: AppTextStyles.white16500.copyWith(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 18.sp,
                       ),
                     ),
-                    SizedBox(height: 16.h),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 56),
-                          child: Row(
-                            children: [
-                              const Expanded(child: Divider()),
-                              Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                                child: Text(
-                                  AppStrings.orText.tr(),
-                                  style: AppTextStyles.white13400.copyWith(
-                                    fontSize: 12.sp,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      AppStrings.welcomeBack.tr(),
+                      style: AppTextStyles.white24700.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 20.sp,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                CustomGlassContainer(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 24.w,
+                    vertical: 16.h,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        AppStrings.login.tr(),
+                        style: AppTextStyles.white24700,
+                      ),
+                      SizedBox(height: 16.h),
+                      LoginForm(
+                        formKey: _formKey,
+                        emailController: _emailController,
+                        passwordController: _passwordController,
+                        onForgetPasswordTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.forgetPassword,
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 56),
+                            child: Row(
+                              children: [
+                                const Expanded(child: Divider()),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16.w,
+                                  ),
+                                  child: Text(
+                                    AppStrings.orText.tr(),
+                                    style: AppTextStyles.white13400.copyWith(
+                                      fontSize: 12.sp,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const Expanded(child: Divider()),
+                                const Expanded(child: Divider()),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 16.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SocialLoginButton(assetPath: AppIcons.facebook),
+                              SizedBox(width: 16.w),
+                              SocialLoginButton(assetPath: AppIcons.google),
+                              SizedBox(width: 16.w),
+                              SocialLoginButton(icon: Icons.apple),
                             ],
                           ),
-                        ),
-                        SizedBox(height: 16.h),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SocialLoginButton(assetPath: AppIcons.facebook),
-                            SizedBox(width: 16.w),
-                            SocialLoginButton(assetPath: AppIcons.google),
-                            SizedBox(width: 16.w),
-                            SocialLoginButton(icon: Icons.apple),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 24.h),
-                    // Login button — enabled only when the form is valid.
-                    AnimatedBuilder(
-                      animation: Listenable.merge([
-                        _emailController,
-                        _passwordController,
-                      ]),
-                      builder: (context, child) {
-                        final isValid =
-                            AppValidations.validateEmail(
-                                  _emailController.text,
-                                ) ==
-                                null &&
-                            AppValidations.validatePassword(
-                                  _passwordController.text,
-                                ) ==
-                                null;
-                        return SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: isValid ? _onLoginPressed : null,
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: Text(AppStrings.login.tr()),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppStrings.dontHaveAccount.tr(),
-                          style: AppTextStyles.white13400.copyWith(
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {}, // TODO: navigate to register later.
-                          child: Text(
-                            AppStrings.register.tr(),
-                            style: AppTextStyles.primary13500.copyWith(
-                              fontWeight: FontWeight.w800,
+                        ],
+                      ),
+                      SizedBox(height: 24.h),
+                      // Login button — enabled only when the form is valid.
+                      AnimatedBuilder(
+                        animation: Listenable.merge([
+                          _emailController,
+                          _passwordController,
+                        ]),
+                        builder: (context, child) {
+                          final isValid =
+                              AppValidations.validateEmail(
+                                    _emailController.text,
+                                  ) ==
+                                  null &&
+                              AppValidations.validatePassword(
+                                    _passwordController.text,
+                                  ) ==
+                                  null;
+                          return SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: isValid ? _onLoginPressed : null,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Text(AppStrings.login.tr()),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            AppStrings.dontHaveAccount.tr(),
+                            style: AppTextStyles.white13400.copyWith(
                               fontSize: 14.sp,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          TextButton(
+                            onPressed:
+                                () {}, // TODO: navigate to register later.
+                            child: Text(
+                              AppStrings.register.tr(),
+                              style: AppTextStyles.primary13500.copyWith(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14.sp,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
