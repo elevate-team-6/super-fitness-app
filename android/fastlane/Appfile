@@ -1,0 +1,2 @@
+json_key_file("") # Path to the json secret file - leave empty if using environment variables
+package_name("com.example.super_fitness") # Your package name
