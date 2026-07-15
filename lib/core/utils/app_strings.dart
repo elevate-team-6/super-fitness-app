@@ -97,6 +97,7 @@ abstract class AppStrings {
   static const String forgotPassword = 'forgotPassword';
   static const String registerPrompt = 'registerPrompt';
   static const String signupWelcome = 'signupWelcome';
+  static const String signupCreateAccount = 'signupCreateAccount';
   static const String register = 'register';
   static const String firstName = 'firstName';
   static const String lastName = 'lastName';
@@ -125,4 +126,5 @@ abstract class AppStrings {
   static const String moderatelyActive = 'moderatelyActive';
   static const String veryActive = 'veryActive';
   static const String extraActive = 'extraActive';
+  static const String or = 'or';
 }

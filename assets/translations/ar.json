@@ -75,11 +75,12 @@
   "password": "كلمة المرور",
   "forgotPassword": "هل نسيت كلمة المرور؟",
   "registerPrompt": "ليس لديك حساب؟ سجل الآن",
-  "signupWelcome": "مرحباً بك،\nإنشاء حساب جديد",
+  "signupWelcome": "مرحباً بك،",
+  "signupCreateAccount": "إنشاء حساب جديد",
   "register": "تسجيل",
   "firstName": "الاسم الأول",
   "lastName": "اسم العائلة",
-  "loginPrompt": "لديك حساب بالفعل؟ سجل دخول",
+  "loginPrompt": "لديك حساب بالفعل؟",
   "tellUsAboutYourself": "أخبرنا عن نفسك!",
   "genderTitle": "نحتاج لمعرفة جنسك",
   "male": "ذكر",
@@ -103,5 +104,6 @@
   "lightlyActive": "نشاط خفيف",
   "moderatelyActive": "نشاط متوسط",
   "veryActive": "نشط جداً",
-  "extraActive": "نشاط فائق"
+  "extraActive": "نشاط فائق",
+  "or": "أو"
 }

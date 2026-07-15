@@ -63,7 +63,7 @@ abstract class AppTheme {
       // text field
       inputDecorationTheme: InputDecorationTheme(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         hintStyle: AppTextStyles.white2016500,
         labelStyle: AppTextStyles.white13500,
         errorStyle: TextStyle(color: AppColors.red, fontSize: 12.sp),
