@@ -17,10 +17,11 @@ class ForgetPasswordMockDataSourceImpl implements AuthRemoteDataSourceContract {
     await Future.delayed(const Duration(seconds: 1));
     return response;
   }
+
   @override
   Future<BaseResponse<ForgetPasswordResponse>> forgotPassword(
-      ForgetPasswordRequest request,
-      ) async {
+    ForgetPasswordRequest request,
+  ) async {
     /// fake validation
     if (request.email.contains('@')) {
       return _simulate(
@@ -39,8 +40,8 @@ class ForgetPasswordMockDataSourceImpl implements AuthRemoteDataSourceContract {
 
   @override
   Future<BaseResponse<VerifyResetCodeResponse>> verifyResetCode(
-      VerifyResetCodeRequest request,
-      ) async {
+    VerifyResetCodeRequest request,
+  ) async {
     /// fake OTP = 123456
     if (request.resetCode == '123456') {
       return _simulate(
@@ -55,8 +56,8 @@ class ForgetPasswordMockDataSourceImpl implements AuthRemoteDataSourceContract {
 
   @override
   Future<BaseResponse<ResetPasswordResponse>> resetPassword(
-      ResetPasswordRequest request,
-      ) async {
+    ResetPasswordRequest request,
+  ) async {
     /// fake password rule
     if (request.newPassword.length >= 6) {
       return _simulate(

@@ -27,9 +27,7 @@ void main() {
     test('should return SuccessBaseResponse when api call succeeds', () async {
       final request = ForgetPasswordRequest(email: 'test@test.com');
 
-      const response = ForgetPasswordResponse(
-        message: 'Success',
-      );
+      const response = ForgetPasswordResponse(message: 'Success');
 
       when(
         mockApiClient.forgotPassword(request),
@@ -43,28 +41,28 @@ void main() {
       verifyNoMoreInteractions(mockApiClient);
     });
 
-    test('should return ErrorBaseResponse when api call throws exception',
-        () async {
-      final request = ForgetPasswordRequest(email: 'test@test.com');
+    test(
+      'should return ErrorBaseResponse when api call throws exception',
+      () async {
+        final request = ForgetPasswordRequest(email: 'test@test.com');
 
-      when(
-        mockApiClient.forgotPassword(request),
-      ).thenThrow(Exception('Network Error'));
+        when(
+          mockApiClient.forgotPassword(request),
+        ).thenThrow(Exception('Network Error'));
 
-      final result = await remoteDataSource.forgotPassword(request);
+        final result = await remoteDataSource.forgotPassword(request);
 
-      expect(result, isA<ErrorBaseResponse<ForgetPasswordResponse>>());
+        expect(result, isA<ErrorBaseResponse<ForgetPasswordResponse>>());
 
-      verify(mockApiClient.forgotPassword(request)).called(1);
-      verifyNoMoreInteractions(mockApiClient);
-    });
+        verify(mockApiClient.forgotPassword(request)).called(1);
+        verifyNoMoreInteractions(mockApiClient);
+      },
+    );
   });
 
   group('verifyResetCode', () {
     test('should return SuccessBaseResponse when api call succeeds', () async {
-      final request = VerifyResetCodeRequest(
-        resetCode: '123456',
-      );
+      final request = VerifyResetCodeRequest(resetCode: '123456');
 
       const response = VerifyResetCodeResponse(
         status: 'success',
@@ -83,23 +81,23 @@ void main() {
       verifyNoMoreInteractions(mockApiClient);
     });
 
-    test('should return ErrorBaseResponse when api call throws exception',
-        () async {
-      final request = VerifyResetCodeRequest(
-        resetCode: '123456',
-      );
+    test(
+      'should return ErrorBaseResponse when api call throws exception',
+      () async {
+        final request = VerifyResetCodeRequest(resetCode: '123456');
 
-      when(
-        mockApiClient.verifyResetCode(request),
-      ).thenThrow(Exception('Network Error'));
+        when(
+          mockApiClient.verifyResetCode(request),
+        ).thenThrow(Exception('Network Error'));
 
-      final result = await remoteDataSource.verifyResetCode(request);
+        final result = await remoteDataSource.verifyResetCode(request);
 
-      expect(result, isA<ErrorBaseResponse<VerifyResetCodeResponse>>());
+        expect(result, isA<ErrorBaseResponse<VerifyResetCodeResponse>>());
 
-      verify(mockApiClient.verifyResetCode(request)).called(1);
-      verifyNoMoreInteractions(mockApiClient);
-    });
+        verify(mockApiClient.verifyResetCode(request)).called(1);
+        verifyNoMoreInteractions(mockApiClient);
+      },
+    );
   });
 
   group('resetPassword', () {
@@ -126,23 +124,25 @@ void main() {
       verifyNoMoreInteractions(mockApiClient);
     });
 
-    test('should return ErrorBaseResponse when api call throws exception',
-        () async {
-      final request = ResetPasswordRequest(
-        email: 'test@test.com',
-        newPassword: '12345678',
-      );
+    test(
+      'should return ErrorBaseResponse when api call throws exception',
+      () async {
+        final request = ResetPasswordRequest(
+          email: 'test@test.com',
+          newPassword: '12345678',
+        );
 
-      when(
-        mockApiClient.resetPassword(request),
-      ).thenThrow(Exception('Network Error'));
+        when(
+          mockApiClient.resetPassword(request),
+        ).thenThrow(Exception('Network Error'));
 
-      final result = await remoteDataSource.resetPassword(request);
+        final result = await remoteDataSource.resetPassword(request);
 
-      expect(result, isA<ErrorBaseResponse<ResetPasswordResponse>>());
+        expect(result, isA<ErrorBaseResponse<ResetPasswordResponse>>());
 
-      verify(mockApiClient.resetPassword(request)).called(1);
-      verifyNoMoreInteractions(mockApiClient);
-    });
+        verify(mockApiClient.resetPassword(request)).called(1);
+        verifyNoMoreInteractions(mockApiClient);
+      },
+    );
   });
 }

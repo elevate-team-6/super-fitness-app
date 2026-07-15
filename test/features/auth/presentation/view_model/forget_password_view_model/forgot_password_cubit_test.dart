@@ -24,8 +24,8 @@ import 'forgot_password_cubit_test.mocks.dart';
 ])
 void main() {
   provideDummy<BaseResponse<ForgetPasswordEntity>>(
-  ErrorBaseResponse<ForgetPasswordEntity>('dummy'),
-);
+    ErrorBaseResponse<ForgetPasswordEntity>('dummy'),
+  );
   late MockForgetPasswordUseCase forgotPasswordUseCase;
   late MockVerifyResetCodeUseCase verifyResetCodeUseCase;
   late MockResetPasswordUseCase resetPasswordUseCase;
@@ -61,17 +61,12 @@ void main() {
       build: () {
         when(
           forgotPasswordUseCase(email: 'test@test.com'),
-        ).thenAnswer(
-          (_) async =>  SuccessBaseResponse(entity),
-        );
+        ).thenAnswer((_) async => SuccessBaseResponse(entity));
 
         return cubit;
       },
-      act: (cubit) => cubit.doEvent(
-         ForgotPasswordEvent(
-          email: 'test@test.com',
-        ),
-      ),
+      act: (cubit) =>
+          cubit.doEvent(ForgotPasswordEvent(email: 'test@test.com')),
       expect: () => [
         const ForgotPasswordState(
           forgotPasswordState: BaseState(isLoading: true),
@@ -79,26 +74,20 @@ void main() {
         const ForgotPasswordState(),
       ],
       verify: (_) {
-        verify(
-          forgotPasswordUseCase(email: 'test@test.com'),
-        ).called(1);
+        verify(forgotPasswordUseCase(email: 'test@test.com')).called(1);
       },
     );
 
     test('emits success ui events', () async {
       when(
         forgotPasswordUseCase(email: 'test@test.com'),
-      ).thenAnswer(
-        (_) async =>  SuccessBaseResponse(entity),
-      );
+      ).thenAnswer((_) async => SuccessBaseResponse(entity));
 
       final events = <BaseUiEvent>[];
 
       final sub = cubit.eventStream.listen(events.add);
 
-      cubit.doEvent(
-         ForgotPasswordEvent(email: 'test@test.com'),
-      );
+      cubit.doEvent(ForgotPasswordEvent(email: 'test@test.com'));
 
       await Future.delayed(Duration.zero);
 
@@ -111,10 +100,7 @@ void main() {
       );
 
       expect(events[1], isA<NavigateEvent>());
-      expect(
-        (events[1] as NavigateEvent).routeName,
-        AppRoutes.verifyResetCode,
-      );
+      expect((events[1] as NavigateEvent).routeName, AppRoutes.verifyResetCode);
 
       await sub.cancel();
     });
@@ -124,17 +110,12 @@ void main() {
       build: () {
         when(
           forgotPasswordUseCase(email: 'test@test.com'),
-        ).thenAnswer(
-          (_) async =>  ErrorBaseResponse('Error'),
-        );
+        ).thenAnswer((_) async => ErrorBaseResponse('Error'));
 
         return cubit;
       },
-      act: (cubit) => cubit.doEvent(
-         ForgotPasswordEvent(
-          email: 'test@test.com',
-        ),
-      ),
+      act: (cubit) =>
+          cubit.doEvent(ForgotPasswordEvent(email: 'test@test.com')),
       expect: () => [
         const ForgotPasswordState(
           forgotPasswordState: BaseState(isLoading: true),
@@ -150,17 +131,12 @@ void main() {
       build: () {
         when(
           verifyResetCodeUseCase(resetCode: '123456'),
-        ).thenAnswer(
-          (_) async =>  SuccessBaseResponse(entity),
-        );
+        ).thenAnswer((_) async => SuccessBaseResponse(entity));
 
         return cubit;
       },
       act: (cubit) => cubit.doEvent(
-         VerifyResetCodeEvent(
-          email: 'test@test.com',
-          resetCode: '123456',
-        ),
+        VerifyResetCodeEvent(email: 'test@test.com', resetCode: '123456'),
       ),
       expect: () => [
         const ForgotPasswordState(
@@ -175,17 +151,12 @@ void main() {
       build: () {
         when(
           verifyResetCodeUseCase(resetCode: '123456'),
-        ).thenAnswer(
-          (_) async =>  ErrorBaseResponse('Error'),
-        );
+        ).thenAnswer((_) async => ErrorBaseResponse('Error'));
 
         return cubit;
       },
       act: (cubit) => cubit.doEvent(
-         VerifyResetCodeEvent(
-          email: 'test@test.com',
-          resetCode: '123456',
-        ),
+        VerifyResetCodeEvent(email: 'test@test.com', resetCode: '123456'),
       ),
       expect: () => [
         const ForgotPasswordState(
@@ -201,26 +172,16 @@ void main() {
       'success',
       build: () {
         when(
-          resetPasswordUseCase(
-            email: 'test@test.com',
-            newPassword: '12345678',
-          ),
-        ).thenAnswer(
-          (_) async =>  SuccessBaseResponse(entity),
-        );
+          resetPasswordUseCase(email: 'test@test.com', newPassword: '12345678'),
+        ).thenAnswer((_) async => SuccessBaseResponse(entity));
 
         return cubit;
       },
       act: (cubit) => cubit.doEvent(
-         ResetPasswordEvent(
-          email: 'test@test.com',
-          newPassword: '12345678',
-        ),
+        ResetPasswordEvent(email: 'test@test.com', newPassword: '12345678'),
       ),
       expect: () => [
-         ForgotPasswordState(
-          resetPasswordState: BaseState(isLoading: true),
-        ),
+        ForgotPasswordState(resetPasswordState: BaseState(isLoading: true)),
         const ForgotPasswordState(),
       ],
     );
@@ -229,21 +190,13 @@ void main() {
       'error',
       build: () {
         when(
-          resetPasswordUseCase(
-            email: 'test@test.com',
-            newPassword: '12345678',
-          ),
-        ).thenAnswer(
-          (_) async =>  ErrorBaseResponse('Error'),
-        );
+          resetPasswordUseCase(email: 'test@test.com', newPassword: '12345678'),
+        ).thenAnswer((_) async => ErrorBaseResponse('Error'));
 
         return cubit;
       },
       act: (cubit) => cubit.doEvent(
-         ResetPasswordEvent(
-          email: 'test@test.com',
-          newPassword: '12345678',
-        ),
+        ResetPasswordEvent(email: 'test@test.com', newPassword: '12345678'),
       ),
       expect: () => [
         const ForgotPasswordState(

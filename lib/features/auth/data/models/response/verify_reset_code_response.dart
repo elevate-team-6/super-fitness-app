@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:super_fitness/features/auth/domain/entities/forget_password_entity.dart';
+
 class VerifyResetCodeResponse extends Equatable {
   final String? status;
   final String? message;

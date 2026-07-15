@@ -99,8 +99,7 @@ void main() {
       verify(
         mockCubit.doEvent(
           argThat(
-            isA<ForgotPasswordEvent>()
-                .having((e) => e.email, 'email', email),
+            isA<ForgotPasswordEvent>().having((e) => e.email, 'email', email),
           ),
         ),
       ).called(1);

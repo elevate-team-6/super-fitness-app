@@ -17,16 +17,16 @@ abstract class AuthApiClient {
   factory AuthApiClient(Dio dio) = _AuthApiClient;
   @POST(AppEndPoints.forgetPassword)
   Future<ForgetPasswordResponse> forgotPassword(
-      @Body() ForgetPasswordRequest request,
-      );
+    @Body() ForgetPasswordRequest request,
+  );
 
   @POST(AppEndPoints.verifyOtp)
   Future<VerifyResetCodeResponse> verifyResetCode(
-      @Body() VerifyResetCodeRequest request,
-      );
+    @Body() VerifyResetCodeRequest request,
+  );
 
   @PUT(AppEndPoints.resetPassword)
   Future<ResetPasswordResponse> resetPassword(
-      @Body() ResetPasswordRequest request,
-      );
+    @Body() ResetPasswordRequest request,
+  );
 }

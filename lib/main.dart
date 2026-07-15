@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
             initialRoute: isLoggedIn
                 ? AppRoutes.forgetPassword
                 : AppRoutes.forgetPassword,
-          
+
             builder: BotToastInit(),
             navigatorObservers: [BotToastNavigatorObserver()],
           ),

@@ -16,7 +16,7 @@ class AuthRepoImpl implements AuthRepoContract {
   final AuthRemoteDataSourceContract _remoteDataSource;
   final AuthRemoteDataSourceContract? _mockDataSource;
 
-   AuthRepoImpl(this._remoteDataSource,[@Named('mock') this._mockDataSource]);
+  AuthRepoImpl(this._remoteDataSource, [@Named('mock') this._mockDataSource]);
   @override
   Future<BaseResponse<ForgetPasswordEntity>> forgotPassword({
     required String email,

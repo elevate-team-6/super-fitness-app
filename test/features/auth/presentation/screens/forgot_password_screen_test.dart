@@ -48,7 +48,8 @@ void main() {
             if (settings.name == AppRoutes.verifyResetCode) {
               return MaterialPageRoute(
                 settings: settings,
-                builder: (context) => const Scaffold(body: Text('Verify Screen')),
+                builder: (context) =>
+                    const Scaffold(body: Text('Verify Screen')),
               );
             }
             return null;
@@ -63,7 +64,9 @@ void main() {
   }
 
   group('ForgotPasswordScreen Tests', () {
-    testWidgets('Initial State: Should render all widgets correctly', (WidgetTester tester) async {
+    testWidgets('Initial State: Should render all widgets correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
@@ -73,7 +76,9 @@ void main() {
       expect(find.text(AppStrings.sentOtP), findsOneWidget);
     });
 
-    testWidgets('Validation: Should show error when email is empty', (WidgetTester tester) async {
+    testWidgets('Validation: Should show error when email is empty', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
@@ -83,7 +88,9 @@ void main() {
       verifyNever(mockCubit.doEvent(any));
     });
 
-    testWidgets('Action: Should call doEvent when valid email is entered', (WidgetTester tester) async {
+    testWidgets('Action: Should call doEvent when valid email is entered', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
@@ -94,21 +101,24 @@ void main() {
       verify(mockCubit.doEvent(argThat(isA<ForgotPasswordEvent>()))).called(1);
     });
 
-    testWidgets('Navigation: Should navigate to Verify Screen when success event is emitted', (WidgetTester tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+    testWidgets(
+      'Navigation: Should navigate to Verify Screen when success event is emitted',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      // Simulate state change to trigger listener navigation (if based on state)
-      // Note: The screen listens to eventStream for UI events like handleUiEvent, 
-      // but also has a BlocConsumer listener for state change.
-      
-      when(mockCubit.state).thenReturn(const ForgotPasswordState());
-      
-      // We need to trigger the BlocConsumer listener
-      stateController.add(const ForgotPasswordState()); 
-      await tester.pump();
-      
-      expect(find.text('Verify Screen'), findsNothing);
-    });
+        // Simulate state change to trigger listener navigation (if based on state)
+        // Note: The screen listens to eventStream for UI events like handleUiEvent,
+        // but also has a BlocConsumer listener for state change.
+
+        when(mockCubit.state).thenReturn(const ForgotPasswordState());
+
+        // We need to trigger the BlocConsumer listener
+        stateController.add(const ForgotPasswordState());
+        await tester.pump();
+
+        expect(find.text('Verify Screen'), findsNothing);
+      },
+    );
   });
 }
