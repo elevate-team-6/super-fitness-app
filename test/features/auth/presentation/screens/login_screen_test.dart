@@ -120,9 +120,10 @@ void main() {
               supportedLocales: context.supportedLocales,
               locale: context.locale,
               debugShowCheckedModeBanner: false,
-              // CustomSnackBar renders through BotToast, so the overlay must be
-              // installed for notification assertions to find anything.
               builder: BotToastInit(),
+              onGenerateRoute: (_) => MaterialPageRoute<void>(
+                builder: (_) => const SizedBox.shrink(),
+              ),
               home: BlocProvider<LoginCubit>.value(
                 value: activeCubit,
                 child: const LoginScreen(),
