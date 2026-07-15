@@ -75,11 +75,12 @@
   "password": "Password",
   "forgotPassword": "Forgot your password?",
   "registerPrompt": "Don't have an account yet? Register",
-  "signupWelcome": "Hey There,\nCREATE AN ACCOUNT",
+  "signupWelcome": "Hey There,",
+  "signupCreateAccount": "CREATE AN ACCOUNT",
   "register": "Register",
   "firstName": "First Name",
   "lastName": "Last Name",
-  "loginPrompt": "Already have an account? Login",
+  "loginPrompt": "Already have an account?",
   "tellUsAboutYourself": "TELL US ABOUT YOURSELF!",
   "genderTitle": "We Need To Know Your Gender",
   "male": "Male",
@@ -103,5 +104,6 @@
   "lightlyActive": "Lightly",
   "moderatelyActive": "Moderately",
   "veryActive": "Very Active",
-  "extraActive": "Extra Active"
+  "extraActive": "Extra Active",
+  "or": "Or"
 }
