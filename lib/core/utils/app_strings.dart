@@ -102,4 +102,43 @@ abstract class AppStrings {
   static const String profile = 'profile';
   static const String exitConfirmation = 'exit_confirmation';
   static const String somethingWentWrong = 'something_went_wrong';
+
+  // Signup
+  static const String registerFailed = 'registerFailed';
+  static const String registerSuccess = 'registerSuccess';
+
+  // Auth Flow UI
+  static const String loginWelcome = 'loginWelcome';
+  static const String forgotPassword = 'forgotPassword';
+  static const String registerPrompt = 'registerPrompt';
+  static const String signupWelcome = 'signupWelcome';
+  static const String signupCreateAccount = 'signupCreateAccount';
+  static const String firstName = 'firstName';
+  static const String lastName = 'lastName';
+  static const String loginPrompt = 'loginPrompt';
+  static const String tellUsAboutYourself = 'tellUsAboutYourself';
+  static const String genderTitle = 'genderTitle';
+  static const String male = 'male';
+  static const String female = 'female';
+  static const String ageTitle = 'ageTitle';
+  static const String personalizationDesc = 'personalizationDesc';
+  static const String weightTitle = 'weightTitle';
+  static const String heightTitle = 'heightTitle';
+  static const String year = 'year';
+  static const String kg = 'kg';
+  static const String cm = 'cm';
+  static const String done = 'done';
+  static const String goalTitle = 'goalTitle';
+  static const String gainWeight = 'gainWeight';
+  static const String loseWeight = 'loseWeight';
+  static const String getFitter = 'getFitter';
+  static const String gainMoreFlexible = 'gainMoreFlexible';
+  static const String learnTheBasic = 'learnTheBasic';
+  static const String activityLevelTitle = 'activityLevelTitle';
+  static const String sedentary = 'sedentary';
+  static const String lightlyActive = 'lightlyActive';
+  static const String moderatelyActive = 'moderatelyActive';
+  static const String veryActive = 'veryActive';
+  static const String extraActive = 'extraActive';
+  static const String or = 'or';
 }

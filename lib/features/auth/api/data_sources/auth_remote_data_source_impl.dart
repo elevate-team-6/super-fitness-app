@@ -1,10 +1,13 @@
 import 'package:injectable/injectable.dart';
-import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/config/error_handler/error_handler.dart';
-import 'package:super_fitness/features/auth/api/api_client/auth_api_client.dart';
-import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
-import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
-import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
+
+import '../../../../config/base_response/base_response.dart';
+import '../../../../config/error_handler/error_handler.dart';
+import '../../data/data_sources/auth_remote_data_source_contract.dart';
+import '../../data/models/request/sign_in_request_model.dart';
+import '../../data/models/request/signup_request.dart';
+import '../../data/models/response/sign_in_response_model.dart';
+import '../../data/models/response/signup_response.dart';
+import '../api_client/auth_api_client.dart';
 
 @Injectable(as: AuthRemoteDataSourceContract)
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSourceContract {
@@ -15,5 +18,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSourceContract {
   @override
   Future<BaseResponse<SignInResponseModel>> signIn(SignInRequestModel request) {
     return ErrorHandler.handleApiCall(() => _apiClient.signIn(request));
+  }
+
+  @override
+  Future<BaseResponse<SignupResponse>> signup(SignupRequest request) async {
+    return ErrorHandler.handleApiCall(() {
+      return _apiClient.signup(request);
+    });
   }
 }

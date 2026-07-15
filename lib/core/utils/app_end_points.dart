@@ -5,6 +5,8 @@ abstract class AppEndPoints {
   // API EndPoints:-
   // Auth
   static const String signin = "$baseUrl/auth/signin";
+  static const String signup = "$baseUrl/auth/signup";
+
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
   // 1. Group them by feature (e.g., // Products, // Cart).

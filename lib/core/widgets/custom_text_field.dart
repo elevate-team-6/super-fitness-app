@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:super_fitness/core/utils/app_colors.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../utils/app_text_styles.dart';
 
 class CustomTextField extends StatefulWidget {
   final String? labelText;
@@ -11,7 +12,9 @@ class CustomTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final bool obscureText;
   final Widget? suffixIcon;
+  final String? suffixIconPath;
   final Widget? prefixIcon;
+  final String? prefixIconPath;
   final ValueChanged<String>? onChanged;
   final bool readOnly;
   final VoidCallback? onTap;
@@ -23,13 +26,15 @@ class CustomTextField extends StatefulWidget {
     this.controller,
     this.validator,
     this.keyboardType,
-    this.textInputAction,
+    this.textInputAction = TextInputAction.next,
     this.obscureText = false,
     this.suffixIcon,
     this.prefixIcon,
     this.onChanged,
     this.readOnly = false,
     this.onTap,
+    this.suffixIconPath,
+    this.prefixIconPath,
   });
 
   @override
@@ -50,7 +55,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
     // When the parent supplies a suffixIcon it owns the visibility toggle
     // (e.g. driven by a cubit), so respect its `obscureText`. Otherwise the
     // field self-manages a built-in toggle for any obscured field.
-    final hasExternalSuffix = widget.suffixIcon != null;
+    final hasExternalSuffix =
+        widget.suffixIcon != null || widget.suffixIconPath != null;
     final isObscured = hasExternalSuffix ? widget.obscureText : _obscureText;
 
     return TextFormField(
@@ -62,22 +68,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onChanged: widget.onChanged,
       readOnly: widget.readOnly,
       onTap: widget.onTap,
-      style: const TextStyle(color: AppColors.white),
       autovalidateMode: AutovalidateMode.onUserInteraction,
+      style: AppTextStyles.white16500,
       onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
-        isDense: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         labelText: widget.labelText,
         hintText: widget.hintText,
-        hintStyle: TextStyle(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w400,
-          color: AppColors.white,
-        ),
-        prefixIcon: widget.prefixIcon,
+        prefixIcon: widget.prefixIconPath != null
+            ? Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SvgPicture.asset(widget.prefixIconPath!),
+              )
+            : widget.prefixIcon,
         suffixIcon: hasExternalSuffix
-            ? widget.suffixIcon
+            ? widget.suffixIconPath != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(widget.suffixIconPath!),
+                    )
+                  : widget.suffixIcon
             : widget.obscureText
             ? IconButton(
                 onPressed: () {
