@@ -26,15 +26,6 @@ void main() {
     );
 
     blocTest<MainLayoutCubit, MainLayoutState>(
-      'emits new state with extra data when changeTab is called with extra',
-      build: () => mainLayoutCubit,
-      act: (cubit) => cubit.changeTab(2, extra: 'workout_params'),
-      expect: () => [
-        const MainLayoutState(currentIndex: 2, extra: 'workout_params'),
-      ],
-    );
-
-    blocTest<MainLayoutCubit, MainLayoutState>(
       'emits new state even if same index is called (standard behavior unless optimized)',
       build: () => mainLayoutCubit,
       act: (cubit) => cubit.changeTab(0),

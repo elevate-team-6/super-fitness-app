@@ -2,17 +2,13 @@ part of 'main_layout_cubit.dart';
 
 class MainLayoutState extends Equatable {
   final int currentIndex;
-  final dynamic extra; // For passing data between tabs (e.g., workout category)
 
-  const MainLayoutState({this.currentIndex = 0, this.extra});
+  const MainLayoutState({this.currentIndex = 0});
 
-  MainLayoutState copyWith({int? currentIndex, dynamic extra}) {
-    return MainLayoutState(
-      currentIndex: currentIndex ?? this.currentIndex,
-      extra: extra ?? this.extra,
-    );
+  MainLayoutState copyWith({int? currentIndex}) {
+    return MainLayoutState(currentIndex: currentIndex ?? this.currentIndex);
   }
 
   @override
-  List<Object?> get props => [currentIndex, extra];
+  List<Object?> get props => [currentIndex];
 }

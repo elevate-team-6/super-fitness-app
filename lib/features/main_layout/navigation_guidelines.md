@@ -11,47 +11,32 @@ To switch to a different tab from any screen (e.g., from `HomeScreen` to `Workou
 context.read<MainLayoutCubit>().changeTab(2);
 ```
 
-## 2. Passing Extra Data (e.g., Workout Category)
+## 2. Sharing Data Between Tabs
 
-If you need to navigate to a tab and have it perform a specific action (like selecting a category), pass the data in the `extra` parameter.
+Do **NOT** use the `MainLayoutCubit` to pass data between tabs. The `MainLayoutCubit` should only be responsible for managing which tab is currently active.
 
-```dart
-// In HomeScreen:
-context.read<MainLayoutCubit>().changeTab(
-  2, // Workouts Index
-  extra: {'category': 'chest'}, // Pass category ID or index
-);
-```
+If you need to navigate to a tab and have it perform a specific action (like selecting a category or filtering data), follow these steps:
 
-## 3. Handling Navigation in the Target Tab
+1.  **Update the Feature Cubit**: Directly call a method on the Cubit responsible for that feature to update its state.
+2.  **Change the Tab**: Call `changeTab` on the `MainLayoutCubit`.
 
-The target screen (e.g., `WorkoutsScreen`) should use a `BlocListener` to react when the tab becomes active and check for any `extra` data.
+### Example: Navigating to Workouts with a Category
 
 ```dart
-// In WorkoutsScreen:
-@override
-Widget build(BuildContext context) {
-  return BlocListener<MainLayoutCubit, MainLayoutState>(
-    listenWhen: (previous, current) => 
-        current.currentIndex == 2 && current.extra != null,
-    listener: (context, state) {
-      final category = state.extra['category'];
-      // Trigger your WorkoutsCubit to filter or scroll
-      // context.read<WorkoutsCubit>().filterByCategory(category);
-      
-      // IMPORTANT: Clear the extra data if it should only be handled once
-      // context.read<MainLayoutCubit>().changeTab(2, extra: null);
-    },
-    child: ...
-  );
-}
+// In HomeScreen or any other component:
+
+// 1. Update WorkoutsCubit first (assuming it's provided high enough in the tree)
+context.read<WorkoutsCubit>().selectCategory('chest');
+
+// 2. Then switch the tab
+context.read<MainLayoutCubit>().changeTab(2); // Workouts Index
 ```
 
-## 4. Performance Best Practices
+## 3. Performance Best Practices
 
 - **IndexedStack**: We use `IndexedStack` in `MainLayoutScreen` to keep the state of all tabs alive. This prevents screens from rebuilding from scratch every time you switch tabs.
-- **BlocListener vs BlocBuilder**: Use `BlocListener` for navigation-related side effects. Only use `BlocBuilder` if the UI of the tab itself needs to change based on the `MainLayoutState`.
+- **BlocListener vs BlocBuilder**: Use `BlocListener` for navigation-related side effects. Only use `BlocBuilder` if the UI of the tab itself needs to change based on the `MainLayoutState` (which currently only contains `currentIndex`).
 - **Clean Architecture**: 
-    - The `MainLayoutCubit` acts as a "Coordinator".
-    - Each feature remains independent.
-    - Features communicate via the shared `MainLayoutCubit` without direct dependencies on each other's Blocs/Cubits.
+    - The `MainLayoutCubit` acts as a "Navigator/Coordinator" for the main shell.
+    - Each feature remains independent and manages its own business logic.
+    - Avoid "Junk Drawer" states where a single Cubit holds unrelated data for multiple features.

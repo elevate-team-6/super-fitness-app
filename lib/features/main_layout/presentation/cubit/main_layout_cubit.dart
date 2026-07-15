@@ -8,7 +8,7 @@ part 'main_layout_state.dart';
 class MainLayoutCubit extends Cubit<MainLayoutState> {
   MainLayoutCubit() : super(const MainLayoutState());
 
-  void changeTab(int index, {dynamic extra}) {
-    emit(state.copyWith(currentIndex: index, extra: extra));
+  void changeTab(int index) {
+    emit(state.copyWith(currentIndex: index));
   }
 }
