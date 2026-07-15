@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:super_fitness/core/utils/app_colors.dart';
+import 'package:super_fitness/core/utils/app_text_styles.dart';
 
 class CustomTextField extends StatefulWidget {
   final String? labelText;
@@ -62,10 +64,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onTap: widget.onTap,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+      style: AppTextStyles.white16500,
       decoration: InputDecoration(
         labelText: widget.labelText,
+        labelStyle: AppTextStyles.white16500,
         hintText: widget.hintText,
+        hintStyle: AppTextStyles.white16500.copyWith(
+          color: AppColors.white.withValues(alpha: 0.5),
+        ),
         prefixIcon: widget.prefixIcon,
+        suffixIconColor: AppColors.white,
+        prefixIconColor: AppColors.white,
         suffixIcon: hasExternalSuffix
             ? widget.suffixIcon
             : widget.obscureText

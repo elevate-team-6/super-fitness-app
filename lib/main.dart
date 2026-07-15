@@ -1,7 +1,9 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
@@ -48,22 +50,24 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          localizationsDelegates: context.localizationDelegates,
-          supportedLocales: context.supportedLocales,
-          locale: context.locale,
-          debugShowCheckedModeBanner: false,
-          title: 'Flowers App',
-          theme: AppTheme.mainTheme,
-          navigatorKey: AppRoutes.navigatorKey,
-          onGenerateRoute: AppRoutes.onGenerateRoute,
-          initialRoute: isOnboardingDone
-              ? isLoggedIn
-                    ? AppRoutes.mainLayout
-                    : AppRoutes.login
-              : AppRoutes.onboarding,
-          builder: BotToastInit(),
-          navigatorObservers: [BotToastNavigatorObserver()],
+        return BlocProvider(
+          create: (_) => getIt<ForgotPasswordCubit>(),
+          child: MaterialApp(
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            debugShowCheckedModeBanner: false,
+            title: 'Flowers App',
+            theme: AppTheme.mainTheme,
+            navigatorKey: AppRoutes.navigatorKey,
+            onGenerateRoute: AppRoutes.onGenerateRoute,
+            initialRoute: isLoggedIn
+                ? AppRoutes.forgetPassword
+                : AppRoutes.forgetPassword,
+          
+            builder: BotToastInit(),
+            navigatorObservers: [BotToastNavigatorObserver()],
+          ),
         );
       },
     );

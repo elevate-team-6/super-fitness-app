@@ -1,13 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/base_ui_handler/ui_event_handler_mixin.dart';
 import 'package:super_fitness/config/validations/app_validations.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
-import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
@@ -17,38 +17,42 @@ import 'package:super_fitness/features/auth/presentation/view_model/forget_passw
 import 'package:super_fitness/features/auth/presentation/view_model/forget_password_view_model/forgot_password_events.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/forget_password_view_model/forgot_password_state.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  final String email;
+
+  const ResetPasswordScreen({super.key, required this.email});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
+class _ResetPasswordScreenState extends State<ResetPasswordScreen>
     with UiEventHandler {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
 
-  StreamSubscription<BaseUiEvent>? _uiEventSubscription;
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+
+  StreamSubscription<BaseUiEvent>? _subscription;
 
   @override
   void initState() {
     super.initState();
 
-    _uiEventSubscription = context
-        .read<ForgotPasswordCubit>()
-        .eventStream
-        .listen(handleUiEvent);
+    _subscription = context.read<ForgotPasswordCubit>().eventStream.listen(
+      handleUiEvent,
+    );
   }
 
   @override
   void dispose() {
-    _uiEventSubscription?.cancel();
-    _emailController.dispose();
+    _subscription?.cancel();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _sendOtp() {
+  void _submit() {
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -56,7 +60,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
     }
 
     context.read<ForgotPasswordCubit>().doEvent(
-      ForgotPasswordEvent(email: _emailController.text.trim()),
+      ResetPasswordEvent(
+        email: widget.email,
+        newPassword: _passwordController.text.trim(),
+      ),
     );
   }
 
@@ -75,12 +82,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                 child: Image.asset(AppImages.lancherLogo, height: 120.h),
               ),
 
-              SizedBox(height: 85.h),
+              SizedBox(height: 65.h),
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Text(
-                  AppStrings.enterEmail,
+                  AppStrings.passwordMoreCharacter,
                   style: AppTextStyles.white20500,
                 ),
               ),
@@ -88,12 +95,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Text(
-                  AppStrings.forgetPassword,
+                  AppStrings.createNewPassword,
                   style: AppTextStyles.white24500,
                 ),
               ),
 
-              SizedBox(height: 20.h),
+              SizedBox(height: 5.h),
 
               CustomGlassContainer(
                 child: Form(
@@ -101,11 +108,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                   child: Column(
                     children: [
                       CustomTextField(
-                        controller: _emailController,
-                        hintText: AppStrings.email,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.done,
-                        validator: AppValidations.validateEmail,
+                        controller: _passwordController,
+                        hintText: AppStrings.password,
                         prefixIcon: Padding(
                           padding: EdgeInsets.only(
                             left: 16.w,
@@ -113,36 +117,50 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                             top: 12.h,
                             bottom: 12.h,
                           ),
-                          child: SvgPicture.asset(AppIcons.email),
+                          child: SvgPicture.asset(AppIcons.lock),
                         ),
+                        obscureText: true,
+                        textInputAction: TextInputAction.next,
+                        validator: AppValidations.validatePassword,
                       ),
 
-                      SizedBox(height: 24.h),
+                      SizedBox(height: 20.h),
 
-                      BlocConsumer<ForgotPasswordCubit, ForgotPasswordState>(
-                        listenWhen: (previous, current) =>
-                            previous.forgotPasswordState !=
-                            current.forgotPasswordState,
-                        listener: (context, state) {
-                          if (!state.forgotPasswordState.isLoading) {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.verifyResetCode,
-                              arguments: _emailController.text.trim(),
-                            );
-                          }
-                        },
+                      CustomTextField(
+                        controller: _confirmPasswordController,
+                        hintText: AppStrings.password,
+                        obscureText: true,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.only(
+                            left: 16.w,
+                            right: 5.w,
+                            top: 12.h,
+                            bottom: 12.h,
+                          ),
+                          child: SvgPicture.asset(AppIcons.lock),
+                        ),
+                        textInputAction: TextInputAction.done,
+                        validator: (value) =>
+                            AppValidations.validateConfirmPassword(
+                              value,
+                              _passwordController.text,
+                            ),
+                      ),
+
+                      SizedBox(height: 30.h),
+
+                      BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
                         buildWhen: (previous, current) =>
-                            previous.forgotPasswordState !=
-                            current.forgotPasswordState,
+                            previous.resetPasswordState !=
+                            current.resetPasswordState,
                         builder: (context, state) {
                           return SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: state.forgotPasswordState.isLoading
+                              onPressed: state.resetPasswordState.isLoading
                                   ? null
-                                  : _sendOtp,
-                              child: state.forgotPasswordState.isLoading
+                                  : _submit,
+                              child: state.resetPasswordState.isLoading
                                   ? const SizedBox(
                                       width: 22,
                                       height: 22,
@@ -150,7 +168,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                                         strokeWidth: 2,
                                       ),
                                     )
-                                  : Text(AppStrings.sentOtP),
+                                  : Text(AppStrings.confirm),
                             ),
                           );
                         },

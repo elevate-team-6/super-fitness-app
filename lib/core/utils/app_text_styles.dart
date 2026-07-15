@@ -205,6 +205,11 @@ abstract class AppTextStyles {
     fontWeight: FontWeight.w500,
     color: AppColors.white20,
   );
+  static TextStyle get white20800 => GoogleFonts.balooThambi2(
+    fontSize: _sp(20),
+    fontWeight: FontWeight.w800,
+    color: AppColors.white,
+  );
 
   static TextStyle get white2020500 => GoogleFonts.balooThambi2(
     fontSize: _sp(20),
