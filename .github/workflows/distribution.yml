@@ -35,7 +35,8 @@ jobs:
       - name: 📦 Install dependencies
         run: |
           flutter pub get
-          cd android && gem install fastlane && fastlane add_plugin firebase_app_distribution
+          cd android
+          bundle install
 
       - name: 🏗️ Run build_runner
         run: dart run build_runner build --delete-conflicting-outputs
