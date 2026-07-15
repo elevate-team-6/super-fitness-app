@@ -63,7 +63,7 @@ abstract class AppTheme {
       // text field
       inputDecorationTheme: InputDecorationTheme(
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         hintStyle: AppTextStyles.white2016500,
         labelStyle: AppTextStyles.white13500,
         errorStyle: TextStyle(color: AppColors.red, fontSize: 12.sp),
@@ -92,25 +92,24 @@ abstract class AppTheme {
 
       // Navigation Bar Theme
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.black90,
-        indicatorColor: Colors.transparent,
+        backgroundColor: AppColors.black80,
         elevation: 0,
+        height: 55.h,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-
+        labelPadding: EdgeInsets.zero,
+        indicatorColor: Colors.transparent,
+        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return AppTextStyles.primary13500;
           }
-
           return AppTextStyles.white13500;
         }),
-
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: AppColors.primary);
+            return IconThemeData(color: AppColors.primary, size: 40.sp);
           }
-
-          return const IconThemeData(color: AppColors.white);
+          return IconThemeData(color: AppColors.white, size: 46.sp);
         }),
       ),
 

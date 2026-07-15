@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
-import 'package:super_fitness/core/utils/app_text_styles.dart';
 
 class CustomTextField extends StatefulWidget {
   final String? labelText;
@@ -62,19 +62,20 @@ class _CustomTextFieldState extends State<CustomTextField> {
       onChanged: widget.onChanged,
       readOnly: widget.readOnly,
       onTap: widget.onTap,
+      style: const TextStyle(color: AppColors.white),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-      style: AppTextStyles.white16500,
       decoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         labelText: widget.labelText,
-        labelStyle: AppTextStyles.white16500,
         hintText: widget.hintText,
-        hintStyle: AppTextStyles.white16500.copyWith(
-          color: AppColors.white.withValues(alpha: 0.5),
+        hintStyle: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w400,
+          color: AppColors.white,
         ),
         prefixIcon: widget.prefixIcon,
-        suffixIconColor: AppColors.white,
-        prefixIconColor: AppColors.white,
         suffixIcon: hasExternalSuffix
             ? widget.suffixIcon
             : widget.obscureText

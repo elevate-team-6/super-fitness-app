@@ -19,7 +19,7 @@ class CustomGlassContainer extends StatelessWidget {
   const CustomGlassContainer({
     super.key,
     required this.child,
-    this.blur = 15.0,
+    this.blur = 34.6,
     this.opacity = 0.1,
     this.color = AppColors.black80,
     this.borderRadius,
@@ -32,12 +32,14 @@ class CustomGlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(50);
+
     return Container(
       width: width,
       height: height,
       margin: margin,
       child: ClipRRect(
-        borderRadius: borderRadius ?? BorderRadius.circular(50),
+        borderRadius: effectiveBorderRadius,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
           child: Container(
@@ -46,7 +48,7 @@ class CustomGlassContainer extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             decoration: BoxDecoration(
               color: color.withValues(alpha: opacity),
-              borderRadius: borderRadius ?? BorderRadius.circular(50),
+              borderRadius: effectiveBorderRadius,
               border: border,
             ),
             child: child,
