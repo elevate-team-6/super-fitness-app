@@ -160,7 +160,12 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
                             children: [
                               SocialLoginButton(assetPath: AppIcons.facebook),
                               SizedBox(width: 16.w),
-                              SocialLoginButton(assetPath: AppIcons.google),
+                              SocialLoginButton(
+                                assetPath: AppIcons.google,
+                                onTap: () => context
+                                    .read<LoginCubit>()
+                                    .doIntent(const GoogleLoginEvent()),
+                              ),
                               SizedBox(width: 16.w),
                               SocialLoginButton(icon: Icons.apple),
                             ],

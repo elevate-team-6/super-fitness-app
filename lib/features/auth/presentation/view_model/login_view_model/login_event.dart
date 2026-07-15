@@ -20,3 +20,7 @@ class LoginEvent extends LoginEvents {
   @override
   List<Object?> get props => [request];
 }
+
+class GoogleLoginEvent extends LoginEvents {
+  const GoogleLoginEvent();
+}

@@ -81,5 +81,6 @@
   "workouts": "Workouts",
   "chat": "Chat",
   "profile": "Profile",
-  "exit_confirmation": "Are You Sure To Close The Application?"
+  "exit_confirmation": "Are You Sure To Close The Application?",
+  "something_went_wrong": "Something went wrong. Please try again."
 }

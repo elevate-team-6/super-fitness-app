@@ -1,17 +1,26 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
+import 'config/services/google_auth_service.dart';
 import 'core/utils/app_constants.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await GoogleAuthService.initialize(
+    serverClientId: AppConstants.googleServerClientId,
+  );
+
   configureDependencies();
 
   final isOnboardingDone = await AuthService.isOnboardingCompleted();
@@ -53,7 +62,7 @@ class MyApp extends StatelessWidget {
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           debugShowCheckedModeBanner: false,
-          title: 'Flowers App',
+          title: 'Super Fitness',
           theme: AppTheme.mainTheme,
           navigatorKey: AppRoutes.navigatorKey,
           onGenerateRoute: AppRoutes.onGenerateRoute,

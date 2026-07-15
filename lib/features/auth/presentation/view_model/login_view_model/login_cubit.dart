@@ -6,6 +6,7 @@ import 'package:super_fitness/config/base_cubit/base_cubit.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/google_auth_service.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
@@ -20,9 +21,13 @@ import 'package:super_fitness/features/auth/presentation/view_model/login_view_m
 class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
   final SignInUseCase _signInUseCase;
   final SecureCacheHelper _secureCacheHelper;
+  final GoogleAuthService _googleAuthService;
 
-  LoginCubit(this._signInUseCase, this._secureCacheHelper)
-    : super(const LoginState());
+  LoginCubit(
+    this._signInUseCase,
+    this._secureCacheHelper,
+    this._googleAuthService,
+  ) : super(const LoginState());
 
   void doIntent(LoginEvents event) {
     switch (event) {
@@ -30,6 +35,8 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
         _togglePasswordVisibility();
       case LoginEvent(:final request):
         _signIn(request);
+      case GoogleLoginEvent():
+        _signInWithGoogle();
     }
   }
 
@@ -57,6 +64,32 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
         );
       case ErrorBaseResponse<SignInEntity>():
         emitUiEvent(DisplayErrorEvent(result.errorMessage));
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    emitUiEvent(ShowLoadingEvent());
+
+    try {
+      final account = await _googleAuthService.signIn();
+
+      emitUiEvent(HideLoadingEvent());
+
+      // The user dismissed the account picker — nothing to report.
+      if (account == null) return;
+
+      // TODO(SF-XX): replace with POST /auth/google once the backend exposes
+      // it, then cache the returned session and navigate to mainLayout.
+      // New users will also need the onboarding screens (gender, age, weight,
+      // height, goal, activityLevel) before signup can be completed.
+      emitUiEvent(
+        DisplaySuccessEvent(
+          'Google: ${account.firstName ?? ''} — ${account.email}',
+        ),
+      );
+    } catch (e) {
+      emitUiEvent(HideLoadingEvent());
+      emitUiEvent(DisplayErrorEvent(AppStrings.somethingWentWrong.tr()));
     }
   }
 
