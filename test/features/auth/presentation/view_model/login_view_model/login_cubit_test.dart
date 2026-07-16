@@ -5,6 +5,7 @@ import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/facebook_auth_service.dart';
 import 'package:super_fitness/config/services/google_auth_service.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
@@ -17,11 +18,17 @@ import 'package:super_fitness/features/auth/presentation/view_model/login_view_m
 
 import 'login_cubit_test.mocks.dart';
 
-@GenerateMocks([SignInUseCase, SecureCacheHelper, GoogleAuthService])
+@GenerateMocks([
+  SignInUseCase,
+  SecureCacheHelper,
+  GoogleAuthService,
+  FacebookAuthService,
+])
 void main() {
   late MockSignInUseCase mockUseCase;
   late MockSecureCacheHelper mockCache;
   late MockGoogleAuthService mockGoogleAuthService;
+  late MockFacebookAuthService mockFacebookAuthService;
   late LoginCubit cubit;
 
   const request = SignInRequestModel(
@@ -52,7 +59,13 @@ void main() {
     mockUseCase = MockSignInUseCase();
     mockCache = MockSecureCacheHelper();
     mockGoogleAuthService = MockGoogleAuthService();
-    cubit = LoginCubit(mockUseCase, mockCache, mockGoogleAuthService);
+    mockFacebookAuthService = MockFacebookAuthService();
+    cubit = LoginCubit(
+      mockUseCase,
+      mockCache,
+      mockGoogleAuthService,
+      mockFacebookAuthService,
+    );
 
     when(
       mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),

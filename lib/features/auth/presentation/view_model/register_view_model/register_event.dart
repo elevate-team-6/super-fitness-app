@@ -7,11 +7,17 @@ class UpdateAccountInfoEvent extends RegisterEvent {
   final String lastName;
   final String email;
   final String password;
+
+  /// True when the data came from a social provider: the account step is
+  /// already answered, so the flow jumps straight to the first fitness question.
+  final bool skipAccountStep;
+
   const UpdateAccountInfoEvent({
     required this.firstName,
     required this.lastName,
     required this.email,
     required this.password,
+    this.skipAccountStep = false,
   });
 }
 
@@ -55,20 +61,4 @@ class PreviousStepEvent extends RegisterEvent {
 
 class SubmitSignupEvent extends RegisterEvent {
   const SubmitSignupEvent();
-}
-
-/// Fills the account step from a Google account and jumps straight to the
-/// first fitness question — the user never sees the email/password step.
-class PrefillFromGoogleEvent extends RegisterEvent {
-  final String firstName;
-  final String lastName;
-  final String email;
-  final String password;
-
-  PrefillFromGoogleEvent({
-    required this.firstName,
-    required this.lastName,
-    required this.email,
-    required this.password,
-  });
 }

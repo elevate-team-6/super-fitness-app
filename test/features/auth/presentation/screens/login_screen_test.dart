@@ -14,6 +14,7 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/facebook_auth_service.dart';
 import 'package:super_fitness/config/services/google_auth_service.dart';
 import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
@@ -39,11 +40,17 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([SignInUseCase, SecureCacheHelper, GoogleAuthService])
+@GenerateMocks([
+  SignInUseCase,
+  SecureCacheHelper,
+  GoogleAuthService,
+  FacebookAuthService,
+])
 void main() {
   late MockSignInUseCase mockUseCase;
   late MockSecureCacheHelper mockCache;
   late MockGoogleAuthService mockGoogleAuthService;
+  late MockFacebookAuthService mockFacebookAuthService;
   late LoginCubit cubit;
   late Map<String, Map<String, dynamic>> translations;
 
@@ -80,12 +87,17 @@ void main() {
     mockUseCase = MockSignInUseCase();
     mockCache = MockSecureCacheHelper();
     mockGoogleAuthService = MockGoogleAuthService();
+    mockFacebookAuthService = MockFacebookAuthService();
     when(
       mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
     ).thenAnswer((_) async {});
 
-    cubit = LoginCubit(mockUseCase, mockCache, mockGoogleAuthService);
-
+    cubit = LoginCubit(
+      mockUseCase,
+      mockCache,
+      mockGoogleAuthService,
+      mockFacebookAuthService,
+    );
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });
 
@@ -414,6 +426,7 @@ void main() {
         mockUseCase,
         mockCache,
         mockGoogleAuthService,
+        mockFacebookAuthService,
       );
       addTearDown(() async {
         if (!arabicCubit.isClosed) await arabicCubit.close();

@@ -18,7 +18,6 @@ import 'package:super_fitness/features/auth/data/models/request/sign_in_request_
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:super_fitness/features/auth/presentation/widgets/login_form.dart';
-import 'package:super_fitness/features/auth/presentation/widgets/social_login_button.dart';
 import 'package:super_fitness/features/auth/presentation/widgets/social_login_buttons.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -137,6 +136,9 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
                         onGoogleTap: () => context.read<LoginCubit>().doIntent(
                           const GoogleLoginEvent(),
                         ),
+                        onFacebookTap: () => context
+                            .read<LoginCubit>()
+                            .doIntent(const FacebookLoginEvent()),
                       ),
                       SizedBox(height: 24.h),
                       AnimatedBuilder(

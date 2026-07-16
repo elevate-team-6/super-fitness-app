@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 
-/// Derives a deterministic password for a Google account.
+/// Derives a deterministic password for a social media account.
 ///
-/// TEMPORARY — remove once the backend exposes a proper `POST /auth/google`
+/// TEMPORARY — remove once the backend exposes a proper `POST /auth/social`
 /// endpoint that trades a Firebase ID token for one of our tokens.
 ///
 /// Our signup/signin endpoints require a password, but Google never gives us
@@ -15,8 +15,8 @@ import 'package:crypto/crypto.dart';
 /// This is NOT a secret: anything derived on the client can be reproduced by
 /// the client. It is only acceptable because this is a training project against
 /// a sandbox API. Do not ship this pattern to real users.
-abstract class GooglePasswordDerivation {
-  GooglePasswordDerivation._();
+abstract class SocialPasswordDerivation {
+  SocialPasswordDerivation._();
 
   /// Special character appended to satisfy the project's password policy.
   static const String _specialChar = '@';
@@ -24,8 +24,8 @@ abstract class GooglePasswordDerivation {
   /// Builds a password that always satisfies AppValidations.validatePassword:
   /// 8+ characters, with a lowercase letter, an uppercase letter, a digit and
   /// a special character.
-  static String fromUid(String uid) {
-    final digest = sha256.convert(utf8.encode(uid));
+  static String fromEmail(String email) {
+    final digest = sha256.convert(utf8.encode(email.trim().toLowerCase()));
     // Base64 gives us a mix of upper/lower/digits in a compact string.
     final base = base64Url.encode(digest.bytes).replaceAll('=', '');
     final core = base.substring(0, 16);

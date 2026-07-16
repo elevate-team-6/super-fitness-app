@@ -6,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/config/base_ui_handler/ui_event_handler_mixin.dart';
+import 'package:super_fitness/config/services/social_signup_args.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
-import 'package:super_fitness/features/auth/presentation/widgets/google_signup_args.dart';
+
 import '../view_model/register_view_model/register_cubit.dart';
 import '../view_model/register_view_model/register_event.dart';
 import '../view_model/register_view_model/register_state.dart';
@@ -22,8 +23,11 @@ import '../widgets/selectable_option_list.dart';
 import '../widgets/step_header.dart';
 
 class CompleteRegisterScreen extends StatefulWidget {
-  final GoogleSignupArgs? googleArgs;
-  const CompleteRegisterScreen({super.key, this.googleArgs});
+  /// Set when the user arrived from a social sign-in: the provider already gave
+  /// us the account details, so those are seeded and the account step skipped.
+  final SocialSignupArgs? socialArgs;
+
+  const CompleteRegisterScreen({super.key, this.socialArgs});
 
   @override
   State<CompleteRegisterScreen> createState() => _CompleteRegisterScreenState();
@@ -38,17 +42,22 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
   void initState() {
     super.initState();
     final cubit = context.read<RegisterCubit>();
-    final args = widget.googleArgs;
+
+    // Seed before reading currentStep below, so the picker opens on the first
+    // fitness question instead of animating in from the account step.
+    final args = widget.socialArgs;
     if (args != null) {
       cubit.doEvent(
-        PrefillFromGoogleEvent(
+        UpdateAccountInfoEvent(
           firstName: args.firstName,
           lastName: args.lastName,
           email: args.email,
           password: args.password,
+          skipAccountStep: true,
         ),
       );
     }
+
     _uiEventSubscription = cubit.eventStream.listen(handleUiEvent);
 
     final currentStep = cubit.state.currentStep;

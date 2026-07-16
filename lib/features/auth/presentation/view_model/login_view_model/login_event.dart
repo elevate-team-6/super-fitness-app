@@ -24,3 +24,7 @@ class LoginEvent extends LoginEvents {
 class GoogleLoginEvent extends LoginEvents {
   const GoogleLoginEvent();
 }
+
+class FacebookLoginEvent extends LoginEvents {
+  const FacebookLoginEvent();
+}

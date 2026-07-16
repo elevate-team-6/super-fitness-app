@@ -1,26 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
-
-/// The Google account data we get back after a successful sign-in. This is all
-/// the profile information Google gives us — the rest of the signup fields
-/// (gender, age, weight, height, goal, activityLevel) still have to be
-/// collected from the onboarding screens.
-class GoogleAccountData {
-  final String uid;
-  final String email;
-  final String? firstName;
-  final String? lastName;
-  final String? photo;
-
-  const GoogleAccountData({
-    required this.uid,
-    required this.email,
-    this.firstName,
-    this.lastName,
-    this.photo,
-  });
-}
+import 'package:super_fitness/config/services/social_account_data.dart';
 
 /// Wraps Google Sign-In + Firebase Auth so the rest of the app never touches
 /// either SDK directly.
@@ -39,7 +20,7 @@ class GoogleAuthService {
 
   /// Opens the Google account picker and signs the user into Firebase.
   /// Returns null if the user dismisses the picker.
-  Future<GoogleAccountData?> signIn() async {
+  Future<SocialAccountData?> signIn() async {
     try {
       final googleUser = await GoogleSignIn.instance.authenticate(
         scopeHint: const ['email', 'profile'],
@@ -59,7 +40,7 @@ class GoogleAuthService {
 
       final names = _splitName(user.displayName ?? googleUser.displayName);
 
-      return GoogleAccountData(
+      return SocialAccountData(
         uid: user.uid,
         email: user.email!,
         firstName: names.$1,

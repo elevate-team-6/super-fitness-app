@@ -6,8 +6,10 @@ import 'package:super_fitness/config/base_cubit/base_cubit.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/facebook_auth_service.dart';
 import 'package:super_fitness/config/services/google_auth_service.dart';
-import 'package:super_fitness/config/services/google_password_derivation.dart';
+import 'package:super_fitness/config/services/social_password_derivation.dart';
+import 'package:super_fitness/config/services/social_account_data.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
@@ -17,18 +19,20 @@ import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart'
 import 'package:super_fitness/features/auth/domain/use_cases/sign_in_use_case.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_state.dart';
-import 'package:super_fitness/features/auth/presentation/widgets/google_signup_args.dart';
+import 'package:super_fitness/config/services/social_signup_args.dart';
 
 @injectable
 class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
   final SignInUseCase _signInUseCase;
   final SecureCacheHelper _secureCacheHelper;
   final GoogleAuthService _googleAuthService;
+  final FacebookAuthService _facebookAuthService;
 
   LoginCubit(
     this._signInUseCase,
     this._secureCacheHelper,
     this._googleAuthService,
+    this._facebookAuthService,
   ) : super(const LoginState());
 
   void doIntent(LoginEvents event) {
@@ -38,7 +42,9 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
       case LoginEvent(:final request):
         _signIn(request);
       case GoogleLoginEvent():
-        _signInWithGoogle();
+        _signInWithSocial(_googleAuthService.signIn);
+      case FacebookLoginEvent():
+        _signInWithSocial(_facebookAuthService.signIn);
     }
   }
 
@@ -69,31 +75,21 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
     }
   }
 
-  /// Signs in with Google.
-  ///
-  /// Our backend has no Google endpoint yet, so we bridge it with the regular
-  /// email/password endpoints and a password derived from the Google uid
-  /// (see [GooglePasswordDerivation]). Signin doubles as the "does this user
-  /// exist?" check: the API returns the same 401 for an unknown email and a
-  /// wrong password, so a failure is treated as a first-time user and sends
-  /// them into the register flow to fill in the fitness details Google can't
-  /// provide.
-  ///
-  /// TODO(SF-XX): replace all of this with POST /auth/google once the backend
-  /// can trade a Firebase ID token for one of our tokens.
-  Future<void> _signInWithGoogle() async {
+  Future<void> _signInWithSocial(
+    Future<SocialAccountData?> Function() signIn,
+  ) async {
     emitUiEvent(ShowLoadingEvent());
 
     try {
-      final account = await _googleAuthService.signIn();
+      final account = await signIn();
 
-      // The user dismissed the account picker — nothing to report.
+      // The user dismissed the provider's sheet — nothing to report.
       if (account == null) {
         emitUiEvent(HideLoadingEvent());
         return;
       }
 
-      final password = GooglePasswordDerivation.fromUid(account.uid);
+      final password = SocialPasswordDerivation.fromEmail(account.email);
       final result = await _signInUseCase(
         SignInRequestModel(email: account.email, password: password),
       );
@@ -113,12 +109,12 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
             ),
           );
 
-        // First time with this Google account — collect the rest and sign up.
+        // First time with this account — collect the rest and sign up.
         case ErrorBaseResponse<SignInEntity>():
           emitUiEvent(
             NavigateEvent(
               AppRoutes.completeRegister,
-              arguments: GoogleSignupArgs(
+              arguments: SocialSignupArgs(
                 firstName: account.firstName ?? '',
                 lastName: account.lastName ?? '',
                 email: account.email,
