@@ -1,218 +1,211 @@
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:mockito/annotations.dart';
-// import 'package:mockito/mockito.dart';
-// import 'package:super_fitness/config/base_response/base_response.dart';
-// import 'package:super_fitness/config/cache/secure_cache_helper.dart';
-// import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
-// import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
-// import 'package:super_fitness/features/auth/data/models/request/signup_request.dart';
-// import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
-// import 'package:super_fitness/features/auth/data/models/response/signup_response.dart';
-// import 'package:super_fitness/features/auth/data/models/response/user_model.dart';
-// import 'package:super_fitness/features/auth/data/repo/auth_repo_impl.dart';
-// import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
-// import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/core/utils/app_keys.dart';
+import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
+import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
+import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
+import 'package:super_fitness/features/auth/data/models/response/user_model.dart';
+import 'package:super_fitness/features/auth/data/repo/auth_repo_impl.dart';
+import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
 
-// import 'auth_repo_impl_test.mocks.dart';
+import 'auth_repo_impl_test.mocks.dart';
 
-// @GenerateMocks([AuthRemoteDataSourceContract, SecureCacheHelper])
-// void main() {
-//   provideDummy<BaseResponse<SignInResponseModel>>(ErrorBaseResponse('dummy'));
-//   provideDummy<BaseResponse<SignupResponse>>(
-//     const SuccessBaseResponse<SignupResponse>(null),
-//   );
+@GenerateMocks([AuthRemoteDataSourceContract, SecureCacheHelper])
+void main() {
+  late MockAuthRemoteDataSourceContract mockDataSource;
+  late MockSecureCacheHelper mockCache;
+  late AuthRepoImpl repo;
 
-//   late AuthRepoImpl repository;
-//   late MockAuthRemoteDataSourceContract mockRemoteDataSource;
-//   late MockSecureCacheHelper mockSecureCacheHelper;
+  const request = SignInRequestModel(
+    email: 'test@test.com',
+    password: 'Ahmed@123',
+  );
 
-//   const signInRequest = SignInRequestModel(
-//     email: 'test@test.com',
-//     password: 'Ahmed@123',
-//   );
+  const userModel = UserModel(
+    id: 'u1',
+    firstName: 'Ahmed',
+    lastName: 'Emam',
+    email: 'test@test.com',
+    gender: 'male',
+    age: 25,
+    weight: 90,
+    height: 183,
+    activityLevel: 'level1',
+    goal: 'Gain weight',
+    photo: 'photo.png',
+    createdAt: '2026-07-13T15:06:13.971Z',
+  );
 
-//   const signInResponseModel = SignInResponseModel(
-//     message: 'success',
-//     token: 'fake_token',
-//     user: UserModel(
-//       id: 'u1',
-//       firstName: 'Ahmed',
-//       lastName: 'Emam',
-//       email: 'test@test.com',
-//       gender: 'male',
-//       age: 25,
-//       weight: 90,
-//       height: 183,
-//       activityLevel: 'level1',
-//       goal: 'Gain weight',
-//       photo: 'photo.png',
-//       createdAt: '2026-07-13T15:06:13.971Z',
-//     ),
-//   );
+  const responseModel = SignInResponseModel(
+    message: 'success',
+    token: 'fake_token',
+    user: userModel,
+  );
 
-//   const signupRequest = SignupRequest(
-//     firstName: 'John',
-//     lastName: 'Doe',
-//     email: 'john@example.com',
-//     password: 'password123',
-//     rePassword: 'password123',
-//     gender: 'male',
-//     height: 180,
-//     weight: 75,
-//     age: 25,
-//     goal: 'weight_loss',
-//     activityLevel: 'moderate',
-//   );
+  setUp(() {
+    mockDataSource = MockAuthRemoteDataSourceContract();
+    mockCache = MockSecureCacheHelper();
+    repo = AuthRepoImpl(mockDataSource, mockCache);
 
-//   const signupResponse = SignupResponse(
-//     message: 'Registration successful',
-//     token: 'test_token_123',
-//     user: UserModel(
-//       id: 'user_123',
-//       firstName: 'John',
-//       lastName: 'Doe',
-//       email: 'john@example.com',
-//       gender: 'male',
-//       age: 25,
-//       weight: 75,
-//       height: 180,
-//       activityLevel: 'moderate',
-//       goal: 'weight_loss',
-//     ),
-//   );
+    when(
+      mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
 
-//   setUp(() {
-//     mockRemoteDataSource = MockAuthRemoteDataSourceContract();
-//     mockSecureCacheHelper = MockSecureCacheHelper();
-//     repository = AuthRepoImpl(mockRemoteDataSource, mockSecureCacheHelper);
-//   });
+    provideDummy<BaseResponse<SignInResponseModel>>(ErrorBaseResponse('dummy'));
+  });
 
-//   group('signIn', () {
-//     test('forwards the request to the remote data source', () async {
-//       when(
-//         mockRemoteDataSource.signIn(signInRequest),
-//       ).thenAnswer((_) async => SuccessBaseResponse(signInResponseModel));
+  group('signIn', () {
+    test('forwards the request to the remote data source', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => SuccessBaseResponse(responseModel));
 
-//       await repository.signIn(signInRequest);
+      await repo.signIn(request);
 
-//       verify(mockRemoteDataSource.signIn(signInRequest)).called(1);
-//     });
+      verify(mockDataSource.signIn(request)).called(1);
+    });
 
-//     test('maps a successful response model to its entity', () async {
-//       when(
-//         mockRemoteDataSource.signIn(signInRequest),
-//       ).thenAnswer((_) async => SuccessBaseResponse(signInResponseModel));
+    test('maps a successful response model to its entity', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => SuccessBaseResponse(responseModel));
 
-//       final result = await repository.signIn(signInRequest);
+      final result = await repo.signIn(request);
 
-//       expect(result, isA<SuccessBaseResponse<SignInEntity>>());
-//       final entity = (result as SuccessBaseResponse<SignInEntity>).data;
-//       expect(entity?.message, 'success');
-//       expect(entity?.token, 'fake_token');
-//       expect(entity?.user?.id, 'u1');
-//       expect(entity?.user?.firstName, 'Ahmed');
-//       expect(entity?.user?.lastName, 'Emam');
-//       expect(entity?.user?.email, 'test@test.com');
-//       expect(entity?.user?.gender, 'male');
-//       expect(entity?.user?.age, 25);
-//       expect(entity?.user?.weight, 90);
-//       expect(entity?.user?.height, 183);
-//       expect(entity?.user?.activityLevel, 'level1');
-//       expect(entity?.user?.goal, 'Gain weight');
-//       expect(entity?.user?.photo, 'photo.png');
-//     });
+      expect(result, isA<SuccessBaseResponse<SignInEntity>>());
+      final entity = (result as SuccessBaseResponse<SignInEntity>).data;
+      expect(entity?.message, 'success');
+      expect(entity?.token, 'fake_token');
+      // The nested user model is mapped too, field by field.
+      expect(entity?.user?.id, 'u1');
+      expect(entity?.user?.firstName, 'Ahmed');
+      expect(entity?.user?.lastName, 'Emam');
+      expect(entity?.user?.email, 'test@test.com');
+      expect(entity?.user?.gender, 'male');
+      expect(entity?.user?.age, 25);
+      expect(entity?.user?.weight, 90);
+      expect(entity?.user?.height, 183);
+      expect(entity?.user?.activityLevel, 'level1');
+      expect(entity?.user?.goal, 'Gain weight');
+      expect(entity?.user?.photo, 'photo.png');
+    });
 
-//     test('passes the error message through on failure', () async {
-//       when(
-//         mockRemoteDataSource.signIn(signInRequest),
-//       ).thenAnswer((_) async => ErrorBaseResponse('invalid credentials'));
+    test('maps a success with no user to an entity with a null user', () async {
+      when(mockDataSource.signIn(request)).thenAnswer(
+        (_) async => SuccessBaseResponse(
+          const SignInResponseModel(message: 'success', token: 'fake_token'),
+        ),
+      );
 
-//       final result = await repository.signIn(signInRequest);
+      final result = await repo.signIn(request);
 
-//       expect(result, isA<ErrorBaseResponse<SignInEntity>>());
-//       expect(
-//         (result as ErrorBaseResponse<SignInEntity>).errorMessage,
-//         'invalid credentials',
-//       );
-//     });
-//   });
+      final entity = (result as SuccessBaseResponse<SignInEntity>).data;
+      expect(entity?.token, 'fake_token');
+      expect(entity?.user, isNull);
+    });
 
-//   group('signup', () {
-//     test(
-//       'returns a mapped UserEntity and stores the token on success',
-//       () async {
-//         when(
-//           mockRemoteDataSource.signup(signupRequest),
-//         ).thenAnswer((_) async => const SuccessBaseResponse(signupResponse));
-//         when(
-//           mockSecureCacheHelper.writeData(
-//             key: anyNamed('key'),
-//             value: anyNamed('value'),
-//           ),
-//         ).thenAnswer((_) async => Future.value());
+    test('maps a success with null data to a success with null data', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => SuccessBaseResponse(null));
 
-//         final result = await repository.signup(signupRequest);
+      final result = await repo.signIn(request);
 
-//         expect(result, isA<SuccessBaseResponse<UserEntity>>());
-//         expect(
-//           (result as SuccessBaseResponse<UserEntity>).data?.id,
-//           'user_123',
-//         );
-//         expect((result).data?.firstName, 'John');
-//         verify(mockRemoteDataSource.signup(signupRequest)).called(1);
-//         verify(
-//           mockSecureCacheHelper.writeData(
-//             key: 'token',
-//             value: 'test_token_123',
-//           ),
-//         ).called(1);
-//       },
-//     );
+      expect(result, isA<SuccessBaseResponse<SignInEntity>>());
+      expect((result as SuccessBaseResponse<SignInEntity>).data, isNull);
+    });
 
-//     test('returns an error when the remote response has no user', () async {
-//       const responseWithoutUser = SignupResponse(
-//         message: 'Registration failed',
-//         token: null,
-//         user: null,
-//       );
-//       when(
-//         mockRemoteDataSource.signup(signupRequest),
-//       ).thenAnswer((_) async => const SuccessBaseResponse(responseWithoutUser));
+    test('passes the error message through on failure', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => ErrorBaseResponse('invalid credentials'));
 
-//       final result = await repository.signup(signupRequest);
+      final result = await repo.signIn(request);
 
-//       expect(result, isA<ErrorBaseResponse<UserEntity>>());
-//       expect(
-//         (result as ErrorBaseResponse<UserEntity>).errorMessage,
-//         isNotEmpty,
-//       );
-//       verifyNever(
-//         mockSecureCacheHelper.writeData(
-//           key: anyNamed('key'),
-//           value: anyNamed('value'),
-//         ),
-//       );
-//     });
+      expect(result, isA<ErrorBaseResponse<SignInEntity>>());
+      expect(
+        (result as ErrorBaseResponse<SignInEntity>).errorMessage,
+        'invalid credentials',
+      );
+    });
+  });
 
-//     test('passes through the remote error response', () async {
-//       const errorMessage = 'Email already exists';
-//       when(mockRemoteDataSource.signup(signupRequest)).thenAnswer(
-//         (_) async => ErrorBaseResponse<SignupResponse>(errorMessage),
-//       );
+  group('signIn session caching', () {
+    test('caches the token, the full user data and the user id', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => SuccessBaseResponse(responseModel));
 
-//       final result = await repository.signup(signupRequest);
+      await repo.signIn(request);
 
-//       expect(result, isA<ErrorBaseResponse<UserEntity>>());
-//       expect(
-//         (result as ErrorBaseResponse<UserEntity>).errorMessage,
-//         errorMessage,
-//       );
-//       verifyNever(
-//         mockSecureCacheHelper.writeData(
-//           key: anyNamed('key'),
-//           value: anyNamed('value'),
-//         ),
-//       );
-//     });
-//   });
-// }
+      verify(
+        mockCache.writeData(key: AppKeys.tokenKey, value: 'fake_token'),
+      ).called(1);
+      verify(
+        mockCache.writeData(key: AppKeys.userIdKey, value: 'u1'),
+      ).called(1);
+      // The whole user object is persisted as JSON (acceptance criteria).
+      final userJson =
+          verify(
+                mockCache.writeData(
+                  key: AppKeys.userDataKey,
+                  value: captureAnyNamed('value'),
+                ),
+              ).captured.single
+              as String;
+      expect(userJson, contains('Ahmed'));
+      expect(userJson, contains('Gain weight'));
+      expect(userJson, contains('183'));
+    });
+
+    test('does not cache an empty token', () async {
+      when(mockDataSource.signIn(request)).thenAnswer(
+        (_) async => SuccessBaseResponse(
+          const SignInResponseModel(
+            message: 'success',
+            token: '',
+            user: userModel,
+          ),
+        ),
+      );
+
+      await repo.signIn(request);
+
+      verifyNever(
+        mockCache.writeData(key: AppKeys.tokenKey, value: anyNamed('value')),
+      );
+    });
+
+    test('skips the user cache when the response has no user', () async {
+      when(mockDataSource.signIn(request)).thenAnswer(
+        (_) async => SuccessBaseResponse(
+          const SignInResponseModel(message: 'success', token: 'fake_token'),
+        ),
+      );
+
+      await repo.signIn(request);
+
+      verify(
+        mockCache.writeData(key: AppKeys.tokenKey, value: 'fake_token'),
+      ).called(1);
+      verifyNever(
+        mockCache.writeData(key: AppKeys.userDataKey, value: anyNamed('value')),
+      );
+    });
+
+    test('caches nothing when sign-in fails', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => ErrorBaseResponse('invalid credentials'));
+
+      await repo.signIn(request);
+
+      verifyNever(
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
+      );
+    });
+  });
+}

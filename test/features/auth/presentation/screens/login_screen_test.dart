@@ -13,7 +13,6 @@ import 'package:mockito/mockito.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/config/services/facebook_auth_service.dart';
 import 'package:super_fitness/config/services/google_auth_service.dart';
 import 'package:super_fitness/core/utils/app_constants.dart';
@@ -25,7 +24,7 @@ import 'package:super_fitness/features/auth/domain/use_cases/sign_in_use_case.da
 import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/widgets/login_form.dart';
-import 'package:super_fitness/features/auth/presentation/widgets/social_login_button.dart';
+import 'package:super_fitness/features/auth/presentation/widgets/social_login_buttons.dart';
 
 import 'login_screen_test.mocks.dart';
 
@@ -40,15 +39,9 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([
-  SignInUseCase,
-  SecureCacheHelper,
-  GoogleAuthService,
-  FacebookAuthService,
-])
+@GenerateMocks([SignInUseCase, GoogleAuthService, FacebookAuthService])
 void main() {
   late MockSignInUseCase mockUseCase;
-  late MockSecureCacheHelper mockCache;
   late MockGoogleAuthService mockGoogleAuthService;
   late MockFacebookAuthService mockFacebookAuthService;
   late LoginCubit cubit;
@@ -85,19 +78,14 @@ void main() {
 
   setUp(() {
     mockUseCase = MockSignInUseCase();
-    mockCache = MockSecureCacheHelper();
     mockGoogleAuthService = MockGoogleAuthService();
     mockFacebookAuthService = MockFacebookAuthService();
-    when(
-      mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
-    ).thenAnswer((_) async {});
-
     cubit = LoginCubit(
       mockUseCase,
-      mockCache,
       mockGoogleAuthService,
       mockFacebookAuthService,
     );
+
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });
 
@@ -183,10 +171,11 @@ void main() {
       expect(find.byType(TextField), findsNWidgets(2));
     });
 
-    testWidgets('renders the three social buttons', (tester) async {
+    testWidgets('renders the social sign-in buttons', (tester) async {
       await pumpLoginScreen(tester);
 
-      expect(find.byType(SocialLoginButton), findsNWidgets(3));
+      expect(find.byType(SocialLoginButtons), findsOneWidget);
+      expect(find.text(AppStrings.or.tr()), findsOneWidget);
     });
   });
 
@@ -309,7 +298,7 @@ void main() {
       tester,
     ) async {
       // Left pending so the sign-in never completes: this test only asserts
-      // what was sent, not the caching/navigation that follows.
+      // what was sent, not the navigation that follows.
       when(
         mockUseCase(any),
       ).thenAnswer((_) => Completer<BaseResponse<SignInEntity>>().future);
@@ -330,9 +319,7 @@ void main() {
       expect(captured.password, validPassword);
     });
 
-    testWidgets('a successful sign-in caches the token and the user data', (
-      tester,
-    ) async {
+    testWidgets('a successful sign-in leaves the login screen', (tester) async {
       when(mockUseCase(any)).thenAnswer(
         (_) async => SuccessBaseResponse(
           const SignInEntity(
@@ -353,17 +340,10 @@ void main() {
       await tester.tap(loginButton());
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
 
-      // Token + full user data are persisted (per the acceptance criteria).
-      verify(
-        mockCache.writeData(key: anyNamed('key'), value: 'token-123'),
-      ).called(1);
-      verify(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: argThat(contains('Ahmed'), named: 'value'),
-        ),
-      ).called(1);
+      // The cubit navigates to the main layout, which the test stubs out.
+      expect(find.byType(LoginForm), findsNothing);
 
       // The success toast is shown too; drop it so its timers don't outlive
       // the test.
@@ -372,7 +352,7 @@ void main() {
       await tester.pump(const Duration(seconds: 5));
     });
 
-    testWidgets('a server error surfaces the message and caches nothing', (
+    testWidgets('a server error surfaces the message and stays put', (
       tester,
     ) async {
       const errorMessage = 'Invalid email or password';
@@ -396,10 +376,8 @@ void main() {
 
       verify(mockUseCase(any)).called(1);
       expect(find.text(errorMessage), findsOneWidget);
-      // No session is cached on failure.
-      verifyNever(
-        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
-      );
+      // The user stays on the login screen on failure.
+      expect(find.byType(LoginForm), findsOneWidget);
 
       // Remove the toast, then advance past its 4s auto-dismiss so no timers
       // are left pending at teardown.
@@ -424,7 +402,6 @@ void main() {
       // listened to the shared one.
       final arabicCubit = LoginCubit(
         mockUseCase,
-        mockCache,
         mockGoogleAuthService,
         mockFacebookAuthService,
       );
