@@ -76,30 +76,30 @@ class _CustomTextFieldState extends State<CustomTextField> {
         hintText: widget.hintText,
         prefixIcon: widget.prefixIconPath != null
             ? Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SvgPicture.asset(widget.prefixIconPath!),
-        )
+                padding: const EdgeInsets.all(10.0),
+                child: SvgPicture.asset(widget.prefixIconPath!),
+              )
             : widget.prefixIcon,
         suffixIcon: hasExternalSuffix
             ? widget.suffixIconPath != null
-            ? Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: SvgPicture.asset(widget.suffixIconPath!),
-        )
-            : widget.suffixIcon
+                  ? Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(widget.suffixIconPath!),
+                    )
+                  : widget.suffixIcon
             : widget.obscureText
             ? IconButton(
-          onPressed: () {
-            setState(() {
-              _obscureText = !_obscureText;
-            });
-          },
-          icon: Icon(
-            _obscureText
-                ? Icons.visibility_off_outlined
-                : Icons.visibility_outlined,
-          ),
-        )
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+                icon: Icon(
+                  _obscureText
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+              )
             : null,
       ),
     );

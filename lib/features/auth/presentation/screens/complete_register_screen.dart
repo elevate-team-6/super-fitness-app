@@ -18,8 +18,8 @@ import '../view_model/register_view_model/register_event.dart';
 import '../view_model/register_view_model/register_state.dart';
 import '../widgets/custom_horizontal_wheel_picker.dart';
 import '../widgets/gender_selection_view.dart';
+import '../widgets/multi_step_progress_header.dart';
 import '../widgets/selectable_option_list.dart';
-import '../widgets/step_header.dart';
 
 class CompleteRegisterScreen extends StatefulWidget {
   const CompleteRegisterScreen({super.key});
@@ -86,7 +86,7 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
             return Column(
               children: [
                 SizedBox(height: 40.h),
-                StepHeader(
+                MultiStepProgressHeader(
                   currentStep: state.currentStep,
                   title: _getTitle(state.currentStep),
                   subtitle: _getSubtitle(state.currentStep),

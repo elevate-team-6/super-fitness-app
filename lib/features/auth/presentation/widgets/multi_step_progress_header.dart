@@ -4,12 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 
-class StepHeader extends StatelessWidget {
+class MultiStepProgressHeader extends StatelessWidget {
   final int currentStep;
   final String title;
   final String? subtitle;
 
-  const StepHeader({
+  const MultiStepProgressHeader({
     super.key,
     required this.currentStep,
     required this.title,
