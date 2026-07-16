@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
@@ -11,9 +13,10 @@ import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart'
 
 import 'auth_repo_impl_test.mocks.dart';
 
-@GenerateMocks([AuthRemoteDataSourceContract])
+@GenerateMocks([AuthRemoteDataSourceContract, SecureCacheHelper])
 void main() {
   late MockAuthRemoteDataSourceContract mockDataSource;
+  late MockSecureCacheHelper mockCache;
   late AuthRepoImpl repo;
 
   const request = SignInRequestModel(
@@ -44,7 +47,12 @@ void main() {
 
   setUp(() {
     mockDataSource = MockAuthRemoteDataSourceContract();
-    repo = AuthRepoImpl(mockDataSource);
+    mockCache = MockSecureCacheHelper();
+    repo = AuthRepoImpl(mockDataSource, mockCache);
+
+    when(
+      mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
 
     provideDummy<BaseResponse<SignInResponseModel>>(ErrorBaseResponse('dummy'));
   });
@@ -121,6 +129,82 @@ void main() {
       expect(
         (result as ErrorBaseResponse<SignInEntity>).errorMessage,
         'invalid credentials',
+      );
+    });
+  });
+
+  group('signIn session caching', () {
+    test('caches the token, the full user data and the user id', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => SuccessBaseResponse(responseModel));
+
+      await repo.signIn(request);
+
+      verify(
+        mockCache.writeData(key: AppKeys.tokenKey, value: 'fake_token'),
+      ).called(1);
+      verify(
+        mockCache.writeData(key: AppKeys.userIdKey, value: 'u1'),
+      ).called(1);
+      // The whole user object is persisted as JSON (acceptance criteria).
+      final userJson =
+          verify(
+                mockCache.writeData(
+                  key: AppKeys.userDataKey,
+                  value: captureAnyNamed('value'),
+                ),
+              ).captured.single
+              as String;
+      expect(userJson, contains('Ahmed'));
+      expect(userJson, contains('Gain weight'));
+      expect(userJson, contains('183'));
+    });
+
+    test('does not cache an empty token', () async {
+      when(mockDataSource.signIn(request)).thenAnswer(
+        (_) async => SuccessBaseResponse(
+          const SignInResponseModel(
+            message: 'success',
+            token: '',
+            user: userModel,
+          ),
+        ),
+      );
+
+      await repo.signIn(request);
+
+      verifyNever(
+        mockCache.writeData(key: AppKeys.tokenKey, value: anyNamed('value')),
+      );
+    });
+
+    test('skips the user cache when the response has no user', () async {
+      when(mockDataSource.signIn(request)).thenAnswer(
+        (_) async => SuccessBaseResponse(
+          const SignInResponseModel(message: 'success', token: 'fake_token'),
+        ),
+      );
+
+      await repo.signIn(request);
+
+      verify(
+        mockCache.writeData(key: AppKeys.tokenKey, value: 'fake_token'),
+      ).called(1);
+      verifyNever(
+        mockCache.writeData(key: AppKeys.userDataKey, value: anyNamed('value')),
+      );
+    });
+
+    test('caches nothing when sign-in fails', () async {
+      when(
+        mockDataSource.signIn(request),
+      ).thenAnswer((_) async => ErrorBaseResponse('invalid credentials'));
+
+      await repo.signIn(request);
+
+      verifyNever(
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       );
     });
   });

@@ -4,8 +4,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
-import 'package:super_fitness/config/cache/secure_cache_helper.dart';
-import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
@@ -16,10 +14,9 @@ import 'package:super_fitness/features/auth/presentation/view_model/login_view_m
 
 import 'login_cubit_test.mocks.dart';
 
-@GenerateMocks([SignInUseCase, SecureCacheHelper])
+@GenerateMocks([SignInUseCase])
 void main() {
   late MockSignInUseCase mockUseCase;
-  late MockSecureCacheHelper mockCache;
   late LoginCubit cubit;
 
   const request = SignInRequestModel(
@@ -27,33 +24,26 @@ void main() {
     password: 'Ahmed@123',
   );
 
-  const fakeUser = UserEntity(
-    id: 'u1',
-    firstName: 'Ahmed',
-    lastName: 'Emam',
-    email: 'test@test.com',
-    gender: 'male',
-    age: 25,
-    weight: 90,
-    height: 183,
-    activityLevel: 'level1',
-    goal: 'Gain weight',
-  );
-
   const fakeEntity = SignInEntity(
     message: 'success',
     token: 'fake_token',
-    user: fakeUser,
+    user: UserEntity(
+      id: 'u1',
+      firstName: 'Ahmed',
+      lastName: 'Emam',
+      email: 'test@test.com',
+      gender: 'male',
+      age: 25,
+      weight: 90,
+      height: 183,
+      activityLevel: 'level1',
+      goal: 'Gain weight',
+    ),
   );
 
   setUp(() {
     mockUseCase = MockSignInUseCase();
-    mockCache = MockSecureCacheHelper();
-    cubit = LoginCubit(mockUseCase, mockCache);
-
-    when(
-      mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
-    ).thenAnswer((_) async {});
+    cubit = LoginCubit(mockUseCase);
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });
@@ -98,6 +88,23 @@ void main() {
   });
 
   group('LoginEvent', () {
+    test('passes the request straight to the use case', () async {
+      when(
+        mockUseCase(request),
+      ).thenAnswer((_) async => SuccessBaseResponse(fakeEntity));
+
+      final expectation = expectLater(
+        cubit.eventStream,
+        emitsThrough(isA<NavigateEvent>()),
+      );
+
+      cubit.doIntent(const LoginEvent(request));
+      await expectation;
+
+      verify(mockUseCase(request)).called(1);
+      verifyNoMoreInteractions(mockUseCase);
+    });
+
     test(
       'emits loading then success side effects on valid credentials',
       () async {
@@ -117,86 +124,8 @@ void main() {
 
         cubit.doIntent(const LoginEvent(request));
         await expectation;
-
-        verify(mockUseCase(request)).called(1);
       },
     );
-
-    test('caches the token, the full user data and the user id', () async {
-      when(
-        mockUseCase(request),
-      ).thenAnswer((_) async => SuccessBaseResponse(fakeEntity));
-
-      final expectation = expectLater(
-        cubit.eventStream,
-        emitsThrough(isA<NavigateEvent>()),
-      );
-
-      cubit.doIntent(const LoginEvent(request));
-      await expectation;
-
-      verify(
-        mockCache.writeData(key: AppKeys.tokenKey, value: 'fake_token'),
-      ).called(1);
-      verify(
-        mockCache.writeData(key: AppKeys.userIdKey, value: 'u1'),
-      ).called(1);
-      // The whole user object is persisted as JSON (acceptance criteria).
-      final userJson =
-          verify(
-                mockCache.writeData(
-                  key: AppKeys.userDataKey,
-                  value: captureAnyNamed('value'),
-                ),
-              ).captured.single
-              as String;
-      expect(userJson, contains('Ahmed'));
-      expect(userJson, contains('Gain weight'));
-      expect(userJson, contains('183'));
-    });
-
-    test('does not cache an empty token', () async {
-      when(mockUseCase(request)).thenAnswer(
-        (_) async => SuccessBaseResponse(
-          const SignInEntity(message: 'success', token: '', user: fakeUser),
-        ),
-      );
-
-      final expectation = expectLater(
-        cubit.eventStream,
-        emitsThrough(isA<NavigateEvent>()),
-      );
-
-      cubit.doIntent(const LoginEvent(request));
-      await expectation;
-
-      verifyNever(
-        mockCache.writeData(key: AppKeys.tokenKey, value: anyNamed('value')),
-      );
-    });
-
-    test('skips the user cache when the response has no user', () async {
-      when(mockUseCase(request)).thenAnswer(
-        (_) async => SuccessBaseResponse(
-          const SignInEntity(message: 'success', token: 'fake_token'),
-        ),
-      );
-
-      final expectation = expectLater(
-        cubit.eventStream,
-        emitsThrough(isA<NavigateEvent>()),
-      );
-
-      cubit.doIntent(const LoginEvent(request));
-      await expectation;
-
-      verify(
-        mockCache.writeData(key: AppKeys.tokenKey, value: 'fake_token'),
-      ).called(1);
-      verifyNever(
-        mockCache.writeData(key: AppKeys.userDataKey, value: anyNamed('value')),
-      );
-    });
 
     test(
       'emits loading then failure side effects on wrong credentials',
@@ -223,22 +152,22 @@ void main() {
       },
     );
 
-    test('caches nothing and never navigates when sign-in fails', () async {
+    test('never navigates when sign-in fails', () async {
       when(
         mockUseCase(request),
       ).thenAnswer((_) async => ErrorBaseResponse('invalid credentials'));
 
-      final expectation = expectLater(
-        cubit.eventStream,
-        emitsThrough(isA<DisplayErrorEvent>()),
-      );
+      // Collected rather than matched in order, so a stray NavigateEvent after
+      // the error would still be caught.
+      final events = <BaseUiEvent>[];
+      final subscription = cubit.eventStream.listen(events.add);
+      addTearDown(subscription.cancel);
 
       cubit.doIntent(const LoginEvent(request));
-      await expectation;
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
-      verifyNever(
-        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
-      );
+      expect(events.whereType<NavigateEvent>(), isEmpty);
+      expect(events.whereType<DisplayErrorEvent>(), hasLength(1));
     });
   });
 }

@@ -82,7 +82,7 @@ void main() {
       mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
     ).thenAnswer((_) async {});
 
-    cubit = LoginCubit(mockUseCase, mockCache);
+    cubit = LoginCubit(mockUseCase);
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });
@@ -120,10 +120,9 @@ void main() {
               supportedLocales: context.supportedLocales,
               locale: context.locale,
               debugShowCheckedModeBanner: false,
+              // CustomSnackBar renders through BotToast, so the overlay must be
+              // installed for notification assertions to find anything.
               builder: BotToastInit(),
-              onGenerateRoute: (_) => MaterialPageRoute<void>(
-                builder: (_) => const SizedBox.shrink(),
-              ),
               home: BlocProvider<LoginCubit>.value(
                 value: activeCubit,
                 child: const LoginScreen(),
@@ -408,7 +407,7 @@ void main() {
       // Re-render with the Arabic locale. A fresh cubit is used because the
       // event stream is single-subscription and the first screen already
       // listened to the shared one.
-      final arabicCubit = LoginCubit(mockUseCase, mockCache);
+      final arabicCubit = LoginCubit(mockUseCase);
       addTearDown(() async {
         if (!arabicCubit.isClosed) await arabicCubit.close();
       });
