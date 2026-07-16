@@ -69,6 +69,7 @@
   "explore": "Explore",
   "workouts": "Workouts",
   "chat": "Chat",
+  "exit_confirmation": "Are You Sure To Close The Application?",
   "profile": "Profile",
   "doIt": "Do IT",
   "registerFailed ": "Register Failed",
