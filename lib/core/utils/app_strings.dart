@@ -65,6 +65,7 @@ abstract class AppStrings {
   static const String invalidIdNumber = 'invalidIdNumber';
   static const String pleaseUploadNationalId = 'pleaseUploadNationalId';
   static const String pleaseUploadDrivingLicense = 'pleaseUploadDrivingLicense';
+  static const String loginSuccess = 'login_success';
 
   // Exit App Dialog
   static const String exitAppTitle = 'exitAppTitle';
@@ -84,6 +85,17 @@ abstract class AppStrings {
   static const String back = 'back';
   static const String next = 'next';
   static const String doIt = 'doIt';
+
+  // Login screen
+  static const String heyThere = 'hey_there';
+  static const String welcomeBack = 'welcome_back';
+  static const String login = 'login';
+  static const String email = 'email';
+  static const String password = 'password';
+  static const String forgetPassword = 'forget_password';
+  static const String orText = 'or';
+  static const String dontHaveAccount = 'dont_have_account';
+  static const String register = 'register';
   static const String explore = 'explore';
   static const String workouts = 'workouts';
   static const String chat = 'chat';

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
-
+import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
+import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
@@ -21,6 +24,15 @@ abstract class AppRoutes {
       switch (settings.name) {
         case onboarding:
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
+
+        case login:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<LoginCubit>(),
+              child: const LoginScreen(),
+            ),
+          );
+
         case mainLayout:
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
         default:
