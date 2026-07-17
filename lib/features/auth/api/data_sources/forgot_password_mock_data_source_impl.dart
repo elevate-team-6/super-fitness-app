@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/features/auth/data/data_sources/forget_password_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/models/request/forgot_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/reset_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/verify_reset_code_request.dart';
@@ -7,11 +8,10 @@ import 'package:super_fitness/features/auth/data/models/response/forgot_password
 import 'package:super_fitness/features/auth/data/models/response/reset_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/verify_reset_code_response.dart';
 
-import '../../data/data_sources/auth_remote_data_source_contract.dart';
-
 @Named('mock')
-@Injectable(as: AuthRemoteDataSourceContract)
-class ForgetPasswordMockDataSourceImpl implements AuthRemoteDataSourceContract {
+@Injectable(as: ForgotPasswordRemoteDataSourceContract)
+class ForgetPasswordMockDataSourceImpl
+    implements ForgotPasswordRemoteDataSourceContract {
   /// simulate network delay
   Future<T> _simulate<T>(T response) async {
     await Future.delayed(const Duration(seconds: 1));

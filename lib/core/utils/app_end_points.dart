@@ -8,6 +8,8 @@ abstract class AppEndPoints {
   static const String resetPassword = "$auth/resetPassword";
   static const String verifyOtp = "$auth/verifyResetCode";
 
+  // Auth
+  static const String signin = "$baseUrl/auth/signin";
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
   // 1. Group them by feature (e.g., // Products, // Cart).

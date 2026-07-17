@@ -8,6 +8,10 @@ import 'package:super_fitness/features/auth/data/models/request/verify_reset_cod
 import 'package:super_fitness/features/auth/data/models/response/forgot_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/reset_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/verify_reset_code_response.dart';
+import 'package:super_fitness/core/utils/app_end_points.dart';
+import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
+import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
+
 part 'auth_api_client.g.dart';
 
 @lazySingleton
@@ -15,6 +19,9 @@ part 'auth_api_client.g.dart';
 abstract class AuthApiClient {
   @factoryMethod
   factory AuthApiClient(Dio dio) = _AuthApiClient;
+
+  @POST(AppEndPoints.signin)
+  Future<SignInResponseModel> signIn(@Body() SignInRequestModel body);
   @POST(AppEndPoints.forgetPassword)
   Future<ForgetPasswordResponse> forgotPassword(
     @Body() ForgetPasswordRequest request,

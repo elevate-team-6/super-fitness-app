@@ -67,8 +67,19 @@
   "back": "رجوع",
   "next": "التالي",
   "doIt": "ابدأ الآن",
+  "hey_there": "أهلاً بك",
+  "welcome_back": "مرحباً بعودتك",
+  "login": "تسجيل الدخول",
+  "email": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forget_password": "نسيت كلمة المرور؟",
+  "or": "أو",
+  "dont_have_account": "ليس لديك حساب؟",
+  "register": "إنشاء حساب",
+  "login_success": "تم تسجيل الدخول بنجاح",
   "explore": "اكتشف",
   "workouts": "التمارين",
   "chat": "الكوتش",
-  "profile": "الملف الشخصي"
+  "profile": "الملف الشخصي",
+  "exit_confirmation": "هل أنت متأكد من إغلاق التطبيق؟"
 }
