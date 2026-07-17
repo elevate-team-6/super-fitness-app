@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/services/social_account_data.dart';
@@ -26,9 +27,16 @@ class GoogleAuthService {
         scopeHint: const ['email', 'profile'],
       );
 
-      // Synchronous in 7.x (it used to be a Future).
       final idToken = googleUser.authentication.idToken;
-      if (idToken == null) return null;
+      if (idToken == null) {
+        // This is usually due to missing SHA-1 in Firebase Console or wrong serverClientId.
+        if (kDebugMode) {
+          print(
+            'GoogleAuthService: idToken is null. Check Firebase SHA-1 and google-services.json',
+          );
+        }
+        return null;
+      }
 
       final credential = GoogleAuthProvider.credential(idToken: idToken);
       final userCredential = await _firebaseAuth.signInWithCredential(
@@ -48,8 +56,23 @@ class GoogleAuthService {
         photo: user.photoURL ?? googleUser.photoUrl,
       );
     } on GoogleSignInException catch (e) {
-      // The user backing out of the picker isn't an error worth surfacing.
-      if (e.code == GoogleSignInExceptionCode.canceled) return null;
+      if (kDebugMode) {
+        print('GoogleAuthService: GoogleSignInException: $e');
+      }
+      // Error code 16 is typically SIGN_IN_FAILED/CANCELED due to configuration issues.
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        if (e.toString().contains('[16]')) {
+          throw Exception(
+            'Google Sign-In failed [16]: This usually means a SHA-1 mismatch or missing Support Email in Firebase.',
+          );
+        }
+        return null;
+      }
+      rethrow;
+    } catch (e) {
+      if (kDebugMode) {
+        print('GoogleAuthService: Unexpected Error: $e');
+      }
       rethrow;
     }
   }
