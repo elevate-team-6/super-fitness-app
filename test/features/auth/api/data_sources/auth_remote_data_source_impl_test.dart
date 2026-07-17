@@ -58,7 +58,7 @@ void main() {
 
     test(
       'wraps a Dio failure in ErrorBaseResponse instead of throwing',
-      () async {
+          () async {
         when(mockApiClient.signIn(request)).thenThrow(
           DioException(
             requestOptions: RequestOptions(path: '/auth/signin'),

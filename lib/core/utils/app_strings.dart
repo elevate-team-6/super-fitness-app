@@ -86,13 +86,33 @@ abstract class AppStrings {
   static const String next = 'next';
   static const String doIt = 'doIt';
 
+  // forget password
+  static const String forgetPassword = 'Forget Password';
+  static const String enterEmail = 'Enter Your Email';
+  static const String email = 'Email';
+  static const String password = 'Password';
+  static const String done = 'Done';
+  static const String confirm = 'Confirm';
+  static const String dontRecieveCode = 'Didnt Recieve Verification Code?';
+  static const String sentOtP = 'Sent OTP';
+  static const String createNewPassword = 'Create New Password';
+  static const String passwordMoreCharacter =
+      'Make Sure Its 8 Characters Or More';
+  static const String otpCode = 'OTP CODE';
+  static const String resendCode = 'Resend Code?';
+  static const String enterOtp = 'Enter Your OTP Check your email';
+  static const String verificationCodeSentToYourEmail =
+      'verificationCodeSentToYourEmail';
+  static const String verificationCodeIsCorrect = 'verificationCodeIsCorrect';
+  static const String passwordResetSuccessfully = 'passwordResetSuccessfully';
+  static const String otpCodeInvalid = 'otpCodeInvalid';
+
+  // Onboarding
+
   // Login screen
   static const String heyThere = 'hey_there';
   static const String welcomeBack = 'welcome_back';
   static const String login = 'login';
-  static const String email = 'email';
-  static const String password = 'password';
-  static const String forgetPassword = 'forget_password';
   static const String orText = 'or';
   static const String dontHaveAccount = 'dont_have_account';
   static const String register = 'register';

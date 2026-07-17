@@ -32,6 +32,7 @@ abstract class AppImages {
   // Example: static const String yourIcon = '${_imagesPath}image_name.svg';
   static const String fitnessAppLogo = '${_imagesPath}lancher_logo.png';
   static const String authBackground = '${_imagesPath}auth_background.png';
+  static const String lancherLogo = '${_imagesPath}lancher_logo.png';
   static const String chatBackground = '${_imagesPath}chat_background.jpg';
   static const String homeBackground = '${_imagesPath}home_background.jpg';
   static const String onboardingBackground =

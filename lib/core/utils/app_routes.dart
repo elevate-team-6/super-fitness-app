@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:super_fitness/features/auth/presentation/screens/reset_password_screen.dart';
+import 'package:super_fitness/features/auth/presentation/screens/verify_reset_code_screen.dart';
+
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
@@ -15,7 +19,7 @@ abstract class AppRoutes {
   static const String login = 'login';
   static const String registerScreen = 'register';
   static const String forgetPassword = '/forgotPassword';
-  static const String changePassword = '/changePassword';
+  static const String resetPassword = '/resetPassword';
   static const String verifyResetCode = '/VerifyResetCode';
   static const String mainLayout = 'mainLayout';
 
@@ -35,6 +39,23 @@ abstract class AppRoutes {
 
         case mainLayout:
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
+        case AppRoutes.forgetPassword:
+          return MaterialPageRoute(
+            builder: (_) => const ForgotPasswordScreen(),
+          );
+
+        case AppRoutes.verifyResetCode:
+          return MaterialPageRoute(
+            builder: (_) =>
+                VerifyResetCodeScreen(email: settings.arguments as String),
+          );
+
+        case AppRoutes.resetPassword:
+          return MaterialPageRoute(
+            builder: (_) =>
+                ResetPasswordScreen(email: settings.arguments as String),
+          );
+
         default:
           return _unDefinedRoute(settings.name);
       }

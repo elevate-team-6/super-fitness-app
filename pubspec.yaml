@@ -52,6 +52,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   cloud_firestore: ^6.6.0
   googleapis_auth: ^2.3.3
+  pinput: ^6.0.2
 
 dev_dependencies:
   flutter_test:
