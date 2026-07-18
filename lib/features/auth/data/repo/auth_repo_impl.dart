@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 
@@ -23,18 +22,19 @@ class AuthRepoImpl implements AuthRepoContract {
 
   @override
   Future<BaseResponse<UserEntity>> signup(SignupRequest request) async {
-    final BaseResponse<SignupResponse> response = await _remoteDataSource
-        .signup(request);
+    final BaseResponse<SignupResponse> response =
+        await _remoteDataSource.signup(request);
     switch (response) {
-      case SuccessBaseResponse<SignupResponse>():
-        if (response.data?.user == null) {
-          return ErrorBaseResponse(AppStrings.registerFailed.tr());
+      case SuccessBaseResponse<SignupResponse>(data: var signupData):
+        final user = signupData?.user;
+        if (user == null) {
+          return const ErrorBaseResponse(AppStrings.registerFailed);
         }
         await _secureCacheHelper.writeData(
           key: AppKeys.tokenKey,
-          value: response.data?.token,
+          value: signupData?.token,
         );
-        return SuccessBaseResponse(response.data?.user!.toEntity());
+        return SuccessBaseResponse(user.toEntity());
       case ErrorBaseResponse<SignupResponse>():
         return ErrorBaseResponse(response.errorMessage);
     }

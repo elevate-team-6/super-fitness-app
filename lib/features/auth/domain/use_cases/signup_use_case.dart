@@ -12,6 +12,6 @@ class SignupUseCase {
   const SignupUseCase(this._repository);
 
   Future<BaseResponse<UserEntity>> call(SignupRequest request) async {
-    return await _repository.signup(request);
+    return _repository.signup(request);
   }
 }

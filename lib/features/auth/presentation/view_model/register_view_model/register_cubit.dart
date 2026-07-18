@@ -12,7 +12,7 @@ import '../../../domain/use_cases/signup_use_case.dart';
 import 'register_event.dart';
 import 'register_state.dart';
 
-@lazySingleton
+@injectable
 class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
   final SignupUseCase _signupUseCase;
 
@@ -85,6 +85,7 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
           NavigateEvent(
             AppRoutes.completeRegister,
             navigationType: NavigationType.push,
+            arguments: this,
           ),
         );
       }
@@ -135,16 +136,24 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
 
     emitUiEvent(HideLoadingEvent());
 
-    if (result is SuccessBaseResponse<UserEntity>) {
-      emit(state.copyWith(signupStatus: BaseState(data: result.data)));
-      emitUiEvent(DisplaySuccessEvent(AppStrings.registerSuccess));
-    } else if (result is ErrorBaseResponse<UserEntity>) {
-      emit(
-        state.copyWith(
-          signupStatus: BaseState(errorMessage: result.errorMessage),
-        ),
-      );
-      emitUiEvent(DisplayErrorEvent(result.errorMessage));
+    switch (result) {
+      case SuccessBaseResponse<UserEntity>():
+        emit(state.copyWith(signupStatus: BaseState(data: result.data)));
+        emitUiEvent(DisplaySuccessEvent(AppStrings.registerSuccess));
+        emitUiEvent(
+          NavigateEvent(
+            AppRoutes.mainLayout,
+            navigationType: NavigationType.pushAndRemoveUntil,
+            predicate: (route) => false,
+          ),
+        );
+      case ErrorBaseResponse<UserEntity>():
+        emit(
+          state.copyWith(
+            signupStatus: BaseState(errorMessage: result.errorMessage),
+          ),
+        );
+        emitUiEvent(DisplayErrorEvent(result.errorMessage));
     }
   }
 }

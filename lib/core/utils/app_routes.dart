@@ -31,15 +31,16 @@ abstract class AppRoutes {
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
         case registerScreen:
           return MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: getIt<RegisterCubit>(),
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<RegisterCubit>(),
               child: const RegisterScreen(),
             ),
           );
         case completeRegister:
+          final cubit = settings.arguments as RegisterCubit;
           return MaterialPageRoute(
             builder: (_) => BlocProvider.value(
-              value: getIt<RegisterCubit>(),
+              value: cubit,
               child: const CompleteRegisterScreen(),
             ),
           );
