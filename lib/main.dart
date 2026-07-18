@@ -14,17 +14,26 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Future.wait([
+    EasyLocalization.ensureInitialized(),
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+  ]);
+
   await GoogleAuthService.initialize(
     serverClientId: AppConstants.googleServerClientId,
   );
 
   configureDependencies();
 
-  final isOnboardingDone = await AuthService.isOnboardingCompleted();
-  final isLoggedIn = await AuthService.isLoggedIn();
+  final results = await Future.wait([
+    AuthService.isOnboardingCompleted(),
+    AuthService.isLoggedIn(),
+  ]);
+
+  final isOnboardingDone = results[0];
+  final isLoggedIn = results[1];
+
   runApp(
     EasyLocalization(
       supportedLocales: const [
