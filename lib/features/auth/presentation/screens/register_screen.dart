@@ -122,21 +122,35 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
                       validator: AppValidations.validatePassword,
                     ),
                     SizedBox(height: 32.h),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          context.read<RegisterCubit>().doEvent(
-                            UpdateAccountInfoEvent(
-                              firstName: _firstNameController.text,
-                              lastName: _lastNameController.text,
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            ),
-                          );
-                          context.read<RegisterCubit>().doEvent(
-                            NextStepEvent(),
-                          );
-                        }
+                    AnimatedBuilder(
+                      animation: Listenable.merge([
+                        _firstNameController,
+                        _lastNameController,
+                        _emailController,
+                        _passwordController,
+                      ]),
+                      builder: (context, child) {
+                        final isValid = AppValidations.validateFirstName(
+                          _firstNameController.text,
+                        ) ==
+                            null &&
+                            AppValidations.validateLastName(
+                              _lastNameController.text,
+                            ) ==
+                                null &&
+                            AppValidations.validateEmail(
+                              _emailController.text,
+                            ) ==
+                                null &&
+                            AppValidations.validatePassword(
+                              _passwordController.text,
+                            ) ==
+                                null;
+
+                        return ElevatedButton(
+                          onPressed: isValid ? _onRegisterPressed : null,
+                          child: child,
+                        );
                       },
                       child: Text(
                         AppStrings.register.tr(),
@@ -172,6 +186,22 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
           ],
         ),
       ),
+    );
+  }
+
+  void _onRegisterPressed() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    context.read<RegisterCubit>().doEvent(
+      UpdateAccountInfoEvent(
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
+    context.read<RegisterCubit>().doEvent(
+      NextStepEvent(),
     );
   }
 }

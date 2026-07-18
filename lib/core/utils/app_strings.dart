@@ -65,6 +65,7 @@ abstract class AppStrings {
   static const String invalidIdNumber = 'invalidIdNumber';
   static const String pleaseUploadNationalId = 'pleaseUploadNationalId';
   static const String pleaseUploadDrivingLicense = 'pleaseUploadDrivingLicense';
+  static const String loginSuccess = 'login_success';
 
   // Exit App Dialog
   static const String exitAppTitle = 'exitAppTitle';
@@ -84,6 +85,31 @@ abstract class AppStrings {
   static const String back = 'back';
   static const String next = 'next';
   static const String doIt = 'doIt';
+
+  // forget password
+  static const String forgetPassword = 'forgetPassword';
+  static const String enterEmail = 'enterEmail';
+  static const String confirm = 'confirm';
+  static const String dontRecieveCode = 'dontRecieveCode';
+  static const String sentOtP = 'sentOtP';
+  static const String createNewPassword = 'createNewPassword';
+  static const String passwordMoreCharacter = 'passwordMoreCharacter';
+  static const String otpCode = 'otpCode';
+  static const String resendCode = 'resendCode';
+  static const String enterOtp = 'enterOtp';
+  static const String verificationCodeSentToYourEmail =
+      'verificationCodeSentToYourEmail';
+  static const String verificationCodeIsCorrect = 'verificationCodeIsCorrect';
+  static const String passwordResetSuccessfully = 'passwordResetSuccessfully';
+  static const String otpCodeInvalid = 'otpCodeInvalid';
+
+  // Login screen
+  static const String heyThere = 'hey_there';
+  static const String welcomeBack = 'welcome_back';
+  static const String login = 'login';
+  static const String orText = 'or';
+  static const String dontHaveAccount = 'dont_have_account';
+  static const String register = 'register';
   static const String explore = 'explore';
   static const String workouts = 'workouts';
   static const String chat = 'chat';
@@ -96,14 +122,12 @@ abstract class AppStrings {
 
   // Auth Flow UI
   static const String loginWelcome = 'loginWelcome';
-  static const String login = 'login';
   static const String email = 'email';
   static const String password = 'password';
-  static const String forgotPassword = 'forgotPassword';
+  static const String forgotYourPassword = 'forgotYourPassword';
   static const String registerPrompt = 'registerPrompt';
   static const String signupWelcome = 'signupWelcome';
   static const String signupCreateAccount = 'signupCreateAccount';
-  static const String register = 'register';
   static const String firstName = 'firstName';
   static const String lastName = 'lastName';
   static const String loginPrompt = 'loginPrompt';

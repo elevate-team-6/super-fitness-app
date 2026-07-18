@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 
+import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
+import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
@@ -18,8 +22,6 @@ abstract class AppRoutes {
   static const String registerScreen = 'register';
   static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
-  static const String changePassword = '/changePassword';
-  static const String verifyResetCode = '/VerifyResetCode';
   static const String mainLayout = 'mainLayout';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -27,8 +29,15 @@ abstract class AppRoutes {
       switch (settings.name) {
         case onboarding:
           return MaterialPageRoute(builder: (_) => OnboardingScreen());
-        case mainLayout:
-          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
+
+        case login:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<LoginCubit>(),
+              child: const LoginScreen(),
+            ),
+          );
+
         case registerScreen:
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
@@ -44,6 +53,17 @@ abstract class AppRoutes {
               child: const CompleteRegisterScreen(),
             ),
           );
+        case forgetPassword:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ForgotPasswordCubit>(),
+              child: const ForgotPasswordScreen(),
+            ),
+          );
+
+        case mainLayout:
+          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
+
         default:
           return _unDefinedRoute(settings.name);
       }
@@ -78,4 +98,11 @@ abstract class AppRoutes {
       ),
     );
   }
+}
+
+class ForgotPasswordArgs {
+  final ForgotPasswordCubit cubit;
+  final String email;
+
+  ForgotPasswordArgs({required this.cubit, required this.email});
 }

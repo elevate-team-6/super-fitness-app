@@ -1,6 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 
-class UserEntity extends Equatable {
+part 'user_model.g.dart';
+
+@JsonSerializable()
+class UserModel extends Equatable {
+  @JsonKey(name: '_id')
   final String? id;
   final String? firstName;
   final String? lastName;
@@ -14,7 +20,7 @@ class UserEntity extends Equatable {
   final String? photo;
   final String? createdAt;
 
-  const UserEntity({
+  const UserModel({
     this.id,
     this.firstName,
     this.lastName,
@@ -28,6 +34,11 @@ class UserEntity extends Equatable {
     this.photo,
     this.createdAt,
   });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   @override
   List<Object?> get props => [
@@ -44,4 +55,19 @@ class UserEntity extends Equatable {
     photo,
     createdAt,
   ];
+
+  UserEntity toEntity() => UserEntity(
+    id: id,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    gender: gender,
+    age: age,
+    weight: weight,
+    height: height,
+    activityLevel: activityLevel,
+    goal: goal,
+    photo: photo,
+    createdAt: createdAt,
+  );
 }

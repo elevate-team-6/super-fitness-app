@@ -59,8 +59,8 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: AppRoutes.onGenerateRoute,
           initialRoute: isOnboardingDone
               ? isLoggedIn
-                    ? AppRoutes.mainLayout
-                    : AppRoutes.login
+              ? AppRoutes.mainLayout
+              : AppRoutes.login
               : AppRoutes.onboarding,
           builder: BotToastInit(),
           navigatorObservers: [BotToastNavigatorObserver()],

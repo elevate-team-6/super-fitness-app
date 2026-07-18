@@ -6,10 +6,8 @@ class AuthService {
   static Future<bool> isLoggedIn() async {
     final secureCacheHelper = getIt<SecureCacheHelper>();
     final token = await secureCacheHelper.readData(key: AppKeys.tokenKey);
-    final bool isRemembered =
-        await secureCacheHelper.readData(key: AppKeys.rememberMeKey) == 'true';
 
-    return token != null && token.isNotEmpty && isRemembered;
+    return token != null && token.isNotEmpty && false;
   }
 
   static Future<bool> isOnboardingCompleted() async {

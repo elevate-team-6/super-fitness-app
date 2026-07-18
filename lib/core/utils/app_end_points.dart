@@ -3,7 +3,13 @@ abstract class AppEndPoints {
   static const String baseUrl = "https://fitness.elevateegy.com/api/v1";
 
   // API EndPoints:-
+
+  // Auth
+  static const String signin = "$baseUrl/auth/signin";
   static const String signup = "$baseUrl/auth/signup";
+  static const String forgetPassword = "$baseUrl/auth/forgotPassword";
+  static const String resetPassword = "$baseUrl/auth/resetPassword";
+  static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
 
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
