@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/services/social_account_data.dart';
@@ -27,15 +26,14 @@ class GoogleAuthService {
         scopeHint: const ['email', 'profile'],
       );
 
-      final idToken = googleUser.authentication.idToken;
+      final authentication = googleUser.authentication;
+      final idToken = authentication.idToken;
+
       if (idToken == null) {
         // This is usually due to missing SHA-1 in Firebase Console or wrong serverClientId.
-        if (kDebugMode) {
-          print(
-            'GoogleAuthService: idToken is null. Check Firebase SHA-1 and google-services.json',
-          );
-        }
-        return null;
+        const errorMsg =
+            'GoogleAuthService: idToken is null. Check Firebase SHA-1, Support Email, and google-services.json';
+        throw Exception(errorMsg);
       }
 
       final credential = GoogleAuthProvider.credential(idToken: idToken);
@@ -44,35 +42,37 @@ class GoogleAuthService {
       );
 
       final user = userCredential.user;
-      if (user == null || user.email == null) return null;
+
+      // FALLBACK LOGIC: If Firebase user email is null (happens in some edge cases),
+      // we use the email from the GoogleSignInAccount we just authenticated with.
+      final effectiveEmail = user?.email ?? googleUser.email;
+
+      if (user == null || effectiveEmail.trim().isEmpty) {
+        return null;
+      }
 
       final names = _splitName(user.displayName ?? googleUser.displayName);
 
       return SocialAccountData(
         uid: user.uid,
-        email: user.email!,
+        email: effectiveEmail,
         firstName: names.$1,
         lastName: names.$2,
         photo: user.photoURL ?? googleUser.photoUrl,
       );
     } on GoogleSignInException catch (e) {
-      if (kDebugMode) {
-        print('GoogleAuthService: GoogleSignInException: $e');
+      // Error code 10 is DEVELOPER_ERROR, often SHA-1 mismatch.
+      if (e.code.name == 'developerError' || e.code.toString().contains('10')) {
+        throw Exception(
+          'Google Sign-In Developer Error [10]: Usually a SHA-1 mismatch or wrong package name in Firebase.',
+        );
       }
-      // Error code 16 is typically SIGN_IN_FAILED/CANCELED due to configuration issues.
+
       if (e.code == GoogleSignInExceptionCode.canceled) {
-        if (e.toString().contains('[16]')) {
-          throw Exception(
-            'Google Sign-In failed [16]: This usually means a SHA-1 mismatch or missing Support Email in Firebase.',
-          );
-        }
         return null;
       }
       rethrow;
     } catch (e) {
-      if (kDebugMode) {
-        print('GoogleAuthService: Unexpected Error: $e');
-      }
       rethrow;
     }
   }

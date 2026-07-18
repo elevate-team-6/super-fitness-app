@@ -114,9 +114,16 @@ class LoginCubit extends BaseCubit<LoginState, BaseUiEvent> {
             ),
           );
       }
-    } catch (_) {
+    } catch (e) {
       emitUiEvent(HideLoadingEvent());
-      emitUiEvent(DisplayErrorEvent(AppStrings.somethingWentWrong.tr()));
+
+      String errorMessage = AppStrings.somethingWentWrong.tr();
+      if (e is Exception) {
+        // Strip "Exception: " prefix if present
+        errorMessage = e.toString().replaceFirst('Exception: ', '');
+      }
+
+      emitUiEvent(DisplayErrorEvent(errorMessage));
     }
   }
 }
