@@ -22,8 +22,8 @@ class AuthRepoImpl implements AuthRepoContract {
 
   @override
   Future<BaseResponse<UserEntity>> signup(SignupRequest request) async {
-    final BaseResponse<SignupResponse> response =
-        await _remoteDataSource.signup(request);
+    final BaseResponse<SignupResponse> response = await _remoteDataSource
+        .signup(request);
     switch (response) {
       case SuccessBaseResponse<SignupResponse>(data: var signupData):
         final user = signupData?.user;
