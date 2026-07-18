@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 
+import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
@@ -33,6 +34,13 @@ abstract class AppRoutes {
             builder: (_) => BlocProvider.value(
               value: getIt<RegisterCubit>(),
               child: const RegisterScreen(),
+            ),
+          );
+        case completeRegister:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: getIt<RegisterCubit>(),
+              child: const CompleteRegisterScreen(),
             ),
           );
         default:

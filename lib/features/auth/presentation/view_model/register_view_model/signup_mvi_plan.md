@@ -172,7 +172,7 @@ The signup process is divided into two main screens to ensure a smooth user expe
 
 ## 5. Implementation Details
 
-- **Single Cubit Instance:** Both screens must share the same `SignupCubit` instance to maintain form data integrity across the entire flow.
+- **Single Cubit Instance:** Both screens must share the same `RegisterCubit` instance to maintain form data integrity across the entire flow.
 - **State Persistence:** Since all data is stored in a single `RegisterState`, navigating back and forth between steps (or even between the two screens) will preserve the user's input.
 - **UI Events:**
     - `NavigateEvent`: Used to move from Screen 1 to Screen 2 when Step 0 is completed.
