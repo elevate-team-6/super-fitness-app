@@ -9,7 +9,8 @@ import 'package:super_fitness/features/auth/data/models/request/sign_in_request_
 import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
 import 'package:super_fitness/features/auth/data/models/request/signup_request.dart';
 import 'package:super_fitness/features/auth/data/models/response/signup_response.dart';
-import 'package:super_fitness/features/auth/data/models/response/user_model.dart' as auth;
+import 'package:super_fitness/features/auth/data/models/response/user_model.dart'
+    as auth;
 
 import 'auth_remote_data_source_impl_test.mocks.dart';
 
@@ -60,7 +61,7 @@ void main() {
 
     test(
       'wraps a Dio failure in ErrorBaseResponse instead of throwing',
-          () async {
+      () async {
         when(mockApiClient.signIn(request)).thenThrow(
           DioException(
             requestOptions: RequestOptions(path: '/auth/signin'),
@@ -119,7 +120,7 @@ void main() {
 
       test(
         'should return SuccessBaseResponse when signup is successful',
-            () async {
+        () async {
           // arrange
           when(
             mockApiClient.signup(any),
@@ -135,27 +136,30 @@ void main() {
         },
       );
 
-      test('should return ErrorBaseResponse when DioException occurs', () async {
-        // arrange
-        final dioError = DioException(
-          requestOptions: RequestOptions(path: '/signup'),
-          type: DioExceptionType.connectionTimeout,
-        );
-        when(mockApiClient.signup(any)).thenThrow(dioError);
+      test(
+        'should return ErrorBaseResponse when DioException occurs',
+        () async {
+          // arrange
+          final dioError = DioException(
+            requestOptions: RequestOptions(path: '/signup'),
+            type: DioExceptionType.connectionTimeout,
+          );
+          when(mockApiClient.signup(any)).thenThrow(dioError);
 
-        // act
-        final result = await dataSource.signup(tSignupRequest);
+          // act
+          final result = await dataSource.signup(tSignupRequest);
 
-        // assert
-        expect(result, isA<ErrorBaseResponse<SignupResponse>>());
-        expect((result as ErrorBaseResponse).errorMessage, isNotEmpty);
-        verify(mockApiClient.signup(tSignupRequest)).called(1);
-        verifyNoMoreInteractions(mockApiClient);
-      });
+          // assert
+          expect(result, isA<ErrorBaseResponse<SignupResponse>>());
+          expect((result as ErrorBaseResponse).errorMessage, isNotEmpty);
+          verify(mockApiClient.signup(tSignupRequest)).called(1);
+          verifyNoMoreInteractions(mockApiClient);
+        },
+      );
 
       test(
         'should return ErrorBaseResponse when connection error occurs',
-            () async {
+        () async {
           // arrange
           final dioError = DioException(
             requestOptions: RequestOptions(path: '/signup'),
@@ -174,7 +178,7 @@ void main() {
 
       test(
         'should return ErrorBaseResponse when bad response occurs (401)',
-            () async {
+        () async {
           // arrange
           final dioError = DioException(
             requestOptions: RequestOptions(path: '/signup'),
@@ -197,7 +201,7 @@ void main() {
 
       test(
         'should return ErrorBaseResponse when bad response occurs (500)',
-            () async {
+        () async {
           // arrange
           final dioError = DioException(
             requestOptions: RequestOptions(path: '/signup'),
@@ -218,41 +222,47 @@ void main() {
         },
       );
 
-      test('should return ErrorBaseResponse when request is cancelled', () async {
-        // arrange
-        final dioError = DioException(
-          requestOptions: RequestOptions(path: '/signup'),
-          type: DioExceptionType.cancel,
-        );
-        when(mockApiClient.signup(any)).thenThrow(dioError);
+      test(
+        'should return ErrorBaseResponse when request is cancelled',
+        () async {
+          // arrange
+          final dioError = DioException(
+            requestOptions: RequestOptions(path: '/signup'),
+            type: DioExceptionType.cancel,
+          );
+          when(mockApiClient.signup(any)).thenThrow(dioError);
 
-        // act
-        final result = await dataSource.signup(tSignupRequest);
+          // act
+          final result = await dataSource.signup(tSignupRequest);
 
-        // assert
-        expect(result, isA<ErrorBaseResponse<SignupResponse>>());
-        verify(mockApiClient.signup(tSignupRequest)).called(1);
-      });
+          // assert
+          expect(result, isA<ErrorBaseResponse<SignupResponse>>());
+          verify(mockApiClient.signup(tSignupRequest)).called(1);
+        },
+      );
 
-      test('should return ErrorBaseResponse when send timeout occurs', () async {
-        // arrange
-        final dioError = DioException(
-          requestOptions: RequestOptions(path: '/signup'),
-          type: DioExceptionType.sendTimeout,
-        );
-        when(mockApiClient.signup(any)).thenThrow(dioError);
+      test(
+        'should return ErrorBaseResponse when send timeout occurs',
+        () async {
+          // arrange
+          final dioError = DioException(
+            requestOptions: RequestOptions(path: '/signup'),
+            type: DioExceptionType.sendTimeout,
+          );
+          when(mockApiClient.signup(any)).thenThrow(dioError);
 
-        // act
-        final result = await dataSource.signup(tSignupRequest);
+          // act
+          final result = await dataSource.signup(tSignupRequest);
 
-        // assert
-        expect(result, isA<ErrorBaseResponse<SignupResponse>>());
-        verify(mockApiClient.signup(tSignupRequest)).called(1);
-      });
+          // assert
+          expect(result, isA<ErrorBaseResponse<SignupResponse>>());
+          verify(mockApiClient.signup(tSignupRequest)).called(1);
+        },
+      );
 
       test(
         'should return ErrorBaseResponse when receive timeout occurs',
-            () async {
+        () async {
           // arrange
           final dioError = DioException(
             requestOptions: RequestOptions(path: '/signup'),
@@ -269,25 +279,28 @@ void main() {
         },
       );
 
-      test('should return ErrorBaseResponse when unknown error occurs', () async {
-        // arrange
-        final dioError = DioException(
-          requestOptions: RequestOptions(path: '/signup'),
-          type: DioExceptionType.unknown,
-        );
-        when(mockApiClient.signup(any)).thenThrow(dioError);
+      test(
+        'should return ErrorBaseResponse when unknown error occurs',
+        () async {
+          // arrange
+          final dioError = DioException(
+            requestOptions: RequestOptions(path: '/signup'),
+            type: DioExceptionType.unknown,
+          );
+          when(mockApiClient.signup(any)).thenThrow(dioError);
 
-        // act
-        final result = await dataSource.signup(tSignupRequest);
+          // act
+          final result = await dataSource.signup(tSignupRequest);
 
-        // assert
-        expect(result, isA<ErrorBaseResponse<SignupResponse>>());
-        verify(mockApiClient.signup(tSignupRequest)).called(1);
-      });
+          // assert
+          expect(result, isA<ErrorBaseResponse<SignupResponse>>());
+          verify(mockApiClient.signup(tSignupRequest)).called(1);
+        },
+      );
 
       test(
         'should return ErrorBaseResponse when non-Dio exception occurs',
-            () async {
+        () async {
           // arrange
           when(mockApiClient.signup(any)).thenThrow(Exception('Unknown error'));
 
@@ -302,13 +315,17 @@ void main() {
 
       test('should pass the correct request to apiClient', () async {
         // arrange
-        when(mockApiClient.signup(any)).thenAnswer((_) async => tSignupResponse);
+        when(
+          mockApiClient.signup(any),
+        ).thenAnswer((_) async => tSignupResponse);
 
         // act
         await dataSource.signup(tSignupRequest);
 
         // assert
-        final captured = verify(mockApiClient.signup(captureAny)).captured.single;
+        final captured = verify(
+          mockApiClient.signup(captureAny),
+        ).captured.single;
         expect(captured, equals(tSignupRequest));
       });
     });

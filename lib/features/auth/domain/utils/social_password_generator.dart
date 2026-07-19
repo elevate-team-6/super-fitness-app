@@ -4,8 +4,8 @@ import 'package:crypto/crypto.dart';
 /// [SocialPasswordGenerator] encapsulates the domain logic for deriving
 /// deterministic passwords from social media accounts.
 ///
-/// This is a temporary measure until the backend supports direct social 
-/// authentication tokens. It ensures that a stable, repeatable password 
+/// This is a temporary measure until the backend supports direct social
+/// authentication tokens. It ensures that a stable, repeatable password
 /// can be generated from the same social identity across devices.
 abstract class SocialPasswordGenerator {
   SocialPasswordGenerator._();
@@ -17,7 +17,7 @@ abstract class SocialPasswordGenerator {
   static String deriveFromEmail(String email) {
     final bytes = utf8.encode(email.trim().toLowerCase());
     final digest = sha256.convert(bytes);
-    
+
     // Base64Url encoding provides a compact mix of alphanumeric characters.
     final base64String = base64Url.encode(digest.bytes).replaceAll('=', '');
     final seed = base64String.substring(0, 16);

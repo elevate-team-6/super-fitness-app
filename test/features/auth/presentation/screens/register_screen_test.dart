@@ -159,20 +159,28 @@ void main() {
       expect(button.onPressed, isNull);
     });
 
-    testWidgets('Should show validation error when field is cleared after interaction', (tester) async {
-      await pumpRegisterScreen(tester);
+    testWidgets(
+      'Should show validation error when field is cleared after interaction',
+      (tester) async {
+        await pumpRegisterScreen(tester);
 
-      final firstNameField = find.widgetWithText(TextField, AppStrings.firstName.tr());
-      await tester.enterText(firstNameField, 'A'); // Too short
-      await tester.pump();
-      expect(find.text(AppStrings.nameTooShort.tr()), findsOneWidget);
+        final firstNameField = find.widgetWithText(
+          TextField,
+          AppStrings.firstName.tr(),
+        );
+        await tester.enterText(firstNameField, 'A'); // Too short
+        await tester.pump();
+        expect(find.text(AppStrings.nameTooShort.tr()), findsOneWidget);
 
-      await tester.enterText(firstNameField, ''); // Empty
-      await tester.pump();
-      expect(find.text(AppStrings.firstNameRequired.tr()), findsOneWidget);
-    });
+        await tester.enterText(firstNameField, ''); // Empty
+        await tester.pump();
+        expect(find.text(AppStrings.firstNameRequired.tr()), findsOneWidget);
+      },
+    );
 
-    testWidgets('Should show error for invalid email on interaction', (tester) async {
+    testWidgets('Should show error for invalid email on interaction', (
+      tester,
+    ) async {
       await pumpRegisterScreen(tester);
 
       final emailField = find.widgetWithText(TextField, AppStrings.email.tr());
@@ -212,10 +220,14 @@ void main() {
         ElevatedButton,
         AppStrings.register.tr(),
       );
-      
+
       // Ensure the button is now enabled
       final button = tester.widget<ElevatedButton>(registerButton);
-      expect(button.onPressed, isNotNull, reason: 'Button should be enabled when form is valid');
+      expect(
+        button.onPressed,
+        isNotNull,
+        reason: 'Button should be enabled when form is valid',
+      );
 
       await tester.ensureVisible(registerButton);
       await tester.tap(registerButton);

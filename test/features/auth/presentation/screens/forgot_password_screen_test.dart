@@ -45,7 +45,8 @@ class MockForgotPasswordCubit extends Mock implements ForgotPasswordCubit {
       super.noSuchMethod(
             Invocation.getter(#stream),
             returnValue: const Stream<ForgotPasswordState>.empty(),
-            returnValueForMissingStub: const Stream<ForgotPasswordState>.empty(),
+            returnValueForMissingStub:
+                const Stream<ForgotPasswordState>.empty(),
           )
           as Stream<ForgotPasswordState>;
 
@@ -110,10 +111,12 @@ void main() {
     Locale locale = const Locale('en'),
   }) async {
     when(mockForgotPasswordCubit.state).thenReturn(state);
-    when(mockForgotPasswordCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(mockForgotPasswordCubit.eventStream).thenAnswer(
-      (_) => const Stream.empty(),
-    );
+    when(
+      mockForgotPasswordCubit.stream,
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      mockForgotPasswordCubit.eventStream,
+    ).thenAnswer((_) => const Stream.empty());
 
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1.0;
@@ -159,11 +162,14 @@ void main() {
       await tester.enterText(find.byType(TextField), 'test@test.com');
       await tester.pump();
 
-      final button = find.widgetWithText(ElevatedButton, AppStrings.sentOtP.tr());
+      final button = find.widgetWithText(
+        ElevatedButton,
+        AppStrings.sentOtP.tr(),
+      );
       expect(button, findsOneWidget);
 
       await tester.tap(button);
-      
+
       verify(
         mockForgotPasswordCubit.doEvent(
           argThat(isA<UpdateForgotPasswordInfoEvent>()),

@@ -39,11 +39,7 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([
-  SignInUseCase,
-  GoogleSignInUseCase,
-  FacebookSignInUseCase,
-])
+@GenerateMocks([SignInUseCase, GoogleSignInUseCase, FacebookSignInUseCase])
 void main() {
   late MockSignInUseCase mockUseCase;
   late MockGoogleSignInUseCase mockGoogleUseCase;
@@ -84,11 +80,7 @@ void main() {
     mockUseCase = MockSignInUseCase();
     mockGoogleUseCase = MockGoogleSignInUseCase();
     mockFacebookUseCase = MockFacebookSignInUseCase();
-    cubit = LoginCubit(
-      mockUseCase,
-      mockGoogleUseCase,
-      mockFacebookUseCase,
-    );
+    cubit = LoginCubit(mockUseCase, mockGoogleUseCase, mockFacebookUseCase);
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });

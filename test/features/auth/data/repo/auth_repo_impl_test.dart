@@ -35,7 +35,7 @@ import 'auth_repo_impl_test.mocks.dart';
 void main() {
   late MockAuthRemoteDataSourceContract mockAuthRemoteDataSource;
   late MockForgotPasswordRemoteDataSourceContract
-      mockForgotPasswordRemoteDataSource;
+  mockForgotPasswordRemoteDataSource;
   late MockSecureCacheHelper mockCache;
   late MockSocialAuthDataSource mockSocialAuthDataSource;
   late AuthRepoImpl repo;
@@ -214,9 +214,7 @@ void main() {
       await repo.signIn(request);
 
       // It seems it DOES call writeData with empty string based on failure message
-      verify(
-        mockCache.writeData(key: AppKeys.tokenKey, value: ''),
-      ).called(1);
+      verify(mockCache.writeData(key: AppKeys.tokenKey, value: '')).called(1);
     });
 
     test('skips the user cache when the response has no user', () async {
@@ -414,10 +412,7 @@ void main() {
           (_) async => SuccessBaseResponse<SignupResponse>(tSignupResponse),
         );
         when(
-          mockCache.writeData(
-            key: anyNamed('key'),
-            value: anyNamed('value'),
-          ),
+          mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
         ).thenAnswer((_) async => Future.value());
 
         // act
@@ -428,10 +423,7 @@ void main() {
         expect((result as SuccessBaseResponse).data, equals(tUserEntity));
         verify(mockAuthRemoteDataSource.signup(tSignupRequest)).called(1);
         verify(
-          mockCache.writeData(
-            key: AppKeys.tokenKey,
-            value: 'test_token_123',
-          ),
+          mockCache.writeData(key: AppKeys.tokenKey, value: 'test_token_123'),
         ).called(1);
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
         verifyNoMoreInteractions(mockCache);
@@ -459,10 +451,7 @@ void main() {
         expect((result as ErrorBaseResponse).errorMessage, isNotEmpty);
         verify(mockAuthRemoteDataSource.signup(tSignupRequest)).called(1);
         verifyNever(
-          mockCache.writeData(
-            key: anyNamed('key'),
-            value: anyNamed('value'),
-          ),
+          mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
         );
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
         verifyNoMoreInteractions(mockCache);
@@ -489,10 +478,7 @@ void main() {
         );
         verify(mockAuthRemoteDataSource.signup(tSignupRequest)).called(1);
         verifyNever(
-          mockCache.writeData(
-            key: anyNamed('key'),
-            value: anyNamed('value'),
-          ),
+          mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
         );
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
         verifyNoMoreInteractions(mockCache);
@@ -524,10 +510,7 @@ void main() {
           mockAuthRemoteDataSource.signup(any),
         ).thenAnswer((_) async => SuccessBaseResponse(responseWithToken));
         when(
-          mockCache.writeData(
-            key: anyNamed('key'),
-            value: anyNamed('value'),
-          ),
+          mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
         ).thenAnswer((_) async => Future.value());
 
         // act
@@ -551,10 +534,7 @@ void main() {
 
       // assert
       verifyNever(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       );
     });
 
@@ -574,10 +554,7 @@ void main() {
 
       // assert
       verifyNever(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       );
     });
 
@@ -587,10 +564,7 @@ void main() {
         mockAuthRemoteDataSource.signup(any),
       ).thenAnswer((_) async => SuccessBaseResponse(tSignupResponse));
       when(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       ).thenAnswer((_) async => Future.value());
 
       // act
@@ -617,17 +591,11 @@ void main() {
         mockAuthRemoteDataSource.signup(any),
       ).thenAnswer((_) async => SuccessBaseResponse(tSignupResponse));
       when(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       ).thenThrow(Exception('Cache write failed'));
 
       // act & assert
-      await expectLater(
-        repo.signup(tSignupRequest),
-        throwsA(isA<Exception>()),
-      );
+      await expectLater(repo.signup(tSignupRequest), throwsA(isA<Exception>()));
       verify(mockAuthRemoteDataSource.signup(tSignupRequest)).called(1);
       verify(
         mockCache.writeData(key: AppKeys.tokenKey, value: 'test_token_123'),
@@ -640,10 +608,7 @@ void main() {
         mockAuthRemoteDataSource.signup(any),
       ).thenAnswer((_) async => SuccessBaseResponse(tSignupResponse));
       when(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       ).thenAnswer((_) async => Future.value());
 
       // act
@@ -678,10 +643,7 @@ void main() {
         mockAuthRemoteDataSource.signup(any),
       ).thenAnswer((_) async => SuccessBaseResponse(responseWithNullToken));
       when(
-        mockCache.writeData(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
       ).thenAnswer((_) async => Future.value());
 
       // act
@@ -689,9 +651,7 @@ void main() {
 
       // assert
       expect(result, isA<SuccessBaseResponse<UserEntity>>());
-      verify(
-        mockCache.writeData(key: AppKeys.tokenKey, value: null),
-      ).called(1);
+      verify(mockCache.writeData(key: AppKeys.tokenKey, value: null)).called(1);
     });
   });
 
@@ -703,28 +663,45 @@ void main() {
       lastName: 'Doe',
     );
 
-    test('should return SuccessBaseResponse when DataSource returns data', () async {
-      when(mockSocialAuthDataSource.signInWithGoogle())
-          .thenAnswer((_) async => tSocialAccount);
+    test(
+      'should return SuccessBaseResponse when DataSource returns data',
+      () async {
+        when(
+          mockSocialAuthDataSource.signInWithGoogle(),
+        ).thenAnswer((_) async => tSocialAccount);
 
-      final result = await repo.signInWithGoogle();
+        final result = await repo.signInWithGoogle();
 
-      expect(result, isA<SuccessBaseResponse<SocialAccountEntity>>());
-      expect((result as SuccessBaseResponse<SocialAccountEntity>).data?.email, tSocialAccount.email);
-      verify(mockSocialAuthDataSource.signInWithGoogle()).called(1);
-    });
+        expect(result, isA<SuccessBaseResponse<SocialAccountEntity>>());
+        expect(
+          (result as SuccessBaseResponse<SocialAccountEntity>).data?.email,
+          tSocialAccount.email,
+        );
+        verify(mockSocialAuthDataSource.signInWithGoogle()).called(1);
+      },
+    );
 
-    test('should return ErrorBaseResponse when DataSource returns null (cancelled)', () async {
-      when(mockSocialAuthDataSource.signInWithGoogle()).thenAnswer((_) async => null);
+    test(
+      'should return ErrorBaseResponse when DataSource returns null (cancelled)',
+      () async {
+        when(
+          mockSocialAuthDataSource.signInWithGoogle(),
+        ).thenAnswer((_) async => null);
 
-      final result = await repo.signInWithGoogle();
+        final result = await repo.signInWithGoogle();
 
-      expect(result, isA<ErrorBaseResponse<SocialAccountEntity>>());
-      expect((result as ErrorBaseResponse).errorMessage, AppStrings.googleLoginCancelled);
-    });
+        expect(result, isA<ErrorBaseResponse<SocialAccountEntity>>());
+        expect(
+          (result as ErrorBaseResponse).errorMessage,
+          AppStrings.googleLoginCancelled,
+        );
+      },
+    );
 
     test('should return ErrorBaseResponse when DataSource throws', () async {
-      when(mockSocialAuthDataSource.signInWithGoogle()).thenThrow(Exception('error'));
+      when(
+        mockSocialAuthDataSource.signInWithGoogle(),
+      ).thenThrow(Exception('error'));
 
       final result = await repo.signInWithGoogle();
 
@@ -741,24 +718,39 @@ void main() {
       lastName: 'Doe',
     );
 
-    test('should return SuccessBaseResponse when DataSource returns data', () async {
-      when(mockSocialAuthDataSource.signInWithFacebook())
-          .thenAnswer((_) async => tSocialAccount);
+    test(
+      'should return SuccessBaseResponse when DataSource returns data',
+      () async {
+        when(
+          mockSocialAuthDataSource.signInWithFacebook(),
+        ).thenAnswer((_) async => tSocialAccount);
 
-      final result = await repo.signInWithFacebook();
+        final result = await repo.signInWithFacebook();
 
-      expect(result, isA<SuccessBaseResponse<SocialAccountEntity>>());
-      expect((result as SuccessBaseResponse<SocialAccountEntity>).data?.email, tSocialAccount.email);
-      verify(mockSocialAuthDataSource.signInWithFacebook()).called(1);
-    });
+        expect(result, isA<SuccessBaseResponse<SocialAccountEntity>>());
+        expect(
+          (result as SuccessBaseResponse<SocialAccountEntity>).data?.email,
+          tSocialAccount.email,
+        );
+        verify(mockSocialAuthDataSource.signInWithFacebook()).called(1);
+      },
+    );
 
-    test('should return ErrorBaseResponse when DataSource returns null (cancelled)', () async {
-      when(mockSocialAuthDataSource.signInWithFacebook()).thenAnswer((_) async => null);
+    test(
+      'should return ErrorBaseResponse when DataSource returns null (cancelled)',
+      () async {
+        when(
+          mockSocialAuthDataSource.signInWithFacebook(),
+        ).thenAnswer((_) async => null);
 
-      final result = await repo.signInWithFacebook();
+        final result = await repo.signInWithFacebook();
 
-      expect(result, isA<ErrorBaseResponse<SocialAccountEntity>>());
-      expect((result as ErrorBaseResponse).errorMessage, AppStrings.facebookLoginCancelled);
-    });
+        expect(result, isA<ErrorBaseResponse<SocialAccountEntity>>());
+        expect(
+          (result as ErrorBaseResponse).errorMessage,
+          AppStrings.facebookLoginCancelled,
+        );
+      },
+    );
   });
 }

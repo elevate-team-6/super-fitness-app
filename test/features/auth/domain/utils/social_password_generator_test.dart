@@ -39,7 +39,9 @@ void main() {
     });
 
     test('should handle emails with whitespace and different casing', () {
-      final pass1 = SocialPasswordGenerator.deriveFromEmail(' TEST@example.com ');
+      final pass1 = SocialPasswordGenerator.deriveFromEmail(
+        ' TEST@example.com ',
+      );
       final pass2 = SocialPasswordGenerator.deriveFromEmail('test@example.com');
 
       expect(pass1, equals(pass2));

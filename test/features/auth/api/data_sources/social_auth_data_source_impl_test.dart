@@ -32,7 +32,9 @@ void main() {
     );
 
     test('should return SocialAccountModel when successful', () async {
-      when(mockGoogleAuthService.signIn()).thenAnswer((_) async => tSocialAccount);
+      when(
+        mockGoogleAuthService.signIn(),
+      ).thenAnswer((_) async => tSocialAccount);
 
       final result = await dataSource.signInWithGoogle();
 
@@ -59,7 +61,9 @@ void main() {
     );
 
     test('should return SocialAccountModel when successful', () async {
-      when(mockFacebookAuthService.signIn()).thenAnswer((_) async => tSocialAccount);
+      when(
+        mockFacebookAuthService.signIn(),
+      ).thenAnswer((_) async => tSocialAccount);
 
       final result = await dataSource.signInWithFacebook();
 

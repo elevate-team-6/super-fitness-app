@@ -107,7 +107,9 @@ class ForgotPasswordCubit extends BaseCubit<ForgotPasswordState, BaseUiEvent> {
 
     switch (response) {
       case SuccessBaseResponse<ForgetPasswordEntity>():
-        emitUiEvent(DisplaySuccessEvent(AppStrings.verificationCodeIsCorrect.tr()));
+        emitUiEvent(
+          DisplaySuccessEvent(AppStrings.verificationCodeIsCorrect.tr()),
+        );
         emit(state.copyWith(currentStep: 2));
 
       case ErrorBaseResponse<ForgetPasswordEntity>():
@@ -129,7 +131,9 @@ class ForgotPasswordCubit extends BaseCubit<ForgotPasswordState, BaseUiEvent> {
 
     switch (response) {
       case SuccessBaseResponse<ForgetPasswordEntity>():
-        emitUiEvent(DisplaySuccessEvent(AppStrings.passwordResetSuccessfully.tr()));
+        emitUiEvent(
+          DisplaySuccessEvent(AppStrings.passwordResetSuccessfully.tr()),
+        );
 
         emitUiEvent(
           NavigateEvent(

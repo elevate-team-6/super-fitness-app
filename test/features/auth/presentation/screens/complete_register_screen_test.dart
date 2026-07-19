@@ -251,7 +251,10 @@ void main() {
       const state = RegisterState(currentStep: 3, weight: 75);
       await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.weightTitle.tr().toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppStrings.weightTitle.tr().toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text('75'), findsOneWidget);
     });
 
@@ -259,7 +262,10 @@ void main() {
       const state = RegisterState(currentStep: 4, height: 175);
       await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.heightTitle.tr().toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppStrings.heightTitle.tr().toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text('175'), findsOneWidget);
     });
 

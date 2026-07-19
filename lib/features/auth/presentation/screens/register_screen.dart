@@ -130,21 +130,22 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
                         _passwordController,
                       ]),
                       builder: (context, child) {
-                        final isValid = AppValidations.validateFirstName(
-                          _firstNameController.text,
-                        ) ==
-                            null &&
+                        final isValid =
+                            AppValidations.validateFirstName(
+                                  _firstNameController.text,
+                                ) ==
+                                null &&
                             AppValidations.validateLastName(
-                              _lastNameController.text,
-                            ) ==
+                                  _lastNameController.text,
+                                ) ==
                                 null &&
                             AppValidations.validateEmail(
-                              _emailController.text,
-                            ) ==
+                                  _emailController.text,
+                                ) ==
                                 null &&
                             AppValidations.validatePassword(
-                              _passwordController.text,
-                            ) ==
+                                  _passwordController.text,
+                                ) ==
                                 null;
 
                         return ElevatedButton(
@@ -159,9 +160,9 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
                     ),
                     SizedBox(height: 24.h),
                     SocialLoginButtons(
-                      onGoogleTap: () => context
-                          .read<RegisterCubit>()
-                          .doEvent(const GoogleLoginEvent()),
+                      onGoogleTap: () => context.read<RegisterCubit>().doEvent(
+                        const GoogleLoginEvent(),
+                      ),
                       onFacebookTap: () => context
                           .read<RegisterCubit>()
                           .doEvent(const FacebookLoginEvent()),
@@ -207,8 +208,6 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
         password: _passwordController.text,
       ),
     );
-    context.read<RegisterCubit>().doEvent(
-      NextStepEvent(),
-    );
+    context.read<RegisterCubit>().doEvent(NextStepEvent());
   }
 }

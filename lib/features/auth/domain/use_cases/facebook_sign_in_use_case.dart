@@ -19,14 +19,12 @@ class FacebookSignInUseCase {
     switch (result) {
       case SuccessBaseResponse<SocialAccountEntity>():
         final socialAccount = result.data!;
-        final password =
-            SocialPasswordGenerator.deriveFromEmail(socialAccount.email);
+        final password = SocialPasswordGenerator.deriveFromEmail(
+          socialAccount.email,
+        );
 
         final loginResult = await _repo.signIn(
-          SignInRequestModel(
-            email: socialAccount.email,
-            password: password,
-          ),
+          SignInRequestModel(email: socialAccount.email, password: password),
         );
 
         switch (loginResult) {

@@ -18,11 +18,7 @@ import 'package:super_fitness/features/auth/presentation/view_model/login_view_m
 
 import 'login_cubit_test.mocks.dart';
 
-@GenerateMocks([
-  SignInUseCase,
-  GoogleSignInUseCase,
-  FacebookSignInUseCase,
-])
+@GenerateMocks([SignInUseCase, GoogleSignInUseCase, FacebookSignInUseCase])
 void main() {
   late MockSignInUseCase mockUseCase;
   late MockGoogleSignInUseCase mockGoogleUseCase;
@@ -55,11 +51,7 @@ void main() {
     mockUseCase = MockSignInUseCase();
     mockGoogleUseCase = MockGoogleSignInUseCase();
     mockFacebookUseCase = MockFacebookSignInUseCase();
-    cubit = LoginCubit(
-      mockUseCase,
-      mockGoogleUseCase,
-      mockFacebookUseCase,
-    );
+    cubit = LoginCubit(mockUseCase, mockGoogleUseCase, mockFacebookUseCase);
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
     provideDummy<BaseResponse<SocialSignupEntity>>(ErrorBaseResponse('dummy'));
@@ -191,14 +183,18 @@ void main() {
 
   group('GoogleLoginEvent', () {
     test('navigates to mainLayout on existing user success', () async {
-      when(mockGoogleUseCase()).thenAnswer(
-        (_) async => SuccessBaseResponse<SignInEntity>(fakeEntity),
-      );
+      when(
+        mockGoogleUseCase(),
+      ).thenAnswer((_) async => SuccessBaseResponse<SignInEntity>(fakeEntity));
 
       final expectation = expectLater(
         cubit.eventStream,
         emitsThrough(
-          isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.mainLayout),
+          isA<NavigateEvent>().having(
+            (e) => e.routeName,
+            'routeName',
+            AppRoutes.mainLayout,
+          ),
         ),
       );
 
@@ -220,7 +216,11 @@ void main() {
       final expectation = expectLater(
         cubit.eventStream,
         emitsThrough(
-          isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.completeRegister),
+          isA<NavigateEvent>().having(
+            (e) => e.routeName,
+            'routeName',
+            AppRoutes.completeRegister,
+          ),
         ),
       );
 
@@ -229,9 +229,9 @@ void main() {
     });
 
     test('emits error on failure', () async {
-      when(mockGoogleUseCase()).thenAnswer(
-        (_) async => ErrorBaseResponse<dynamic>('failed'),
-      );
+      when(
+        mockGoogleUseCase(),
+      ).thenAnswer((_) async => ErrorBaseResponse<dynamic>('failed'));
 
       final expectation = expectLater(
         cubit.eventStream,
@@ -245,14 +245,18 @@ void main() {
 
   group('FacebookLoginEvent', () {
     test('navigates to mainLayout on existing user success', () async {
-      when(mockFacebookUseCase()).thenAnswer(
-        (_) async => SuccessBaseResponse<SignInEntity>(fakeEntity),
-      );
+      when(
+        mockFacebookUseCase(),
+      ).thenAnswer((_) async => SuccessBaseResponse<SignInEntity>(fakeEntity));
 
       final expectation = expectLater(
         cubit.eventStream,
         emitsThrough(
-          isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.mainLayout),
+          isA<NavigateEvent>().having(
+            (e) => e.routeName,
+            'routeName',
+            AppRoutes.mainLayout,
+          ),
         ),
       );
 

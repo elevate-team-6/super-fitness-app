@@ -19,11 +19,7 @@ import 'package:super_fitness/features/auth/presentation/view_model/register_vie
 
 import 'register_cubit_test.mocks.dart';
 
-@GenerateMocks([
-  SignupUseCase,
-  GoogleSignInUseCase,
-  FacebookSignInUseCase,
-])
+@GenerateMocks([SignupUseCase, GoogleSignInUseCase, FacebookSignInUseCase])
 void main() {
   provideDummy<BaseResponse<UserEntity>>(
     const SuccessBaseResponse<UserEntity>(null),
@@ -663,7 +659,11 @@ void main() {
           expectLater(
             cubit.eventStream,
             emitsThrough(
-              isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.completeRegister),
+              isA<NavigateEvent>().having(
+                (e) => e.routeName,
+                'routeName',
+                AppRoutes.completeRegister,
+              ),
             ),
           );
         },

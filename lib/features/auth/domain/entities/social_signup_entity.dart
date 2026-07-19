@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Represents the data collected from a social provider that is required 
+/// Represents the data collected from a social provider that is required
 /// to pre-fill the registration process.
 class SocialSignupEntity extends Equatable {
   final String firstName;
