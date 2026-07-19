@@ -77,17 +77,16 @@ class OnboardingContent extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      SizedBox(
-                        width: 93,
-                        child: ElevatedButton(
-                          onPressed: onNext,
-                          child: Text(
-                            isLast
-                                ? AppStrings.doIt.tr()
-                                : AppStrings.next.tr(),
-                            style: AppTextStyles.white16500.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(85.w, 40.h),
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        ),
+                        onPressed: onNext,
+                        child: Text(
+                          isLast ? AppStrings.doIt.tr() : AppStrings.next.tr(),
+                          style: AppTextStyles.white16500.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

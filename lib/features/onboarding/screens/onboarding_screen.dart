@@ -5,6 +5,7 @@ import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/features/onboarding/models/onboarding_model.dart';
+import 'package:super_fitness/features/onboarding/widgets/language_switch_widget.dart';
 import 'package:super_fitness/features/onboarding/widgets/onboarding_content.dart';
 import 'package:super_fitness/features/onboarding/widgets/onboarding_skip_button.dart';
 
@@ -73,11 +74,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         backgroundImage: AppImages.onboardingBackground,
         body: Column(
           children: [
-            // Skip Button
-            OnboardingSkipButton(
-              pageController: _pageController,
-              currentIndex: _currentIndex,
-              itemCount: _onboardingData.length,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const LanguageSwitchWidget(),
+                // Skip Button
+                OnboardingSkipButton(
+                  pageController: _pageController,
+                  currentIndex: _currentIndex,
+                  itemCount: _onboardingData.length,
+                ),
+              ],
             ),
 
             // Images PageView
