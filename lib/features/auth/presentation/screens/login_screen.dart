@@ -15,6 +15,7 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
+import 'package:super_fitness/core/widgets/custom_snack_bar.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
@@ -161,6 +162,9 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
                         onFacebookTap: () => context
                             .read<LoginCubit>()
                             .doIntent(const FacebookLoginEvent()),
+                        onAppleTap: ()=> CustomSnackBar.showSuccessMessage(
+                          AppStrings.appleSignInIsComingSoon.tr()
+                        ),
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

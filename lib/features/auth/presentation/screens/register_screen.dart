@@ -14,6 +14,7 @@ import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/core/widgets/custom_text_field.dart';
 
+import '../../../../core/widgets/custom_snack_bar.dart';
 import '../view_model/register_view_model/register_cubit.dart';
 import '../view_model/register_view_model/register_event.dart';
 import '../widgets/social_login_buttons.dart';
@@ -166,6 +167,9 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
                       onFacebookTap: () => context
                           .read<RegisterCubit>()
                           .doEvent(const FacebookLoginEvent()),
+                      onAppleTap: ()=> CustomSnackBar.showSuccessMessage(
+                          AppStrings.appleSignInIsComingSoon.tr()
+                      ),
                     ),
                     SizedBox(height: 24.h),
                     Row(
