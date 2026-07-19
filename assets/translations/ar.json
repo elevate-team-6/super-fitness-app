@@ -67,6 +67,8 @@
   "back": "رجوع",
   "next": "التالي",
   "hey_there": "أهلاً بك",
+  "google_login_cancelled": "تم إلغاء تسجيل الدخول بجوجل",
+  "facebook_login_cancelled": "تم إلغاء تسجيل الدخول بفيسبوك",
   "welcome_back": "مرحباً بعودتك",
   "forget_password?": "نسيت كلمة المرور؟",
   "dont_have_account": "ليس لديك حساب؟",

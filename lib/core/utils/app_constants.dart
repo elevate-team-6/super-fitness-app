@@ -5,4 +5,6 @@ abstract class AppConstants {
 
   // api images base url
   static const String imageBaseUrl = 'https://flower.elevateegy.com/uploads/';
+  static const String googleServerClientId =
+      '448039353489-bkp3ljjv378kqh8mgv3he22lcjtj08bp.apps.googleusercontent.com';
 }

@@ -67,6 +67,8 @@
   "back": "Back",
   "next": "Next",
   "hey_there": "Hey There",
+  "google_login_cancelled": "Google login was cancelled",
+  "facebook_login_cancelled": "Facebook login was cancelled",
   "welcome_back": "WELCOME BACK",
   "dont_have_account": "Don't Have An Account Yet ?",
   "login_success": "Logged in successfully",
