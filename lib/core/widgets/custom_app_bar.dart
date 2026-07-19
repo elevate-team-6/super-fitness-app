@@ -44,6 +44,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       AppIcons.back,
                       width: 12.w,
                       height: 12.w,
+                      matchTextDirection: true,
                     ),
                   ),
                 ),
