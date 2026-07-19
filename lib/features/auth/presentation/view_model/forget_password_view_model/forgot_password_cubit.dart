@@ -90,7 +90,7 @@ class ForgotPasswordCubit extends BaseCubit<ForgotPasswordState, BaseUiEvent> {
         _startResendTimer();
 
       case ErrorBaseResponse<ForgetPasswordEntity>():
-        emitUiEvent(DisplayErrorEvent(response.errorMessage));
+        emitUiEvent(DisplayErrorEvent(response.errorMessage.tr()));
     }
   }
 
@@ -111,7 +111,7 @@ class ForgotPasswordCubit extends BaseCubit<ForgotPasswordState, BaseUiEvent> {
         emit(state.copyWith(currentStep: 2));
 
       case ErrorBaseResponse<ForgetPasswordEntity>():
-        emitUiEvent(DisplayErrorEvent(response.errorMessage));
+        emitUiEvent(DisplayErrorEvent(response.errorMessage.tr()));
     }
   }
 
@@ -141,7 +141,7 @@ class ForgotPasswordCubit extends BaseCubit<ForgotPasswordState, BaseUiEvent> {
         await close();
 
       case ErrorBaseResponse<ForgetPasswordEntity>():
-        emitUiEvent(DisplayErrorEvent(response.errorMessage));
+        emitUiEvent(DisplayErrorEvent(response.errorMessage.tr()));
     }
   }
 
