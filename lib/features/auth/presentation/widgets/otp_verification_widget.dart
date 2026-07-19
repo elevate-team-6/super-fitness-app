@@ -96,7 +96,7 @@ class _OtpVerificationWidgetState extends State<OtpVerificationWidget> {
                     height: 22,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text(AppStrings.confirm),
+                : Text(AppStrings.confirm.tr()),
           ),
         ),
 
