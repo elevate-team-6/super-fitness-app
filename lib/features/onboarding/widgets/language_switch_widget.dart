@@ -11,7 +11,19 @@ class LanguageSwitchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.locale.languageCode == AppConstants.arabicCode;
+    // Check if EasyLocalization is available (useful for tests and avoiding crashes)
+    Locale? currentLocale;
+    try {
+      currentLocale = context.locale;
+    } catch (e) {
+      currentLocale = null;
+    }
+
+    if (currentLocale == null) {
+      return const SizedBox.shrink();
+    }
+
+    final isArabic = currentLocale.languageCode == AppConstants.arabicCode;
 
     return GestureDetector(
       onTap: () {
@@ -29,7 +41,7 @@ class LanguageSwitchWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(50.r),
         ),
         child: Text(
-          context.locale.languageCode.toUpperCase(),
+          currentLocale.languageCode.toUpperCase(),
           style: AppTextStyles.primary20500.copyWith(
             fontWeight: FontWeight.bold,
           ),
