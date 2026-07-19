@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../../config/base_cubit/base_cubit.dart';
@@ -7,7 +8,11 @@ import '../../../../../config/base_ui_event/base_ui_event.dart';
 import '../../../../../core/utils/app_routes.dart';
 import '../../../../../core/utils/app_strings.dart';
 import '../../../data/models/request/signup_request.dart';
+import '../../../domain/entities/social_signup_entity.dart';
 import '../../../domain/entities/user_entity.dart';
+import '../../../domain/entities/sign_in_entity.dart';
+import '../../../domain/use_cases/facebook_sign_in_use_case.dart';
+import '../../../domain/use_cases/google_sign_in_use_case.dart';
 import '../../../domain/use_cases/signup_use_case.dart';
 import 'register_event.dart';
 import 'register_state.dart';
@@ -15,11 +20,19 @@ import 'register_state.dart';
 @injectable
 class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
   final SignupUseCase _signupUseCase;
+  final GoogleSignInUseCase _googleSignInUseCase;
+  final FacebookSignInUseCase _facebookSignInUseCase;
 
-  RegisterCubit(this._signupUseCase) : super(const RegisterState());
+  RegisterCubit(
+    this._signupUseCase,
+    this._googleSignInUseCase,
+    this._facebookSignInUseCase,
+  ) : super(const RegisterState());
 
   void doEvent(RegisterEvent event) {
     switch (event) {
+      case InitializeFromSocialEvent():
+        _initializeFromSocial(event);
       case UpdateAccountInfoEvent():
         _updateAccountInfo(event);
       case SelectGenderEvent():
@@ -40,6 +53,10 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
         _onPreviousStep();
       case SubmitSignupEvent():
         _onSubmit();
+      case GoogleLoginEvent():
+        _signInWithGoogle();
+      case FacebookLoginEvent():
+        _signInWithFacebook();
     }
   }
 
@@ -50,6 +67,18 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
         lastName: event.lastName,
         email: event.email,
         password: event.password,
+      ),
+    );
+  }
+
+  void _initializeFromSocial(InitializeFromSocialEvent event) {
+    emit(
+      state.copyWith(
+        firstName: event.socialData.firstName,
+        lastName: event.socialData.lastName,
+        email: event.socialData.email,
+        password: event.socialData.password,
+        currentStep: 1, // Skip the first screen (Account Info)
       ),
     );
   }
@@ -85,7 +114,7 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
           NavigateEvent(
             AppRoutes.completeRegister,
             navigationType: NavigationType.push,
-            arguments: this,
+            arguments: CompleteRegisterArgs(cubit: this),
           ),
         );
       }
@@ -139,7 +168,7 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
     switch (result) {
       case SuccessBaseResponse<UserEntity>():
         emit(state.copyWith(signupStatus: BaseState(data: result.data)));
-        emitUiEvent(DisplaySuccessEvent(AppStrings.registerSuccess));
+        emitUiEvent(DisplaySuccessEvent(AppStrings.registerSuccess.tr()));
         emitUiEvent(
           NavigateEvent(
             AppRoutes.mainLayout,
@@ -150,10 +179,49 @@ class RegisterCubit extends BaseCubit<RegisterState, BaseUiEvent> {
       case ErrorBaseResponse<UserEntity>():
         emit(
           state.copyWith(
-            signupStatus: BaseState(errorMessage: result.errorMessage),
+            signupStatus: BaseState(errorMessage: result.errorMessage.tr()),
           ),
         );
-        emitUiEvent(DisplayErrorEvent(result.errorMessage));
+        emitUiEvent(DisplayErrorEvent(result.errorMessage.tr()));
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    emitUiEvent(ShowLoadingEvent());
+    final result = await _googleSignInUseCase();
+    emitUiEvent(HideLoadingEvent());
+    _handleSocialResult(result);
+  }
+
+  Future<void> _signInWithFacebook() async {
+    emitUiEvent(ShowLoadingEvent());
+    final result = await _facebookSignInUseCase();
+    emitUiEvent(HideLoadingEvent());
+    _handleSocialResult(result);
+  }
+
+  void _handleSocialResult(BaseResponse<dynamic> result) {
+    switch (result) {
+      case SuccessBaseResponse<SignInEntity>():
+        emitUiEvent(DisplaySuccessEvent(AppStrings.loginSuccess.tr()));
+        emitUiEvent(
+          NavigateEvent(
+            AppRoutes.mainLayout,
+            navigationType: NavigationType.pushAndRemoveUntil,
+          ),
+        );
+      case SuccessBaseResponse<SocialSignupEntity>():
+        _initializeFromSocial(InitializeFromSocialEvent(result.data!));
+        emitUiEvent(
+          NavigateEvent(
+            AppRoutes.completeRegister,
+            arguments: CompleteRegisterArgs(cubit: this),
+          ),
+        );
+      case ErrorBaseResponse():
+        emitUiEvent(DisplayErrorEvent(result.errorMessage.tr()));
+      case SuccessBaseResponse():
+        break;
     }
   }
 }

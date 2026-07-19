@@ -4,6 +4,7 @@ import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/data_sources/forget_password_remote_data_source_contract.dart';
+import 'package:super_fitness/features/auth/data/data_sources/social_auth_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/models/request/forgot_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/reset_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
@@ -14,6 +15,7 @@ import 'package:super_fitness/features/auth/data/models/response/sign_in_respons
 import 'package:super_fitness/features/auth/data/models/response/verify_reset_code_response.dart';
 import 'package:super_fitness/features/auth/domain/entities/forget_password_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
+import 'package:super_fitness/features/auth/domain/entities/social_account_entity.dart';
 import 'package:super_fitness/features/auth/domain/repo/auth_repo_contract.dart';
 
 import '../../../../core/utils/app_strings.dart';
@@ -29,12 +31,15 @@ class AuthRepoImpl implements AuthRepoContract {
 
   final ForgotPasswordRemoteDataSourceContract? _forgotPasswordMockDataSource;
 
+  final SocialAuthDataSource _socialAuthDataSource;
+
   final SecureCacheHelper _secureCacheHelper;
 
   AuthRepoImpl(
     this._authRemoteDataSource,
     this._forgotPasswordRemoteDataSource,
-    this._secureCacheHelper, [
+    this._secureCacheHelper,
+    this._socialAuthDataSource, [
     @Named('mock') this._forgotPasswordMockDataSource,
   ]);
 
@@ -135,6 +140,32 @@ class AuthRepoImpl implements AuthRepoContract {
 
       case ErrorBaseResponse<ResetPasswordResponse>():
         return ErrorBaseResponse(response.errorMessage);
+    }
+  }
+
+  @override
+  Future<BaseResponse<SocialAccountEntity>> signInWithGoogle() async {
+    try {
+      final model = await _socialAuthDataSource.signInWithGoogle();
+      if (model == null) {
+        return ErrorBaseResponse(AppStrings.googleLoginCancelled);
+      }
+      return SuccessBaseResponse(model.toEntity());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
+    }
+  }
+
+  @override
+  Future<BaseResponse<SocialAccountEntity>> signInWithFacebook() async {
+    try {
+      final model = await _socialAuthDataSource.signInWithFacebook();
+      if (model == null) {
+        return ErrorBaseResponse(AppStrings.facebookLoginCancelled);
+      }
+      return SuccessBaseResponse(model.toEntity());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
   }
 }

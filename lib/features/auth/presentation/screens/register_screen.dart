@@ -158,7 +158,14 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
                       ),
                     ),
                     SizedBox(height: 24.h),
-                    SocialLoginButtons(onAppleTap: () {}, onGoogleTap: () {}),
+                    SocialLoginButtons(
+                      onGoogleTap: () => context
+                          .read<RegisterCubit>()
+                          .doEvent(const GoogleLoginEvent()),
+                      onFacebookTap: () => context
+                          .read<RegisterCubit>()
+                          .doEvent(const FacebookLoginEvent()),
+                    ),
                     SizedBox(height: 24.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

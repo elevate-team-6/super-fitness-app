@@ -68,5 +68,25 @@
 		</array>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>fb1475554801282574</string>
+				</array>
+			</dict>
+		</array>
+		<key>FacebookAppID</key>
+		<string>1475554801282574</string>
+		<key>FacebookClientToken</key>
+	<string>53df1c81d36ef38295ae408e7a81f102</string>
+		<key>FacebookDisplayName</key>
+		<string>Super Fitness</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>fbapi</string>
+			<string>fb-messenger-share-api</string>
+		</array>
 	</dict>
 </plist>

@@ -1,5 +1,12 @@
+import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
+
 sealed class RegisterEvent {
   const RegisterEvent();
+}
+
+class InitializeFromSocialEvent extends RegisterEvent {
+  final SocialSignupEntity socialData;
+  const InitializeFromSocialEvent(this.socialData);
 }
 
 class UpdateAccountInfoEvent extends RegisterEvent {
@@ -55,4 +62,12 @@ class PreviousStepEvent extends RegisterEvent {
 
 class SubmitSignupEvent extends RegisterEvent {
   const SubmitSignupEvent();
+}
+
+class GoogleLoginEvent extends RegisterEvent {
+  const GoogleLoginEvent();
+}
+
+class FacebookLoginEvent extends RegisterEvent {
+  const FacebookLoginEvent();
 }

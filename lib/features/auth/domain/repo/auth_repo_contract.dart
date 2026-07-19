@@ -2,6 +2,7 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/domain/entities/forget_password_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
+import 'package:super_fitness/features/auth/domain/entities/social_account_entity.dart';
 import '../../data/models/request/signup_request.dart';
 
 import '../entities/user_entity.dart';
@@ -23,4 +24,8 @@ abstract interface class AuthRepoContract {
     required String email,
     required String newPassword,
   });
+
+  Future<BaseResponse<SocialAccountEntity>> signInWithGoogle();
+
+  Future<BaseResponse<SocialAccountEntity>> signInWithFacebook();
 }
