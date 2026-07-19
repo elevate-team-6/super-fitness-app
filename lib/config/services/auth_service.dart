@@ -7,7 +7,7 @@ class AuthService {
     final secureCacheHelper = getIt<SecureCacheHelper>();
     final token = await secureCacheHelper.readData(key: AppKeys.tokenKey);
 
-    return token != null && token.isNotEmpty && false;
+    return token != null && token.isNotEmpty;
   }
 
   static Future<bool> isOnboardingCompleted() async {
