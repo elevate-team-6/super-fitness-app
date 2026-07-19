@@ -99,6 +99,12 @@ void main() {
           currentStep: 1,
           forgotPasswordState: BaseState(isLoading: false),
         ),
+        const ForgotPasswordState(
+          email: 'test@test.com',
+          currentStep: 1,
+          resendTimer: 30,
+          forgotPasswordState: BaseState(isLoading: false),
+        ),
       ],
     );
 

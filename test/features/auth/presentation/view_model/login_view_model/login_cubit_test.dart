@@ -8,15 +8,25 @@ import 'package:super_fitness/features/auth/data/models/request/sign_in_request_
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/auth/domain/use_cases/sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/google_sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/facebook_sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_state.dart';
 
 import 'login_cubit_test.mocks.dart';
 
-@GenerateMocks([SignInUseCase])
+@GenerateMocks([
+  SignInUseCase,
+  GoogleSignInUseCase,
+  FacebookSignInUseCase,
+])
 void main() {
   late MockSignInUseCase mockUseCase;
+  late MockGoogleSignInUseCase mockGoogleUseCase;
+  late MockFacebookSignInUseCase mockFacebookUseCase;
   late LoginCubit cubit;
 
   const request = SignInRequestModel(
@@ -43,9 +53,17 @@ void main() {
 
   setUp(() {
     mockUseCase = MockSignInUseCase();
-    cubit = LoginCubit(mockUseCase);
+    mockGoogleUseCase = MockGoogleSignInUseCase();
+    mockFacebookUseCase = MockFacebookSignInUseCase();
+    cubit = LoginCubit(
+      mockUseCase,
+      mockGoogleUseCase,
+      mockFacebookUseCase,
+    );
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
+    provideDummy<BaseResponse<SocialSignupEntity>>(ErrorBaseResponse('dummy'));
+    provideDummy<BaseResponse<dynamic>>(ErrorBaseResponse('dummy'));
   });
 
   tearDown(() async {
@@ -168,6 +186,78 @@ void main() {
 
       expect(events.whereType<NavigateEvent>(), isEmpty);
       expect(events.whereType<DisplayErrorEvent>(), hasLength(1));
+    });
+  });
+
+  group('GoogleLoginEvent', () {
+    test('navigates to mainLayout on existing user success', () async {
+      when(mockGoogleUseCase()).thenAnswer(
+        (_) async => SuccessBaseResponse<SignInEntity>(fakeEntity),
+      );
+
+      final expectation = expectLater(
+        cubit.eventStream,
+        emitsThrough(
+          isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.mainLayout),
+        ),
+      );
+
+      cubit.doIntent(const GoogleLoginEvent());
+      await expectation;
+    });
+
+    test('navigates to completeRegister on new user success', () async {
+      const socialData = SocialSignupEntity(
+        firstName: 'F',
+        lastName: 'L',
+        email: 'e@e.com',
+        password: 'p',
+      );
+      when(mockGoogleUseCase()).thenAnswer(
+        (_) async => const SuccessBaseResponse<SocialSignupEntity>(socialData),
+      );
+
+      final expectation = expectLater(
+        cubit.eventStream,
+        emitsThrough(
+          isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.completeRegister),
+        ),
+      );
+
+      cubit.doIntent(const GoogleLoginEvent());
+      await expectation;
+    });
+
+    test('emits error on failure', () async {
+      when(mockGoogleUseCase()).thenAnswer(
+        (_) async => ErrorBaseResponse<dynamic>('failed'),
+      );
+
+      final expectation = expectLater(
+        cubit.eventStream,
+        emitsThrough(isA<DisplayErrorEvent>()),
+      );
+
+      cubit.doIntent(const GoogleLoginEvent());
+      await expectation;
+    });
+  });
+
+  group('FacebookLoginEvent', () {
+    test('navigates to mainLayout on existing user success', () async {
+      when(mockFacebookUseCase()).thenAnswer(
+        (_) async => SuccessBaseResponse<SignInEntity>(fakeEntity),
+      );
+
+      final expectation = expectLater(
+        cubit.eventStream,
+        emitsThrough(
+          isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.mainLayout),
+        ),
+      );
+
+      cubit.doIntent(const FacebookLoginEvent());
+      await expectation;
     });
   });
 }

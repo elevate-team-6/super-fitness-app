@@ -19,6 +19,8 @@ import 'package:super_fitness/features/auth/data/models/request/sign_in_request_
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/auth/domain/use_cases/sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/google_sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/facebook_sign_in_use_case.dart';
 import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/widgets/login_form.dart';
@@ -37,9 +39,15 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([SignInUseCase])
+@GenerateMocks([
+  SignInUseCase,
+  GoogleSignInUseCase,
+  FacebookSignInUseCase,
+])
 void main() {
   late MockSignInUseCase mockUseCase;
+  late MockGoogleSignInUseCase mockGoogleUseCase;
+  late MockFacebookSignInUseCase mockFacebookUseCase;
   late LoginCubit cubit;
   late Map<String, Map<String, dynamic>> translations;
 
@@ -74,7 +82,13 @@ void main() {
 
   setUp(() {
     mockUseCase = MockSignInUseCase();
-    cubit = LoginCubit(mockUseCase);
+    mockGoogleUseCase = MockGoogleSignInUseCase();
+    mockFacebookUseCase = MockFacebookSignInUseCase();
+    cubit = LoginCubit(
+      mockUseCase,
+      mockGoogleUseCase,
+      mockFacebookUseCase,
+    );
 
     provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
   });
@@ -154,17 +168,17 @@ void main() {
       expect(loginButton(), findsOneWidget);
 
       expect(find.text(AppStrings.welcomeBack.tr()), findsOneWidget);
-      expect(find.text(AppStrings.forgetPassword.tr()), findsOneWidget);
+      expect(find.text(AppStrings.forgotYourPassword.tr()), findsOneWidget);
       expect(find.text(AppStrings.dontHaveAccount.tr()), findsOneWidget);
 
       // Email + password text fields.
       expect(find.byType(TextField), findsNWidgets(2));
     });
 
-    testWidgets('renders the three social buttons', (tester) async {
+    testWidgets('renders the social buttons', (tester) async {
       await pumpLoginScreen(tester);
 
-      expect(find.byType(SocialLoginButtons), findsNWidgets(3));
+      expect(find.byType(SocialLoginButtons), findsOneWidget);
     });
   });
 
@@ -389,7 +403,11 @@ void main() {
       // Re-render with the Arabic locale. A fresh cubit is used because the
       // event stream is single-subscription and the first screen already
       // listened to the shared one.
-      final arabicCubit = LoginCubit(mockUseCase);
+      final arabicCubit = LoginCubit(
+        mockUseCase,
+        mockGoogleUseCase,
+        mockFacebookUseCase,
+      );
       addTearDown(() async {
         if (!arabicCubit.isClosed) await arabicCubit.close();
       });

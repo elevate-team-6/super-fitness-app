@@ -1,17 +1,33 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/features/auth/presentation/screens/complete_register_screen.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_state.dart';
+
+class _InMemoryAssetLoader extends AssetLoader {
+  const _InMemoryAssetLoader(this._data);
+
+  final Map<String, Map<String, dynamic>> _data;
+
+  @override
+  Future<Map<String, dynamic>> load(String path, Locale locale) async =>
+      _data[locale.languageCode] ?? const {};
+}
 
 // Manual Mock for RegisterCubit using Mockito
 class MockRegisterCubit extends Mock implements RegisterCubit {
@@ -58,43 +74,89 @@ class MockRegisterCubit extends Mock implements RegisterCubit {
 
 void main() {
   late MockRegisterCubit mockRegisterCubit;
+  late Map<String, Map<String, dynamic>> translations;
+
+  const surface = Size(700, 1400);
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await EasyLocalization.ensureInitialized();
+
+    translations = {
+      AppConstants.englishCode:
+          json.decode(
+                await rootBundle.loadString(
+                  '${AppConstants.translationsPath}/${AppConstants.englishCode}.json',
+                ),
+              )
+              as Map<String, dynamic>,
+      AppConstants.arabicCode:
+          json.decode(
+                await rootBundle.loadString(
+                  '${AppConstants.translationsPath}/${AppConstants.arabicCode}.json',
+                ),
+              )
+              as Map<String, dynamic>,
+    };
+  });
 
   setUp(() {
     mockRegisterCubit = MockRegisterCubit();
   });
 
-  Widget createWidgetUnderTest(RegisterState state) {
+  Future<void> pumpCompleteRegisterScreen(
+    WidgetTester tester,
+    RegisterState state, {
+    Locale locale = const Locale('en'),
+  }) async {
     when(mockRegisterCubit.state).thenReturn(state);
     when(mockRegisterCubit.stream).thenAnswer((_) => const Stream.empty());
     when(mockRegisterCubit.eventStream).thenAnswer((_) => const Stream.empty());
 
-    return ScreenUtilInit(
-      designSize: const Size(1000, 2000),
-      builder: (_, _) => MaterialApp(
-        localizationsDelegates: const [
-          DefaultMaterialLocalizations.delegate,
-          DefaultWidgetsLocalizations.delegate,
-        ],
-        home: BlocProvider<RegisterCubit>.value(
-          value: mockRegisterCubit,
-          child: const CompleteRegisterScreen(),
+    tester.view.physicalSize = surface;
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      EasyLocalization(
+        key: ValueKey(locale),
+        supportedLocales: const [Locale('en'), Locale('ar')],
+        path: AppConstants.translationsPath,
+        fallbackLocale: const Locale('en'),
+        startLocale: locale,
+        assetLoader: _InMemoryAssetLoader(translations),
+        child: Builder(
+          builder: (context) => ScreenUtilInit(
+            designSize: surface,
+            builder: (_, _) => MaterialApp(
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              debugShowCheckedModeBanner: false,
+              home: BlocProvider<RegisterCubit>.value(
+                value: mockRegisterCubit,
+                child: const CompleteRegisterScreen(),
+              ),
+            ),
+          ),
         ),
       ),
     );
+    await tester.pumpAndSettle();
   }
 
   group('CompleteRegisterScreen Professional Tests (Mockito)', () {
     testWidgets('Step 1: Gender Selection - Interaction', (tester) async {
       const state = RegisterState(currentStep: 1, gender: '');
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(
-        find.text(AppStrings.tellUsAboutYourself.toUpperCase()),
+        find.text(AppStrings.tellUsAboutYourself.tr().toUpperCase()),
         findsOneWidget,
       );
 
-      final maleFinder = find.text(AppStrings.male);
+      final maleFinder = find.text(AppStrings.male.tr());
       expect(maleFinder, findsOneWidget);
 
       await tester.tap(maleFinder);
@@ -106,19 +168,17 @@ void main() {
 
     testWidgets('Step 2: Age Selection Display', (tester) async {
       const state = RegisterState(currentStep: 2, age: 30);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.ageTitle.toUpperCase()), findsOneWidget);
+      expect(find.text(AppStrings.ageTitle.tr().toUpperCase()), findsOneWidget);
       expect(find.text('30'), findsOneWidget);
     });
 
     testWidgets('Step 5: Goal Selection Interaction', (tester) async {
       const state = RegisterState(currentStep: 5, goal: '');
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      final goalOption = find.text(AppStrings.gainWeight);
+      final goalOption = find.text(AppStrings.gainWeight.tr());
       expect(goalOption, findsOneWidget);
 
       await tester.tap(goalOption, warnIfMissed: false);
@@ -129,12 +189,11 @@ void main() {
 
     testWidgets('Step 6: Activity Level Submission', (tester) async {
       const state = RegisterState(currentStep: 6, activityLevel: 'Active');
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.done), findsOneWidget);
+      expect(find.text(AppStrings.done.tr()), findsOneWidget);
 
-      await tester.tap(find.text(AppStrings.done), warnIfMissed: false);
+      await tester.tap(find.text(AppStrings.done.tr()), warnIfMissed: false);
       verify(
         mockRegisterCubit.doEvent(argThat(isA<SubmitSignupEvent>())),
       ).called(1);
@@ -144,8 +203,7 @@ void main() {
       tester,
     ) async {
       const state = RegisterState(currentStep: 2);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       final backButton = find.descendant(
         of: find.byType(CustomAppBar),
@@ -160,8 +218,7 @@ void main() {
 
     testWidgets('Validation: Next button enabled state', (tester) async {
       const validState = RegisterState(currentStep: 3, weight: 70);
-      await tester.pumpWidget(createWidgetUnderTest(validState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, validState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -171,10 +228,9 @@ void main() {
 
     testWidgets('Step 1: Female Gender Selection', (tester) async {
       const state = RegisterState(currentStep: 1, gender: '');
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      final femaleFinder = find.text(AppStrings.female);
+      final femaleFinder = find.text(AppStrings.female.tr());
       expect(femaleFinder, findsOneWidget);
 
       await tester.tap(femaleFinder);
@@ -185,60 +241,54 @@ void main() {
 
     testWidgets('Step 2: Age Selection Interaction', (tester) async {
       const state = RegisterState(currentStep: 2, age: 25);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.ageTitle.toUpperCase()), findsOneWidget);
+      expect(find.text(AppStrings.ageTitle.tr().toUpperCase()), findsOneWidget);
       expect(find.text('25'), findsOneWidget);
     });
 
     testWidgets('Step 3: Weight Selection Display', (tester) async {
       const state = RegisterState(currentStep: 3, weight: 75);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.weightTitle.toUpperCase()), findsOneWidget);
+      expect(find.text(AppStrings.weightTitle.tr().toUpperCase()), findsOneWidget);
       expect(find.text('75'), findsOneWidget);
     });
 
     testWidgets('Step 4: Height Selection Display', (tester) async {
       const state = RegisterState(currentStep: 4, height: 175);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.heightTitle.toUpperCase()), findsOneWidget);
+      expect(find.text(AppStrings.heightTitle.tr().toUpperCase()), findsOneWidget);
       expect(find.text('175'), findsOneWidget);
     });
 
     testWidgets('Step 5: Different Goal Options', (tester) async {
       const state = RegisterState(currentStep: 5, goal: '');
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.loseWeight), findsOneWidget);
-      expect(find.text(AppStrings.getFitter), findsOneWidget);
-      expect(find.text(AppStrings.gainMoreFlexible), findsOneWidget);
-      expect(find.text(AppStrings.learnTheBasic), findsOneWidget);
+      expect(find.text(AppStrings.loseWeight.tr()), findsOneWidget);
+      expect(find.text(AppStrings.getFitter.tr()), findsOneWidget);
+      expect(find.text(AppStrings.gainMoreFlexible.tr()), findsOneWidget);
+      expect(find.text(AppStrings.learnTheBasic.tr()), findsOneWidget);
     });
 
     testWidgets('Step 6: Different Activity Level Options', (tester) async {
       const state = RegisterState(currentStep: 6, activityLevel: '');
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
-      expect(find.text(AppStrings.sedentary), findsOneWidget);
-      expect(find.text(AppStrings.lightlyActive), findsOneWidget);
-      expect(find.text(AppStrings.moderatelyActive), findsOneWidget);
-      expect(find.text(AppStrings.veryActive), findsOneWidget);
-      expect(find.text(AppStrings.extraActive), findsOneWidget);
+      expect(find.text(AppStrings.sedentary.tr()), findsOneWidget);
+      expect(find.text(AppStrings.lightlyActive.tr()), findsOneWidget);
+      expect(find.text(AppStrings.moderatelyActive.tr()), findsOneWidget);
+      expect(find.text(AppStrings.veryActive.tr()), findsOneWidget);
+      expect(find.text(AppStrings.extraActive.tr()), findsOneWidget);
     });
 
     testWidgets('Validation: Step 1 - Empty gender disables Next', (
       tester,
     ) async {
       const invalidState = RegisterState(currentStep: 1, gender: '');
-      await tester.pumpWidget(createWidgetUnderTest(invalidState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, invalidState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -248,8 +298,7 @@ void main() {
 
     testWidgets('Validation: Step 2 - Zero age disables Next', (tester) async {
       const invalidState = RegisterState(currentStep: 2, age: 0);
-      await tester.pumpWidget(createWidgetUnderTest(invalidState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, invalidState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -261,8 +310,7 @@ void main() {
       tester,
     ) async {
       const invalidState = RegisterState(currentStep: 3, weight: 0);
-      await tester.pumpWidget(createWidgetUnderTest(invalidState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, invalidState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -274,8 +322,7 @@ void main() {
       tester,
     ) async {
       const invalidState = RegisterState(currentStep: 4, height: 0);
-      await tester.pumpWidget(createWidgetUnderTest(invalidState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, invalidState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -287,8 +334,7 @@ void main() {
       tester,
     ) async {
       const invalidState = RegisterState(currentStep: 5, goal: '');
-      await tester.pumpWidget(createWidgetUnderTest(invalidState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, invalidState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -300,8 +346,7 @@ void main() {
       tester,
     ) async {
       const invalidState = RegisterState(currentStep: 6, activityLevel: '');
-      await tester.pumpWidget(createWidgetUnderTest(invalidState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, invalidState);
 
       final nextButton = tester.widget<ElevatedButton>(
         find.byType(ElevatedButton),
@@ -313,10 +358,9 @@ void main() {
       tester,
     ) async {
       const validState = RegisterState(currentStep: 1, gender: 'Male');
-      await tester.pumpWidget(createWidgetUnderTest(validState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, validState);
 
-      await tester.tap(find.text(AppStrings.next));
+      await tester.tap(find.text(AppStrings.next.tr()));
       verify(
         mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
       ).called(1);
@@ -326,10 +370,9 @@ void main() {
       tester,
     ) async {
       const validState = RegisterState(currentStep: 2, age: 25);
-      await tester.pumpWidget(createWidgetUnderTest(validState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, validState);
 
-      await tester.tap(find.text(AppStrings.next));
+      await tester.tap(find.text(AppStrings.next.tr()));
       verify(
         mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
       ).called(1);
@@ -339,10 +382,9 @@ void main() {
       tester,
     ) async {
       const validState = RegisterState(currentStep: 3, weight: 70);
-      await tester.pumpWidget(createWidgetUnderTest(validState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, validState);
 
-      await tester.tap(find.text(AppStrings.next));
+      await tester.tap(find.text(AppStrings.next.tr()));
       verify(
         mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
       ).called(1);
@@ -352,10 +394,9 @@ void main() {
       tester,
     ) async {
       const validState = RegisterState(currentStep: 4, height: 175);
-      await tester.pumpWidget(createWidgetUnderTest(validState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, validState);
 
-      await tester.tap(find.text(AppStrings.next));
+      await tester.tap(find.text(AppStrings.next.tr()));
       verify(
         mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
       ).called(1);
@@ -368,10 +409,9 @@ void main() {
         currentStep: 5,
         goal: AppStrings.loseWeight,
       );
-      await tester.pumpWidget(createWidgetUnderTest(validState));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, validState);
 
-      await tester.tap(find.text(AppStrings.next));
+      await tester.tap(find.text(AppStrings.next.tr()));
       verify(
         mockRegisterCubit.doEvent(argThat(isA<NextStepEvent>())),
       ).called(1);
@@ -381,8 +421,7 @@ void main() {
       tester,
     ) async {
       const state = RegisterState(currentStep: 1);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       final backButton = find.descendant(
         of: find.byType(CustomAppBar),
@@ -397,8 +436,7 @@ void main() {
 
     testWidgets('Boundary Values: Age minimum (16)', (tester) async {
       const state = RegisterState(currentStep: 2, age: 16);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(find.text('16'), findsOneWidget);
       final nextButton = tester.widget<ElevatedButton>(
@@ -409,8 +447,7 @@ void main() {
 
     testWidgets('Boundary Values: Age maximum (90)', (tester) async {
       const state = RegisterState(currentStep: 2, age: 90);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(find.text('90'), findsOneWidget);
       final nextButton = tester.widget<ElevatedButton>(
@@ -421,8 +458,7 @@ void main() {
 
     testWidgets('Boundary Values: Weight minimum (30)', (tester) async {
       const state = RegisterState(currentStep: 3, weight: 30);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(find.text('30'), findsOneWidget);
       final nextButton = tester.widget<ElevatedButton>(
@@ -433,8 +469,7 @@ void main() {
 
     testWidgets('Boundary Values: Weight maximum (250)', (tester) async {
       const state = RegisterState(currentStep: 3, weight: 250);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(find.text('250'), findsOneWidget);
       final nextButton = tester.widget<ElevatedButton>(
@@ -445,8 +480,7 @@ void main() {
 
     testWidgets('Boundary Values: Height minimum (100)', (tester) async {
       const state = RegisterState(currentStep: 4, height: 100);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(find.text('100'), findsOneWidget);
       final nextButton = tester.widget<ElevatedButton>(
@@ -457,8 +491,7 @@ void main() {
 
     testWidgets('Boundary Values: Height maximum (250)', (tester) async {
       const state = RegisterState(currentStep: 4, height: 250);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpCompleteRegisterScreen(tester, state);
 
       expect(find.text('250'), findsOneWidget);
       final nextButton = tester.widget<ElevatedButton>(

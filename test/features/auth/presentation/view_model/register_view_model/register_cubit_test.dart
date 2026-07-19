@@ -8,23 +8,44 @@ import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/features/auth/data/models/request/signup_request.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/auth/domain/use_cases/signup_use_case.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/google_sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/facebook_sign_in_use_case.dart';
+import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
+import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_state.dart';
 
 import 'register_cubit_test.mocks.dart';
 
-@GenerateMocks([SignupUseCase])
+@GenerateMocks([
+  SignupUseCase,
+  GoogleSignInUseCase,
+  FacebookSignInUseCase,
+])
 void main() {
   provideDummy<BaseResponse<UserEntity>>(
     const SuccessBaseResponse<UserEntity>(null),
   );
+  provideDummy<BaseResponse<dynamic>>(ErrorBaseResponse('dummy'));
+  provideDummy<BaseResponse<SignInEntity>>(ErrorBaseResponse('dummy'));
+  provideDummy<BaseResponse<SocialSignupEntity>>(ErrorBaseResponse('dummy'));
+
   late RegisterCubit cubit;
   late MockSignupUseCase mockSignupUseCase;
+  late MockGoogleSignInUseCase mockGoogleUseCase;
+  late MockFacebookSignInUseCase mockFacebookUseCase;
 
   setUp(() {
     mockSignupUseCase = MockSignupUseCase();
-    cubit = RegisterCubit(mockSignupUseCase);
+    mockGoogleUseCase = MockGoogleSignInUseCase();
+    mockFacebookUseCase = MockFacebookSignInUseCase();
+    cubit = RegisterCubit(
+      mockSignupUseCase,
+      mockGoogleUseCase,
+      mockFacebookUseCase,
+    );
   });
 
   tearDown(() {
@@ -81,6 +102,30 @@ void main() {
             lastName: 'Name',
             email: 'new@example.com',
             password: 'newpass',
+          ),
+        ],
+      );
+    });
+
+    group('InitializeFromSocialEvent', () {
+      final socialData = SocialSignupEntity(
+        firstName: 'Social',
+        lastName: 'User',
+        email: 'social@test.com',
+        password: 'deterministic_pass',
+      );
+
+      blocTest<RegisterCubit, RegisterState>(
+        'should update state and skip to step 1',
+        build: () => cubit,
+        act: (cubit) => cubit.doEvent(InitializeFromSocialEvent(socialData)),
+        expect: () => [
+          RegisterState(
+            firstName: 'Social',
+            lastName: 'User',
+            email: 'social@test.com',
+            password: 'deterministic_pass',
+            currentStep: 1,
           ),
         ],
       );
@@ -591,6 +636,37 @@ void main() {
             activityLevel: 'moderate',
           ),
         ],
+      );
+    });
+
+    group('Social Login Events', () {
+      blocTest<RegisterCubit, RegisterState>(
+        'GoogleLoginEvent should navigate to completeRegister for new user',
+        build: () => cubit,
+        act: (cubit) {
+          when(mockGoogleUseCase()).thenAnswer(
+            (_) async => const SuccessBaseResponse<SocialSignupEntity>(
+              SocialSignupEntity(
+                firstName: 'Social',
+                lastName: 'User',
+                email: 'social@test.com',
+                password: 'pass',
+              ),
+            ),
+          );
+          cubit.doEvent(const GoogleLoginEvent());
+        },
+        expect: () => [
+          isA<RegisterState>().having((s) => s.currentStep, 'currentStep', 1),
+        ],
+        verify: (cubit) {
+          expectLater(
+            cubit.eventStream,
+            emitsThrough(
+              isA<NavigateEvent>().having((e) => e.routeName, 'routeName', AppRoutes.completeRegister),
+            ),
+          );
+        },
       );
     });
   });
