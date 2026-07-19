@@ -1,0 +1,26 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build APK and upload to Firebase App Distribution"
+  lane :firebase_dist do
+    # Note: Building is now handled by Shorebird in the CI workflow
+    # to ensure the binary is correctly registered for OTA patches.
+
+    # 2. Upload to Firebase
+    # Requires 'firebase_app_distribution' plugin: fastlane add_plugin firebase_app_distribution
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID_ANDROID"],
+      firebase_cli_token: ENV["FIREBASE_TOKEN"],
+      groups: "testers",
+      release_notes: "Build ##{ENV['GITHUB_RUN_NUMBER']} - #{sh("git log -1 --pretty=%B")}",
+      apk_path: "../build/app/outputs/flutter-apk/app-release.apk"
+    )
+  rescue => e
+    UI.important("Distribution failed. Error: #{e.message}")
+  end
+
+  desc "Build and Release with Shorebird"
+  lane :shorebird_release do
+    sh("shorebird release android")
+  end
+end

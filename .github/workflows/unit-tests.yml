@@ -1,0 +1,41 @@
+name: Validate Unit Tests
+
+on:
+  pull_request:
+    types: [ opened, edited, synchronize, reopened ]
+
+
+# Cancel old runs if a new commit is pushed to the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐦 Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 📦 Install dependencies
+        run: flutter pub get
+
+      - name: 🏗️ Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: 🧪 Run unit tests
+        run: |
+          if [ -d "test" ]; then
+            flutter test
+          else
+            echo "No test directory found, skipping tests."
+          fi
