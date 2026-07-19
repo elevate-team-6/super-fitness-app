@@ -162,8 +162,8 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
                         onFacebookTap: () => context
                             .read<LoginCubit>()
                             .doIntent(const FacebookLoginEvent()),
-                        onAppleTap: ()=> CustomSnackBar.showSuccessMessage(
-                          AppStrings.appleSignInIsComingSoon.tr()
+                        onAppleTap: () => CustomSnackBar.showSuccessMessage(
+                          AppStrings.appleSignInIsComingSoon.tr(),
                         ),
                       ),
                       Row(

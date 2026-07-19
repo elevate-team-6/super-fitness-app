@@ -167,8 +167,8 @@ class _RegisterScreenState extends State<RegisterScreen> with UiEventHandler {
                       onFacebookTap: () => context
                           .read<RegisterCubit>()
                           .doEvent(const FacebookLoginEvent()),
-                      onAppleTap: ()=> CustomSnackBar.showSuccessMessage(
-                          AppStrings.appleSignInIsComingSoon.tr()
+                      onAppleTap: () => CustomSnackBar.showSuccessMessage(
+                        AppStrings.appleSignInIsComingSoon.tr(),
                       ),
                     ),
                     SizedBox(height: 24.h),
