@@ -11,23 +11,32 @@ import 'package:super_fitness/features/auth/data/models/response/reset_password_
 import 'package:super_fitness/features/auth/data/models/response/verify_reset_code_response.dart';
 
 @Injectable(as: ForgotPasswordRemoteDataSourceContract)
-class ForgotPasswordRemoteDataSourceImpl implements ForgotPasswordRemoteDataSourceContract {
+class ForgotPasswordRemoteDataSourceImpl
+    implements ForgotPasswordRemoteDataSourceContract {
   final AuthApiClient _apiClient;
 
   ForgotPasswordRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<BaseResponse<ForgetPasswordResponse>> forgotPassword(ForgetPasswordRequest request) {
+  Future<BaseResponse<ForgetPasswordResponse>> forgotPassword(
+    ForgetPasswordRequest request,
+  ) {
     return ErrorHandler.handleApiCall(() => _apiClient.forgotPassword(request));
   }
 
   @override
-  Future<BaseResponse<VerifyResetCodeResponse>> verifyResetCode(VerifyResetCodeRequest request) {
-    return ErrorHandler.handleApiCall(() => _apiClient.verifyResetCode(request));
+  Future<BaseResponse<VerifyResetCodeResponse>> verifyResetCode(
+    VerifyResetCodeRequest request,
+  ) {
+    return ErrorHandler.handleApiCall(
+      () => _apiClient.verifyResetCode(request),
+    );
   }
 
   @override
-  Future<BaseResponse<ResetPasswordResponse>> resetPassword(ResetPasswordRequest request) {
+  Future<BaseResponse<ResetPasswordResponse>> resetPassword(
+    ResetPasswordRequest request,
+  ) {
     return ErrorHandler.handleApiCall(() => _apiClient.resetPassword(request));
   }
 }

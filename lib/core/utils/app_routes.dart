@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
 import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
 import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
@@ -46,7 +48,16 @@ abstract class AppRoutes {
             ),
           );
         case completeRegister:
-          final cubit = settings.arguments as RegisterCubit;
+          final args = settings.arguments as CompleteRegisterArgs;
+          final RegisterCubit cubit;
+
+          if (args.socialData != null) {
+            cubit = getIt<RegisterCubit>();
+            cubit.doEvent(InitializeFromSocialEvent(args.socialData!));
+          } else {
+            cubit = args.cubit!;
+          }
+
           return MaterialPageRoute(
             builder: (_) => BlocProvider.value(
               value: cubit,
@@ -105,4 +116,11 @@ class ForgotPasswordArgs {
   final String email;
 
   ForgotPasswordArgs({required this.cubit, required this.email});
+}
+
+class CompleteRegisterArgs {
+  final RegisterCubit? cubit;
+  final SocialSignupEntity? socialData;
+
+  CompleteRegisterArgs({this.cubit, this.socialData});
 }

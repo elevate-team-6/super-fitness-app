@@ -1,17 +1,33 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+// ignore: depend_on_referenced_packages
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/forget_password_view_model/forgot_password_events.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/forget_password_view_model/forgot_password_state.dart';
+
+class _InMemoryAssetLoader extends AssetLoader {
+  const _InMemoryAssetLoader(this._data);
+
+  final Map<String, Map<String, dynamic>> _data;
+
+  @override
+  Future<Map<String, dynamic>> load(String path, Locale locale) async =>
+      _data[locale.languageCode] ?? const {};
+}
 
 // Manual Mock for ForgotPasswordCubit using Mockito
 class MockForgotPasswordCubit extends Mock implements ForgotPasswordCubit {
@@ -29,7 +45,8 @@ class MockForgotPasswordCubit extends Mock implements ForgotPasswordCubit {
       super.noSuchMethod(
             Invocation.getter(#stream),
             returnValue: const Stream<ForgotPasswordState>.empty(),
-            returnValueForMissingStub: const Stream<ForgotPasswordState>.empty(),
+            returnValueForMissingStub:
+                const Stream<ForgotPasswordState>.empty(),
           )
           as Stream<ForgotPasswordState>;
 
@@ -58,50 +75,101 @@ class MockForgotPasswordCubit extends Mock implements ForgotPasswordCubit {
 
 void main() {
   late MockForgotPasswordCubit mockForgotPasswordCubit;
+  late Map<String, Map<String, dynamic>> translations;
+
+  const surface = Size(700, 1400);
+
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
+    await EasyLocalization.ensureInitialized();
+
+    translations = {
+      AppConstants.englishCode:
+          json.decode(
+                await rootBundle.loadString(
+                  '${AppConstants.translationsPath}/${AppConstants.englishCode}.json',
+                ),
+              )
+              as Map<String, dynamic>,
+      AppConstants.arabicCode:
+          json.decode(
+                await rootBundle.loadString(
+                  '${AppConstants.translationsPath}/${AppConstants.arabicCode}.json',
+                ),
+              )
+              as Map<String, dynamic>,
+    };
+  });
 
   setUp(() {
     mockForgotPasswordCubit = MockForgotPasswordCubit();
   });
 
-  Widget createWidgetUnderTest(ForgotPasswordState state) {
+  Future<void> pumpForgotPasswordScreen(
+    WidgetTester tester,
+    ForgotPasswordState state, {
+    Locale locale = const Locale('en'),
+  }) async {
     when(mockForgotPasswordCubit.state).thenReturn(state);
-    when(mockForgotPasswordCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(mockForgotPasswordCubit.eventStream).thenAnswer(
-      (_) => const Stream.empty(),
-    );
+    when(
+      mockForgotPasswordCubit.stream,
+    ).thenAnswer((_) => const Stream.empty());
+    when(
+      mockForgotPasswordCubit.eventStream,
+    ).thenAnswer((_) => const Stream.empty());
 
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      builder: (_, _) => MaterialApp(
-        localizationsDelegates: const [
-          DefaultMaterialLocalizations.delegate,
-          DefaultWidgetsLocalizations.delegate,
-        ],
-        home: BlocProvider<ForgotPasswordCubit>.value(
-          value: mockForgotPasswordCubit,
-          child: const ForgotPasswordScreen(),
+    tester.view.physicalSize = surface;
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      EasyLocalization(
+        key: ValueKey(locale),
+        supportedLocales: const [Locale('en'), Locale('ar')],
+        path: AppConstants.translationsPath,
+        fallbackLocale: const Locale('en'),
+        startLocale: locale,
+        assetLoader: _InMemoryAssetLoader(translations),
+        child: Builder(
+          builder: (context) => ScreenUtilInit(
+            designSize: surface,
+            builder: (_, _) => MaterialApp(
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              debugShowCheckedModeBanner: false,
+              home: BlocProvider<ForgotPasswordCubit>.value(
+                value: mockForgotPasswordCubit,
+                child: const ForgotPasswordScreen(),
+              ),
+            ),
+          ),
         ),
       ),
     );
+    await tester.pumpAndSettle();
   }
 
   group('ForgotPasswordScreen Step-based Tests', () {
     testWidgets('Step 0: Email Entry - Interaction', (tester) async {
       const state = ForgotPasswordState(currentStep: 0);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpForgotPasswordScreen(tester, state);
 
-      expect(find.text(AppStrings.forgetPassword), findsWidgets);
-      expect(find.text(AppStrings.enterEmail), findsOneWidget);
+      expect(find.text(AppStrings.forgetPassword.tr()), findsWidgets);
+      expect(find.text(AppStrings.enterEmail.tr()), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'test@test.com');
       await tester.pump();
 
-      final button = find.widgetWithText(ElevatedButton, AppStrings.sentOtP);
+      final button = find.widgetWithText(
+        ElevatedButton,
+        AppStrings.sentOtP.tr(),
+      );
       expect(button, findsOneWidget);
 
       await tester.tap(button);
-      
+
       verify(
         mockForgotPasswordCubit.doEvent(
           argThat(isA<UpdateForgotPasswordInfoEvent>()),
@@ -114,20 +182,18 @@ void main() {
 
     testWidgets('Step 1: OTP Verification Display', (tester) async {
       const state = ForgotPasswordState(currentStep: 1);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpForgotPasswordScreen(tester, state);
 
-      expect(find.text(AppStrings.otpCode), findsOneWidget);
-      expect(find.text(AppStrings.enterOtp), findsOneWidget);
+      expect(find.text(AppStrings.otpCode.tr()), findsOneWidget);
+      expect(find.text(AppStrings.enterOtp.tr()), findsOneWidget);
     });
 
     testWidgets('Step 2: New Password Entry Display', (tester) async {
       const state = ForgotPasswordState(currentStep: 2);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpForgotPasswordScreen(tester, state);
 
-      expect(find.text(AppStrings.createNewPassword), findsOneWidget);
-      expect(find.text(AppStrings.passwordMoreCharacter), findsOneWidget);
+      expect(find.text(AppStrings.createNewPassword.tr()), findsOneWidget);
+      expect(find.text(AppStrings.passwordMoreCharacter.tr()), findsOneWidget);
       expect(find.byType(TextField), findsNWidgets(2));
     });
 
@@ -135,8 +201,7 @@ void main() {
       tester,
     ) async {
       const state = ForgotPasswordState(currentStep: 1);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpForgotPasswordScreen(tester, state);
 
       final backButton = find.descendant(
         of: find.byType(CustomAppBar),
@@ -153,8 +218,7 @@ void main() {
       tester,
     ) async {
       const state = ForgotPasswordState(currentStep: 0);
-      await tester.pumpWidget(createWidgetUnderTest(state));
-      await tester.pumpAndSettle();
+      await pumpForgotPasswordScreen(tester, state);
 
       await tester.enterText(find.byType(TextField), 'invalid-email');
       await tester.pump();

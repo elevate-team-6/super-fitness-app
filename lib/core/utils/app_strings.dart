@@ -108,6 +108,9 @@ abstract class AppStrings {
   static const String welcomeBack = 'welcome_back';
   static const String login = 'login';
   static const String orText = 'or';
+  static const String appleSignInIsComingSoon = 'apple_sign_in_is_coming_soon';
+  static const String googleLoginCancelled = 'google_login_cancelled';
+  static const String facebookLoginCancelled = 'facebook_login_cancelled';
   static const String dontHaveAccount = 'dont_have_account';
   static const String register = 'register';
   static const String explore = 'explore';

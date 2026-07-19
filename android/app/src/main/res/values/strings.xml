@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Replace YOUR_FACEBOOK_APP_ID with your actual ID -->
+    <string name="facebook_app_id">1475554801282574</string>
+    <string name="fb_login_protocol_scheme">fb1475554801282574</string>
+    <!-- Replace YOUR_FACEBOOK_CLIENT_TOKEN with your actual Token -->
+    <string name="facebook_client_token">53df1c81d36ef38295ae408e7a81f102</string>
+</resources>
