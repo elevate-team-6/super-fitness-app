@@ -39,10 +39,15 @@ jobs:
           bundle install
 
       - name: 🏗️ Run build_runner
-        run: dart run build_runner build --delete-conflicting-outputs
+        run: |
+          flutter pub get
+          dart run build_runner build --delete-conflicting-outputs
 
       - name: 🔑 Restore Firebase Configs
         run: |
+          # Create directories if they don't exist
+          mkdir -p android/app
+          mkdir -p lib
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > android/app/google-services.json
           echo "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 -d > lib/firebase_options.dart
 
