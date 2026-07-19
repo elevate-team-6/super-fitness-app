@@ -48,16 +48,20 @@ void main() {
     await EasyLocalization.ensureInitialized();
 
     translations = {
-      AppConstants.englishCode: json.decode(
-        await rootBundle.loadString(
-          '${AppConstants.translationsPath}/${AppConstants.englishCode}.json',
-        ),
-      ) as Map<String, dynamic>,
-      AppConstants.arabicCode: json.decode(
-        await rootBundle.loadString(
-          '${AppConstants.translationsPath}/${AppConstants.arabicCode}.json',
-        ),
-      ) as Map<String, dynamic>,
+      AppConstants.englishCode:
+          json.decode(
+                await rootBundle.loadString(
+                  '${AppConstants.translationsPath}/${AppConstants.englishCode}.json',
+                ),
+              )
+              as Map<String, dynamic>,
+      AppConstants.arabicCode:
+          json.decode(
+                await rootBundle.loadString(
+                  '${AppConstants.translationsPath}/${AppConstants.arabicCode}.json',
+                ),
+              )
+              as Map<String, dynamic>,
     };
   });
 
@@ -117,8 +121,10 @@ void main() {
     );
   }
 
-  Future<void> pumpOnboarding(WidgetTester tester,
-      {Locale locale = const Locale('en')}) async {
+  Future<void> pumpOnboarding(
+    WidgetTester tester, {
+    Locale locale = const Locale('en'),
+  }) async {
     tester.view.physicalSize = surfaceSize;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -158,7 +164,9 @@ void main() {
 
       expect(find.text(AppStrings.onboardingTitle2.tr()), findsOneWidget);
       expect(
-          find.text(AppStrings.back.tr()), findsOneWidget); // Back should appear
+        find.text(AppStrings.back.tr()),
+        findsOneWidget,
+      ); // Back should appear
       expect(find.text(AppStrings.next.tr()), findsOneWidget);
 
       // 2. Move to Third Page (Last Page)
@@ -170,7 +178,10 @@ void main() {
         find.text(AppStrings.doIt.tr()),
         findsOneWidget,
       ); // "Do it" should appear
-      expect(find.text(AppStrings.skip.tr()), findsNothing); // Skip should disappear
+      expect(
+        find.text(AppStrings.skip.tr()),
+        findsNothing,
+      ); // Skip should disappear
 
       // 3. Go Back to Second Page
       await tester.tap(find.text(AppStrings.back.tr()));
@@ -270,8 +281,9 @@ void main() {
       },
     );
 
-    testWidgets('Localization: Should switch language correctly',
-        (WidgetTester tester) async {
+    testWidgets('Localization: Should switch language correctly', (
+      WidgetTester tester,
+    ) async {
       // 1. Check English
       await pumpOnboarding(tester, locale: const Locale('en'));
       expect(find.text(translations['en']!['next']), findsOneWidget);
