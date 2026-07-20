@@ -159,4 +159,13 @@ abstract class AppStrings {
   static const String veryActive = 'veryActive';
   static const String extraActive = 'extraActive';
   static const String or = 'or';
+
+  // Food
+  static const String recommendationForYou = 'recommendationForYou';
+  static const String breakfast = 'breakfast';
+  static const String lunch = 'lunch';
+  static const String dinner = 'dinner';
+  static const String noMealsFound = 'noMealsFound';
+  static const String seeAll = 'seeAll';
+  static const String foodRecommendation = 'foodRecommendation';
 }

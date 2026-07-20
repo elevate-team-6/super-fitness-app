@@ -18,4 +18,15 @@ abstract class ApiParameters {
   static const String goal = 'goal';
   static const String photo = 'photo';
   static const String createdAt = 'createdAt';
+
+  // Meals (TheMealDB)
+  static const String meals = 'meals';
+  static const String idMeal = 'idMeal';
+  static const String strMeal = 'strMeal';
+  static const String strMealThumb = 'strMealThumb';
+  static const String strArea = 'strArea';
+  static const String strCountry = 'strCountry';
+
+  // Meals query params
+  static const String category = 'c';
 }

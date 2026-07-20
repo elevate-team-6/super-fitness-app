@@ -130,5 +130,12 @@
   "moderatelyActive": "Moderately",
   "veryActive": "Very Active",
   "extraActive": "Extra Active",
-  "or": "Or"
+  "or": "Or",
+  "recommendationForYou": "Recommendation For You",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "dinner": "Dinner",
+  "noMealsFound": "No meals found",
+  "seeAll": "See All",
+  "foodRecommendation": "Food Recommendation"
 }

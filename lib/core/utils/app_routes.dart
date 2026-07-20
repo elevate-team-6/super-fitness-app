@@ -12,6 +12,10 @@ import 'package:super_fitness/features/auth/presentation/screens/login_screen.da
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
+import '../../features/home/domain/entities/meal_time.dart';
+import '../../features/home/presentation/screens/food_screen.dart';
+import '../../features/home/presentation/view_model/food_view_model/food_cubit.dart';
+import '../../features/home/presentation/view_model/food_view_model/food_event.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
@@ -25,6 +29,7 @@ abstract class AppRoutes {
   static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
   static const String mainLayout = 'mainLayout';
+  static const String food = 'food';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -75,6 +80,17 @@ abstract class AppRoutes {
         case mainLayout:
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
 
+        case food:
+          final args = settings.arguments as FoodArgs;
+
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<FoodCubit>()
+                ..doIntent(SelectMealTimeEvent(args.mealTime)),
+              child: const FoodScreen(),
+            ),
+          );
+
         default:
           return _unDefinedRoute(settings.name);
       }
@@ -116,6 +132,13 @@ class ForgotPasswordArgs {
   final String email;
 
   ForgotPasswordArgs({required this.cubit, required this.email});
+}
+
+class FoodArgs {
+  /// Meal time the food screen opens on, set by whichever Home card was tapped.
+  final MealTime mealTime;
+
+  FoodArgs(this.mealTime);
 }
 
 class CompleteRegisterArgs {
