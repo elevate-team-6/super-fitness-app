@@ -3,26 +3,26 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
-import 'package:super_fitness/features/home/data/data_sources/food_remote_data_source_contract.dart';
+import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
-import 'package:super_fitness/features/home/data/repo/food_repo_impl.dart';
+import 'package:super_fitness/features/home/data/repo/home_repo_impl.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
-import 'food_repo_impl_test.mocks.dart';
+import 'home_repo_impl_test.mocks.dart';
 
-@GenerateMocks([FoodRemoteDataSourceContract])
+@GenerateMocks([HomeRemoteDataSourceContract])
 void main() {
-  late MockFoodRemoteDataSourceContract dataSource;
-  late FoodRepoImpl repo;
+  late MockHomeRemoteDataSourceContract dataSource;
+  late HomeRepoImpl repo;
 
   setUp(() {
     provideDummy<BaseResponse<MealsResponseModel>>(
       const ErrorBaseResponse('dummy'),
     );
-    dataSource = MockFoodRemoteDataSourceContract();
-    repo = FoodRepoImpl(dataSource);
+    dataSource = MockHomeRemoteDataSourceContract();
+    repo = HomeRepoImpl(dataSource);
   });
 
   MealsResponseModel mealsOf(List<String> ids) => MealsResponseModel(
@@ -31,7 +31,7 @@ void main() {
         .toList(),
   );
 
-  group('FoodRepoImpl.getMealsByMealTime', () {
+  group('HomeRepoImpl.getMealsByMealTime', () {
     test('interleaves the categories of a multi-category meal time', () async {
       // MealTime.lunch is Chicken + Pasta + Seafood.
       when(dataSource.getMealsByCategory('Chicken'))

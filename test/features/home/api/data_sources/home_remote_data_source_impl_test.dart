@@ -3,17 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/features/home/api/api_client/food_api_client.dart';
-import 'package:super_fitness/features/home/api/data_sources/food_remote_data_source_impl.dart';
+import 'package:super_fitness/features/home/api/api_client/home_api_client.dart';
+import 'package:super_fitness/features/home/api/data_sources/home_remote_data_source_impl.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 
-import 'food_remote_data_source_impl_test.mocks.dart';
+import 'home_remote_data_source_impl_test.mocks.dart';
 
-@GenerateMocks([FoodApiClient])
+@GenerateMocks([HomeApiClient])
 void main() {
-  late MockFoodApiClient mockApiClient;
-  late FoodRemoteDataSourceImpl dataSource;
+  late MockHomeApiClient mockApiClient;
+  late HomeRemoteDataSourceImpl dataSource;
 
   const responseModel = MealsResponseModel(
     meals: [
@@ -28,8 +28,8 @@ void main() {
   );
 
   setUp(() {
-    mockApiClient = MockFoodApiClient();
-    dataSource = FoodRemoteDataSourceImpl(mockApiClient);
+    mockApiClient = MockHomeApiClient();
+    dataSource = HomeRemoteDataSourceImpl(mockApiClient);
   });
 
   group('getMealsByCategory', () {

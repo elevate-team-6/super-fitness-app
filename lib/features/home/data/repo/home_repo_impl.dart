@@ -1,18 +1,18 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
-import 'package:super_fitness/features/home/data/data_sources/food_remote_data_source_contract.dart';
+import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
-import 'package:super_fitness/features/home/domain/repo/food_repo_contract.dart';
+import 'package:super_fitness/features/home/domain/repo/home_repo_contract.dart';
 
-@Injectable(as: FoodRepoContract)
-class FoodRepoImpl implements FoodRepoContract {
-  final FoodRemoteDataSourceContract _remoteDataSource;
+@Injectable(as: HomeRepoContract)
+class HomeRepoImpl implements HomeRepoContract {
+  final HomeRemoteDataSourceContract _remoteDataSource;
 
-  const FoodRepoImpl(this._remoteDataSource);
+  const HomeRepoImpl(this._remoteDataSource);
 
   @override
   Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(
