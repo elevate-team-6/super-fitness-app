@@ -3,7 +3,7 @@ import 'package:super_fitness/features/home/domain/entities/details_food_entity.
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
-abstract class FoodRepoContract {
+abstract class HomeRepoContract {
   Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(MealTime mealTime);
 
   Future<BaseResponse<DetailsFoodEntity>> getDetailsFood(String id);

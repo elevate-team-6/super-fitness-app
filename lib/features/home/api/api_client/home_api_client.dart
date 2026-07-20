@@ -6,15 +6,15 @@ import 'package:super_fitness/core/utils/app_params.dart';
 import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 
-part 'food_api_client.g.dart';
+part 'home_api_client.g.dart';
 
 /// TheMealDB client. Takes the @Named('external') Dio because this is a
 /// third-party host — the default Dio would attach our auth token to it.
 @lazySingleton
 @RestApi(baseUrl: AppEndPoints.mealDbBaseUrl)
-abstract class FoodApiClient {
+abstract class HomeApiClient {
   @factoryMethod
-  factory FoodApiClient(@Named('external') Dio dio) = _FoodApiClient;
+  factory HomeApiClient(@Named('external') Dio dio) = _HomeApiClient;
 
   @GET(AppEndPoints.mealsByCategory)
   Future<MealsResponseModel> getMealsByCategory(
