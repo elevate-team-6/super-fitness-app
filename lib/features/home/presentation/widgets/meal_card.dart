@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/custom_cached_image.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
@@ -14,6 +15,21 @@ class MealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _openDetails(context),
+      child: _buildCard(),
+    );
+  }
+
+  void _openDetails(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.mealDetails,
+      arguments: MealDetailsArgs(mealId: meal.id, mealName: meal.name),
+    );
+  }
+
+  Widget _buildCard() {
     return Container(
       width: 160.w,
       margin: EdgeInsetsDirectional.only(end: 12.w),

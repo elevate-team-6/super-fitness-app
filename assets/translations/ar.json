@@ -138,5 +138,11 @@
   "dinner": "العشاء",
   "noMealsFound": "لا توجد وجبات",
   "seeAll": "عرض الكل",
-  "foodRecommendation": "وجبات مقترحة"
+  "foodRecommendation": "وجبات مقترحة",
+  "mealDetails": "تفاصيل الوجبة",
+  "mealDetailsNotFound": "لم نتمكن من العثور على هذه الوجبة",
+  "ingredients": "المكونات",
+  "description": "الوصف",
+  "watchVideo": "مشاهدة الفيديو",
+  "noVideoAvailable": "لا يوجد فيديو لهذه الوصفة"
 }

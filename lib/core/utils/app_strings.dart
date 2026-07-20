@@ -168,4 +168,12 @@ abstract class AppStrings {
   static const String noMealsFound = 'noMealsFound';
   static const String seeAll = 'seeAll';
   static const String foodRecommendation = 'foodRecommendation';
+
+  // Meal details
+  static const String mealDetails = 'mealDetails';
+  static const String mealDetailsNotFound = 'mealDetailsNotFound';
+  static const String ingredients = 'ingredients';
+  static const String description = 'description';
+  static const String watchVideo = 'watchVideo';
+  static const String noVideoAvailable = 'noVideoAvailable';
 }
