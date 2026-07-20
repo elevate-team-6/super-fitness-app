@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:injectable/injectable.dart';
 
@@ -15,43 +16,81 @@ class FacebookAuthService {
   /// Opens the Facebook login flow and signs the user into Firebase.
   /// Returns null if the user cancels or Facebook withholds the email.
   Future<SocialAccountModel?> signIn() async {
-    final result = await FacebookAuth.instance.login(
-      permissions: const ['email', 'public_profile'],
-    );
+    try {
+      final result = await FacebookAuth.instance.login(
+        permissions: const ['email', 'public_profile'],
+      );
 
-    if (result.status != LoginStatus.success) {
-      // Cancelled or failed — nothing to report, the caller stays put.
-      return null;
+      if (result.status != LoginStatus.success) {
+        if (result.status == LoginStatus.failed) {
+          await FirebaseCrashlytics.instance.log(
+            'Facebook Login Failed: ${result.message}',
+          );
+          await FirebaseCrashlytics.instance.recordError(
+            Exception('Facebook Login Failed: ${result.message}'),
+            StackTrace.current,
+            reason: 'Facebook Login Status Failed',
+          );
+        }
+        // Cancelled or failed — nothing to report, the caller stays put.
+        return null;
+      }
+
+      final accessToken = result.accessToken;
+      if (accessToken == null) {
+        await FirebaseCrashlytics.instance.log(
+          'Facebook Login Success but AccessToken is null',
+        );
+        return null;
+      }
+
+      // Renamed from `.token` in flutter_facebook_auth 7.x.
+      final credential = FacebookAuthProvider.credential(
+        accessToken.tokenString,
+      );
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
+      final user = userCredential.user;
+      if (user == null) {
+        await FirebaseCrashlytics.instance.log(
+          'Firebase User is null after Facebook Sign-In',
+        );
+        return null;
+      }
+
+      // Facebook doesn't always pass the email through the Firebase credential,
+      // so fall back to the Graph API before giving up on the account.
+      final profile = await FacebookAuth.instance.getUserData(
+        fields: 'email,first_name,last_name,picture.width(400)',
+      );
+
+      final email = user.email ?? profile['email'] as String?;
+      // Our signup keys off the email, so an account without one is unusable.
+      if (email == null || email.isEmpty) {
+        await FirebaseCrashlytics.instance.log(
+          'Facebook Email is null/empty after Graph API call',
+        );
+        return null;
+      }
+
+      final names = _splitName(user.displayName);
+
+      return SocialAccountModel(
+        uid: user.uid,
+        email: email,
+        firstName: names.$1 ?? profile['first_name'] as String?,
+        lastName: names.$2 ?? profile['last_name'] as String?,
+        photo: user.photoURL,
+      );
+    } catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        stack,
+        reason: 'Unexpected error in FacebookAuthService.signIn',
+      );
+      rethrow;
     }
-
-    final accessToken = result.accessToken;
-    if (accessToken == null) return null;
-
-    // Renamed from `.token` in flutter_facebook_auth 7.x.
-    final credential = FacebookAuthProvider.credential(accessToken.tokenString);
-    final userCredential = await _firebaseAuth.signInWithCredential(credential);
-    final user = userCredential.user;
-    if (user == null) return null;
-
-    // Facebook doesn't always pass the email through the Firebase credential,
-    // so fall back to the Graph API before giving up on the account.
-    final profile = await FacebookAuth.instance.getUserData(
-      fields: 'email,first_name,last_name,picture.width(400)',
-    );
-
-    final email = user.email ?? profile['email'] as String?;
-    // Our signup keys off the email, so an account without one is unusable.
-    if (email == null || email.isEmpty) return null;
-
-    final names = _splitName(user.displayName);
-
-    return SocialAccountModel(
-      uid: user.uid,
-      email: email,
-      firstName: names.$1 ?? profile['first_name'] as String?,
-      lastName: names.$2 ?? profile['last_name'] as String?,
-      photo: user.photoURL,
-    );
   }
 
   Future<void> signOut() async {

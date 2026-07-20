@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
 
@@ -34,6 +35,14 @@ class GoogleAuthService {
         // This is usually due to missing SHA-1 in Firebase Console or wrong serverClientId.
         const errorMsg =
             'GoogleAuthService: idToken is null. Check Firebase SHA-1, Support Email, and google-services.json';
+
+        await FirebaseCrashlytics.instance.log(errorMsg);
+        await FirebaseCrashlytics.instance.recordError(
+          Exception(errorMsg),
+          StackTrace.current,
+          reason: 'Google idToken is null',
+        );
+
         throw Exception(errorMsg);
       }
 
@@ -49,6 +58,9 @@ class GoogleAuthService {
       final effectiveEmail = user?.email ?? googleUser.email;
 
       if (user == null || effectiveEmail.trim().isEmpty) {
+        await FirebaseCrashlytics.instance.log(
+          'GoogleAuthService: User or Email is null after Firebase Sign-In',
+        );
         return null;
       }
 
@@ -62,6 +74,15 @@ class GoogleAuthService {
         photo: user.photoURL ?? googleUser.photoUrl,
       );
     } on GoogleSignInException catch (e) {
+      await FirebaseCrashlytics.instance.log(
+        'GoogleSignInException: ${e.code}',
+      );
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        StackTrace.current,
+        reason: 'GoogleSignInException during signIn',
+      );
+
       // Error code 10 is DEVELOPER_ERROR, often SHA-1 mismatch.
       if (e.code.name == 'developerError' || e.code.toString().contains('10')) {
         throw Exception(
@@ -73,7 +94,12 @@ class GoogleAuthService {
         return null;
       }
       rethrow;
-    } catch (e) {
+    } catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(
+        e,
+        stack,
+        reason: 'Unexpected error in GoogleAuthService.signIn',
+      );
       rethrow;
     }
   }

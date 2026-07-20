@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -15,10 +18,14 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase and Localization in parallel
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
+
+  // Setup Crashlytics non-blockingly to avoid slowing down startup
+  _setupCrashlytics();
 
   await GoogleAuthService.initialize(
     serverClientId: AppConstants.googleServerClientId,
@@ -46,6 +53,21 @@ Future<void> main() async {
       child: MyApp(isOnboardingDone: isOnboardingDone, isLoggedIn: isLoggedIn),
     ),
   );
+}
+
+/// Sets up Crashlytics error handlers.
+/// This is separated to keep main() clean and avoid blocking the startup flow.
+void _setupCrashlytics() {
+  // Pass all uncaught "fatal" errors from the framework to Crashlytics
+  FlutterError.onError = (errorDetails) {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+  };
+
+  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
 }
 
 class MyApp extends StatelessWidget {
