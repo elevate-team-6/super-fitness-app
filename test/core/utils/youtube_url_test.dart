@@ -47,17 +47,21 @@ void main() {
     });
   });
 
-  group('YoutubeUrl.embedUrlOf', () {
-    test('rewrites a watch link into the embeddable player url', () {
+  group('YoutubeUrl.watchUrlOf', () {
+    test('normalizes any recognized link into a canonical watch url', () {
       expect(
-        YoutubeUrl.embedUrlOf('https://www.youtube.com/watch?v=xvPR2Tfw5k0'),
-        'https://www.youtube.com/embed/xvPR2Tfw5k0?rel=0&playsinline=1',
+        YoutubeUrl.watchUrlOf('https://youtu.be/xvPR2Tfw5k0'),
+        'https://www.youtube.com/watch?v=xvPR2Tfw5k0',
+      );
+      expect(
+        YoutubeUrl.watchUrlOf('https://www.youtube.com/embed/xvPR2Tfw5k0'),
+        'https://www.youtube.com/watch?v=xvPR2Tfw5k0',
       );
     });
 
     test('returns null when there is no video, so callers can hide the player', () {
-      expect(YoutubeUrl.embedUrlOf(null), isNull);
-      expect(YoutubeUrl.embedUrlOf('not a url at all'), isNull);
+      expect(YoutubeUrl.watchUrlOf(null), isNull);
+      expect(YoutubeUrl.watchUrlOf('not a url at all'), isNull);
     });
   });
 }

@@ -3,7 +3,7 @@ import 'package:super_fitness/features/home/domain/entities/meal_ingredient_enti
 
 /// The full meal record behind `lookup.php`, as opposed to the three-field
 /// [MealEntity] the grid is built from.
-class MealDetailsEntity extends Equatable {
+class DetailsFoodEntity extends Equatable {
   final String id;
   final String name;
   final String thumbnail;
@@ -20,7 +20,7 @@ class MealDetailsEntity extends Equatable {
   final List<String> tags;
   final List<MealIngredientEntity> ingredients;
 
-  const MealDetailsEntity({
+  const DetailsFoodEntity({
     required this.id,
     required this.name,
     required this.thumbnail,

@@ -37,13 +37,12 @@ abstract class YoutubeUrl {
     return null;
   }
 
-  /// The in-app player URL for [url], or null when there's no video to play.
-  static String? embedUrlOf(String? url) {
+  /// A normalized `watch?v=` URL for [url], or null when there's no video —
+  /// what the details screen hands to `url_launcher` to open YouTube.
+  static String? watchUrlOf(String? url) {
     final id = videoIdOf(url);
     if (id == null) return null;
-
-    // `playsinline` keeps iOS from hijacking playback into full screen.
-    return 'https://www.youtube.com/embed/$id?rel=0&playsinline=1';
+    return 'https://www.youtube.com/watch?v=$id';
   }
 
   static String? _nonEmpty(String? value) =>

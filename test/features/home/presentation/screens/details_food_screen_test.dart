@@ -7,25 +7,25 @@ import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_details_entity.dart';
+import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
-import 'package:super_fitness/features/home/domain/use_cases/get_meal_details_use_case.dart';
-import 'package:super_fitness/features/home/presentation/screens/meal_details_screen.dart';
-import 'package:super_fitness/features/home/presentation/view_model/meal_details_view_model/meal_details_cubit.dart';
-import 'package:super_fitness/features/home/presentation/view_model/meal_details_view_model/meal_details_event.dart';
+import 'package:super_fitness/features/home/domain/use_cases/get_details_food_use_case.dart';
+import 'package:super_fitness/features/home/presentation/screens/details_food_screen.dart';
+import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_cubit.dart';
+import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
+import 'package:super_fitness/features/home/presentation/widgets/details_food_hero.dart';
 import 'package:super_fitness/features/home/presentation/widgets/meal_ingredients_list.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_tags_wrap.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_video_preview.dart';
+import 'package:super_fitness/features/home/presentation/widgets/meal_nutrition_bar.dart';
 
-import 'meal_details_screen_test.mocks.dart';
+import 'details_food_screen_test.mocks.dart';
 
 // easy_localization isn't initialized here, so `.tr()` returns the raw key —
 // same convention the other widget tests in this repo rely on.
-@GenerateMocks([GetMealDetailsUseCase])
+@GenerateMocks([GetDetailsFoodUseCase])
 void main() {
-  late MockGetMealDetailsUseCase useCase;
+  late MockGetDetailsFoodUseCase useCase;
 
-  const details = MealDetailsEntity(
+  const details = DetailsFoodEntity(
     id: '52959',
     name: 'Baked salmon with fennel',
     thumbnail: '',
@@ -41,13 +41,13 @@ void main() {
   );
 
   setUp(() {
-    provideDummy<BaseResponse<MealDetailsEntity>>(
+    provideDummy<BaseResponse<DetailsFoodEntity>>(
       const ErrorBaseResponse('dummy'),
     );
-    useCase = MockGetMealDetailsUseCase();
+    useCase = MockGetDetailsFoodUseCase();
   });
 
-  Widget createWidgetUnderTest(MealDetailsCubit cubit) {
+  Widget createWidgetUnderTest(DetailsFoodCubit cubit) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
@@ -55,21 +55,21 @@ void main() {
       builder: (context, child) => MaterialApp(
         home: BlocProvider.value(
           value: cubit,
-          child: const MealDetailsScreen(mealName: 'Baked salmon with fennel'),
+          child: const DetailsFoodScreen(mealName: 'Baked salmon with fennel'),
         ),
       ),
     );
   }
 
-  MealDetailsCubit buildCubit() =>
-      MealDetailsCubit(useCase)..setMealId('52959');
+  DetailsFoodCubit buildCubit() =>
+      DetailsFoodCubit(useCase)..setMealId('52959');
 
   testWidgets('renders the description and ingredients once loaded', (
     tester,
   ) async {
     when(useCase(any))
         .thenAnswer((_) async => const SuccessBaseResponse(details));
-    final cubit = buildCubit()..doIntent(const LoadMealDetailsEvent());
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pumpAndSettle();
@@ -88,20 +88,19 @@ void main() {
     await cubit.close();
   });
 
-  testWidgets('shows the category and area alongside the recipe tags', (
-    tester,
-  ) async {
+  testWidgets('shows the nutrition bar with all four macros', (tester) async {
     when(useCase(any))
         .thenAnswer((_) async => const SuccessBaseResponse(details));
-    final cubit = buildCubit()..doIntent(const LoadMealDetailsEvent());
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pumpAndSettle();
 
-    expect(find.byType(MealTagsWrap), findsOneWidget);
-    expect(find.text('Seafood'), findsOneWidget);
-    expect(find.text('British'), findsOneWidget);
-    expect(find.text('Paleo'), findsOneWidget);
+    expect(find.byType(MealNutritionBar), findsOneWidget);
+    expect(find.text(AppStrings.energy), findsOneWidget);
+    expect(find.text(AppStrings.protein), findsOneWidget);
+    expect(find.text(AppStrings.carbs), findsOneWidget);
+    expect(find.text(AppStrings.fat), findsOneWidget);
 
     await cubit.close();
   });
@@ -109,15 +108,13 @@ void main() {
   testWidgets('offers the video when the recipe has one', (tester) async {
     when(useCase(any))
         .thenAnswer((_) async => const SuccessBaseResponse(details));
-    final cubit = buildCubit()..doIntent(const LoadMealDetailsEvent());
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pumpAndSettle();
 
-    final preview = tester.widget<MealVideoPreview>(
-      find.byType(MealVideoPreview),
-    );
-    expect(preview.onPlay, isNotNull);
+    final hero = tester.widget<DetailsFoodHero>(find.byType(DetailsFoodHero));
+    expect(hero.onPlay, isNotNull);
 
     await cubit.close();
   });
@@ -127,7 +124,7 @@ void main() {
   testWidgets('hides the play button when the recipe has no video', (
     tester,
   ) async {
-    const noVideo = MealDetailsEntity(
+    const noVideo = DetailsFoodEntity(
       id: '1',
       name: 'No video meal',
       thumbnail: '',
@@ -135,16 +132,51 @@ void main() {
     );
     when(useCase(any))
         .thenAnswer((_) async => const SuccessBaseResponse(noVideo));
-    final cubit = buildCubit()..doIntent(const LoadMealDetailsEvent());
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pumpAndSettle();
 
-    final preview = tester.widget<MealVideoPreview>(
-      find.byType(MealVideoPreview),
-    );
-    expect(preview.onPlay, isNull);
+    final hero = tester.widget<DetailsFoodHero>(find.byType(DetailsFoodHero));
+    expect(hero.onPlay, isNull);
 
+    await cubit.close();
+  });
+
+  // The hero replaced the app bar, so it owns the only way back out of a
+  // loaded screen.
+  testWidgets('the hero back button pops the route', (tester) async {
+    when(useCase(any))
+        .thenAnswer((_) async => const SuccessBaseResponse(details));
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
+
+    await tester.pumpWidget(createWidgetUnderTest(cubit));
+    await tester.pumpAndSettle();
+
+    final hero = tester.widget<DetailsFoodHero>(find.byType(DetailsFoodHero));
+    expect(hero.onBack, isNotNull);
+
+    await cubit.close();
+  });
+
+  testWidgets('shows the meal name passed in while the record loads', (
+    tester,
+  ) async {
+    when(useCase(any)).thenAnswer(
+      (_) async => await Future.delayed(
+        const Duration(milliseconds: 50),
+        () => const SuccessBaseResponse(details),
+      ),
+    );
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
+
+    await tester.pumpWidget(createWidgetUnderTest(cubit));
+    await tester.pump();
+
+    final hero = tester.widget<DetailsFoodHero>(find.byType(DetailsFoodHero));
+    expect(hero.name, 'Baked salmon with fennel');
+
+    await tester.pumpAndSettle();
     await cubit.close();
   });
 
@@ -153,7 +185,7 @@ void main() {
   ) async {
     when(useCase(any))
         .thenAnswer((_) async => const ErrorBaseResponse('offline'));
-    final cubit = buildCubit()..doIntent(const LoadMealDetailsEvent());
+    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pumpAndSettle();

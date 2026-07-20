@@ -17,7 +17,7 @@ abstract class AppEndPoints {
   static const String mealDbBaseUrl = "https://www.themealdb.com/api/json/v1/1";
   static const String mealCategories = "$mealDbBaseUrl/categories.php";
   static const String mealsByCategory = "$mealDbBaseUrl/filter.php";
-  static const String mealDetails = "$mealDbBaseUrl/lookup.php";
+  static const String detailsFood = "$mealDbBaseUrl/lookup.php";
 
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:

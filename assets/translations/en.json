@@ -138,10 +138,13 @@
   "noMealsFound": "No meals found",
   "seeAll": "See All",
   "foodRecommendation": "Food Recommendation",
-  "mealDetails": "Meal Details",
-  "mealDetailsNotFound": "We couldn't find this meal",
+  "detailsFood": "Meal Details",
+  "detailsFoodNotFound": "We couldn't find this meal",
   "ingredients": "Ingredients",
   "description": "Description",
   "watchVideo": "Watch Video",
-  "noVideoAvailable": "No video available for this recipe"
+  "energy": "Energy",
+  "protein": "Protein",
+  "carbs": "Carbs",
+  "fat": "Fat"
 }

@@ -4,11 +4,11 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 
 /// A titled block on the details screen — keeps the spacing between
 /// "Ingredients" and "Description" identical without repeating it.
-class MealDetailsSection extends StatelessWidget {
+class DetailsFoodSection extends StatelessWidget {
   final String title;
   final Widget child;
 
-  const MealDetailsSection({
+  const DetailsFoodSection({
     super.key,
     required this.title,
     required this.child,

@@ -1,26 +1,26 @@
 import 'package:equatable/equatable.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_details_entity.dart';
+import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 
-enum MealDetailsStatus { initial, loading, success, error }
+enum DetailsFoodStatus { initial, loading, success, error }
 
 /// Mirrors [FoodState]: loading and error live in state rather than on the UI
 /// event stream, because this screen renders them inline.
-final class MealDetailsState extends Equatable {
-  final MealDetailsStatus status;
-  final MealDetailsEntity? details;
+final class DetailsFoodState extends Equatable {
+  final DetailsFoodStatus status;
+  final DetailsFoodEntity? details;
   final String errorMessage;
 
-  const MealDetailsState({
-    this.status = MealDetailsStatus.initial,
+  const DetailsFoodState({
+    this.status = DetailsFoodStatus.initial,
     this.details,
     this.errorMessage = '',
   });
 
-  MealDetailsState copyWith({
-    MealDetailsStatus? status,
-    MealDetailsEntity? details,
+  DetailsFoodState copyWith({
+    DetailsFoodStatus? status,
+    DetailsFoodEntity? details,
     String? errorMessage,
-  }) => MealDetailsState(
+  }) => DetailsFoodState(
     status: status ?? this.status,
     details: details ?? this.details,
     errorMessage: errorMessage ?? this.errorMessage,

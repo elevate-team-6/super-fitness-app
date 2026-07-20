@@ -3,7 +3,7 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/error_handler/error_handler.dart';
 import 'package:super_fitness/features/home/api/api_client/food_api_client.dart';
 import 'package:super_fitness/features/home/data/data_sources/food_remote_data_source_contract.dart';
-import 'package:super_fitness/features/home/data/models/response/meal_details_response_model.dart';
+import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 
 @Injectable(as: FoodRemoteDataSourceContract)
@@ -20,7 +20,7 @@ class FoodRemoteDataSourceImpl implements FoodRemoteDataSourceContract {
   }
 
   @override
-  Future<BaseResponse<MealDetailsResponseModel>> getMealDetails(String id) {
-    return ErrorHandler.handleApiCall(() => _apiClient.getMealDetails(id));
+  Future<BaseResponse<DetailsFoodResponseModel>> getDetailsFood(String id) {
+    return ErrorHandler.handleApiCall(() => _apiClient.getDetailsFood(id));
   }
 }

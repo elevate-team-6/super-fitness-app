@@ -2,10 +2,10 @@ import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/data/data_sources/food_remote_data_source_contract.dart';
-import 'package:super_fitness/features/home/data/models/response/meal_details_response_model.dart';
+import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_details_entity.dart';
+import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 import 'package:super_fitness/features/home/domain/repo/food_repo_contract.dart';
@@ -48,22 +48,22 @@ class FoodRepoImpl implements FoodRepoContract {
   }
 
   @override
-  Future<BaseResponse<MealDetailsEntity>> getMealDetails(String id) async {
-    final response = await _remoteDataSource.getMealDetails(id);
+  Future<BaseResponse<DetailsFoodEntity>> getDetailsFood(String id) async {
+    final response = await _remoteDataSource.getDetailsFood(id);
 
     switch (response) {
-      case SuccessBaseResponse<MealDetailsResponseModel>():
+      case SuccessBaseResponse<DetailsFoodResponseModel>():
         final meals = response.data?.meals;
 
         // An unknown id comes back as `{"meals": null}` with a 200, so the
         // empty case has to be turned into an error here rather than upstream.
         if (meals == null || meals.isEmpty) {
-          return const ErrorBaseResponse(AppStrings.mealDetailsNotFound);
+          return const ErrorBaseResponse(AppStrings.detailsFoodNotFound);
         }
 
         return SuccessBaseResponse(meals.first.toEntity());
 
-      case ErrorBaseResponse<MealDetailsResponseModel>():
+      case ErrorBaseResponse<DetailsFoodResponseModel>():
         return ErrorBaseResponse(response.errorMessage);
     }
   }

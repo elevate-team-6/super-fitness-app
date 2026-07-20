@@ -14,12 +14,11 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/home/domain/entities/meal_time.dart';
 import '../../features/home/presentation/screens/food_screen.dart';
-import '../../features/home/presentation/screens/meal_details_screen.dart';
-import '../../features/home/presentation/screens/meal_video_screen.dart';
+import '../../features/home/presentation/screens/details_food_screen.dart';
 import '../../features/home/presentation/view_model/food_view_model/food_cubit.dart';
 import '../../features/home/presentation/view_model/food_view_model/food_event.dart';
-import '../../features/home/presentation/view_model/meal_details_view_model/meal_details_cubit.dart';
-import '../../features/home/presentation/view_model/meal_details_view_model/meal_details_event.dart';
+import '../../features/home/presentation/view_model/details_food_view_model/details_food_cubit.dart';
+import '../../features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
@@ -34,8 +33,7 @@ abstract class AppRoutes {
   static const String forgetPassword = '/forgotPassword';
   static const String mainLayout = 'mainLayout';
   static const String food = 'food';
-  static const String mealDetails = 'mealDetails';
-  static const String mealVideo = 'mealVideo';
+  static const String detailsFood = 'detailsFood';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -97,24 +95,16 @@ abstract class AppRoutes {
             ),
           );
 
-        case mealDetails:
-          final args = settings.arguments as MealDetailsArgs;
+        case detailsFood:
+          final args = settings.arguments as DetailsFoodArgs;
 
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => getIt<MealDetailsCubit>()
+              create: (_) => getIt<DetailsFoodCubit>()
                 ..setMealId(args.mealId)
-                ..doIntent(const LoadMealDetailsEvent()),
-              child: MealDetailsScreen(mealName: args.mealName),
+                ..doIntent(const LoadDetailsFoodEvent()),
+              child: DetailsFoodScreen(mealName: args.mealName),
             ),
-          );
-
-        case mealVideo:
-          final args = settings.arguments as MealVideoArgs;
-
-          return MaterialPageRoute(
-            builder: (_) =>
-                MealVideoScreen(embedUrl: args.embedUrl, title: args.title),
           );
 
         default:
@@ -167,22 +157,14 @@ class FoodArgs {
   FoodArgs(this.mealTime);
 }
 
-class MealDetailsArgs {
+class DetailsFoodArgs {
   final String mealId;
 
   /// Already known from the grid card that was tapped, so the app bar has a
   /// title to show while the full record is still loading.
   final String mealName;
 
-  MealDetailsArgs({required this.mealId, required this.mealName});
-}
-
-class MealVideoArgs {
-  /// A YouTube `/embed/` URL, not the raw `watch?v=` link — see [YoutubeUrl].
-  final String embedUrl;
-  final String title;
-
-  MealVideoArgs({required this.embedUrl, required this.title});
+  DetailsFoodArgs({required this.mealId, required this.mealName});
 }
 
 class CompleteRegisterArgs {

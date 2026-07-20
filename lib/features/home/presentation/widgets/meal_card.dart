@@ -24,8 +24,8 @@ class MealCard extends StatelessWidget {
   void _openDetails(BuildContext context) {
     Navigator.pushNamed(
       context,
-      AppRoutes.mealDetails,
-      arguments: MealDetailsArgs(mealId: meal.id, mealName: meal.name),
+      AppRoutes.detailsFood,
+      arguments: DetailsFoodArgs(mealId: meal.id, mealName: meal.name),
     );
   }
 

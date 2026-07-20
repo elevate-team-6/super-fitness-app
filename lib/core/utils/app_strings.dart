@@ -170,10 +170,15 @@ abstract class AppStrings {
   static const String foodRecommendation = 'foodRecommendation';
 
   // Meal details
-  static const String mealDetails = 'mealDetails';
-  static const String mealDetailsNotFound = 'mealDetailsNotFound';
+  static const String detailsFood = 'detailsFood';
+  static const String detailsFoodNotFound = 'detailsFoodNotFound';
   static const String ingredients = 'ingredients';
   static const String description = 'description';
   static const String watchVideo = 'watchVideo';
-  static const String noVideoAvailable = 'noVideoAvailable';
+
+  // Meal nutrition (placeholder — TheMealDB exposes no macros)
+  static const String energy = 'energy';
+  static const String protein = 'protein';
+  static const String carbs = 'carbs';
+  static const String fat = 'fat';
 }

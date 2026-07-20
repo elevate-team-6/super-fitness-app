@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
 
 class MealIngredientsList extends StatelessWidget {
@@ -11,29 +12,41 @@ class MealIngredientsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (final ingredient in ingredients) ...[
-          _MealIngredientRow(ingredient: ingredient),
-          SizedBox(height: 8.h),
+    return CustomGlassContainer(
+      blur: 20,
+      opacity: 0.8,
+      borderRadius: BorderRadius.circular(20.r),
+      padding: EdgeInsets.all(8.w),
+      child: Column(
+        children: [
+          for (var index = 0; index < ingredients.length; index++)
+            _MealIngredientRow(
+              ingredient: ingredients[index],
+              showDivider: index < ingredients.length - 1,
+            ),
         ],
-      ],
+      ),
     );
   }
 }
 
 class _MealIngredientRow extends StatelessWidget {
   final MealIngredientEntity ingredient;
+  final bool showDivider;
 
-  const _MealIngredientRow({required this.ingredient});
+  const _MealIngredientRow({
+    required this.ingredient,
+    required this.showDivider,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+      padding: EdgeInsets.fromLTRB(8.w, 12.h, 8.w, 12.h),
       decoration: BoxDecoration(
-        color: AppColors.black80,
-        borderRadius: BorderRadius.circular(12.r),
+        border: showDivider
+            ? const Border(bottom: BorderSide(color: AppColors.black70))
+            : null,
       ),
       child: Row(
         children: [

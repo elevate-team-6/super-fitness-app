@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:super_fitness/features/home/data/models/response/meal_details_model.dart';
+import 'package:super_fitness/features/home/data/models/response/details_food_model.dart';
 
 void main() {
   /// Trimmed-down copy of the real `lookup.php?i=52959` payload — the shape
@@ -29,9 +29,9 @@ void main() {
     ...overrides,
   };
 
-  group('MealDetailsModel ingredients', () {
+  group('DetailsFoodModel ingredients', () {
     test('flattens the numbered slots into a list, dropping the blanks', () {
-      final meal = MealDetailsModel.fromJson(payload()).toEntity();
+      final meal = DetailsFoodModel.fromJson(payload()).toEntity();
 
       expect(meal.ingredients, hasLength(3));
       expect(meal.ingredients.first.name, 'Fennel');
@@ -41,7 +41,7 @@ void main() {
     });
 
     test('keeps an ingredient that has no measure', () {
-      final meal = MealDetailsModel.fromJson(
+      final meal = DetailsFoodModel.fromJson(
         payload(overrides: {'strMeasure3': ''}),
       ).toEntity();
 
@@ -53,7 +53,7 @@ void main() {
     // The API pads several recipes with whitespace-only slots, which would
     // otherwise render as blank rows in the list.
     test('drops slots that hold only whitespace', () {
-      final meal = MealDetailsModel.fromJson(
+      final meal = DetailsFoodModel.fromJson(
         payload(overrides: {'strIngredient2': '   '}),
       ).toEntity();
 
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('handles a recipe with no ingredients at all', () {
-      final meal = MealDetailsModel.fromJson(
+      final meal = DetailsFoodModel.fromJson(
         payload(
           overrides: {
             for (var slot = 1; slot <= 20; slot++) 'strIngredient$slot': '',
@@ -73,24 +73,24 @@ void main() {
     });
   });
 
-  group('MealDetailsModel tags', () {
+  group('DetailsFoodModel tags', () {
     test('splits the comma-joined tag string', () {
-      final meal = MealDetailsModel.fromJson(payload()).toEntity();
+      final meal = DetailsFoodModel.fromJson(payload()).toEntity();
 
       expect(meal.tags, ['Paleo', 'Keto', 'HighFat']);
     });
 
     test('yields an empty list when tags are null or blank', () {
-      expect(MealDetailsModel.fromJson(payload(tags: null)).toEntity().tags,
+      expect(DetailsFoodModel.fromJson(payload(tags: null)).toEntity().tags,
           isEmpty);
       expect(
-          MealDetailsModel.fromJson(payload(tags: '')).toEntity().tags, isEmpty);
+          DetailsFoodModel.fromJson(payload(tags: '')).toEntity().tags, isEmpty);
     });
   });
 
-  group('MealDetailsModel youtube', () {
+  group('DetailsFoodModel youtube', () {
     test('passes a real link through', () {
-      final meal = MealDetailsModel.fromJson(payload()).toEntity();
+      final meal = DetailsFoodModel.fromJson(payload()).toEntity();
 
       expect(meal.youtubeUrl, 'https://www.youtube.com/watch?v=xvPR2Tfw5k0');
     });
@@ -99,18 +99,18 @@ void main() {
     // rather than also testing for empty strings.
     test('normalizes a missing or blank link to null', () {
       expect(
-        MealDetailsModel.fromJson(payload(youtube: null)).toEntity().youtubeUrl,
+        DetailsFoodModel.fromJson(payload(youtube: null)).toEntity().youtubeUrl,
         isNull,
       );
       expect(
-        MealDetailsModel.fromJson(payload(youtube: '  ')).toEntity().youtubeUrl,
+        DetailsFoodModel.fromJson(payload(youtube: '  ')).toEntity().youtubeUrl,
         isNull,
       );
     });
   });
 
   test('maps the scalar fields onto the entity', () {
-    final meal = MealDetailsModel.fromJson(payload()).toEntity();
+    final meal = DetailsFoodModel.fromJson(payload()).toEntity();
 
     expect(meal.id, '52959');
     expect(meal.name, 'Baked salmon with fennel & tomatoes');
@@ -121,7 +121,7 @@ void main() {
   });
 
   test('falls back to empty strings when the record is mostly null', () {
-    final meal = MealDetailsModel.fromJson(const {'idMeal': '1'}).toEntity();
+    final meal = DetailsFoodModel.fromJson(const {'idMeal': '1'}).toEntity();
 
     expect(meal.id, '1');
     expect(meal.name, isEmpty);

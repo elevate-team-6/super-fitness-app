@@ -1,8 +1,8 @@
 import 'package:super_fitness/core/utils/app_params.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_details_entity.dart';
+import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
 
-class MealDetailsModel {
+class DetailsFoodModel {
   final String? idMeal;
   final String? strMeal;
   final String? strMealThumb;
@@ -16,7 +16,7 @@ class MealDetailsModel {
   /// keys — blank slots are dropped during parsing.
   final List<MealIngredientEntity> ingredients;
 
-  const MealDetailsModel({
+  const DetailsFoodModel({
     this.idMeal,
     this.strMeal,
     this.strMealThumb,
@@ -28,8 +28,8 @@ class MealDetailsModel {
     this.ingredients = const [],
   });
 
-  factory MealDetailsModel.fromJson(Map<String, dynamic> json) =>
-      MealDetailsModel(
+  factory DetailsFoodModel.fromJson(Map<String, dynamic> json) =>
+      DetailsFoodModel(
         idMeal: json[ApiParameters.idMeal] as String?,
         strMeal: json[ApiParameters.strMeal] as String?,
         strMealThumb: json[ApiParameters.strMealThumb] as String?,
@@ -66,7 +66,7 @@ class MealDetailsModel {
     return ingredients;
   }
 
-  MealDetailsEntity toEntity() => MealDetailsEntity(
+  DetailsFoodEntity toEntity() => DetailsFoodEntity(
     id: idMeal ?? '',
     name: strMeal ?? '',
     thumbnail: strMealThumb ?? '',
