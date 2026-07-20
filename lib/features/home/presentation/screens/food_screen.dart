@@ -7,6 +7,7 @@ import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
+import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_cubit.dart';
@@ -30,16 +31,16 @@ class FoodScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       backgroundImage: AppImages.homeBackground,
+      blurSigma: 0,
+      appBar: CustomAppBar(
+        title: AppStrings.foodRecommendation.tr(),
+        onBackPressed: () => Navigator.pop(context),
+      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              AppStrings.foodRecommendation.tr(),
-              style: AppTextStyles.white20500,
-            ),
-            SizedBox(height: 16.h),
             BlocBuilder<FoodCubit, FoodState>(
               buildWhen: (previous, current) =>
                   previous.selectedMealTime != current.selectedMealTime,
@@ -54,8 +55,7 @@ class FoodScreen extends StatelessWidget {
             Expanded(
               child: BlocBuilder<FoodCubit, FoodState>(
                 builder: (context, state) => switch (state.status) {
-                  FoodStatus.initial ||
-                  FoodStatus.loading => _buildGrid(
+                  FoodStatus.initial || FoodStatus.loading => _buildGrid(
                     _skeletonMeals,
                     isLoading: true,
                   ),
