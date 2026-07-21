@@ -57,14 +57,12 @@ class ExerciseStepTile extends StatelessWidget {
                 SizedBox(height: 4.h),
                 Text(
                   reps,
-                  style: AppTextStyles.white12500.copyWith(color: AppColors.primary),
+                  style: AppTextStyles.primary12500,
                 ),
                 SizedBox(height: 4.h),
                 Text(
                   'Lorem Ipsum Dolor Sit Amet Consectetur.',
-                  style: AppTextStyles.white12500.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.6),
-                  ),
+                  style: AppTextStyles.white6012500,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

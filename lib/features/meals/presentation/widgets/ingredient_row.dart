@@ -28,7 +28,7 @@ class IngredientRow extends StatelessWidget {
               ),
               Text(
                 ingredient.measure,
-                style: AppTextStyles.white14500.copyWith(color: AppColors.primary),
+                style: AppTextStyles.primary14500,
               ),
             ],
           ),
