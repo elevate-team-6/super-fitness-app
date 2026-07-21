@@ -176,9 +176,10 @@ abstract class AppStrings {
   static const String description = 'description';
   static const String watchVideo = 'watchVideo';
 
-  // Meal nutrition (placeholder — TheMealDB exposes no macros)
+  // Meal nutrition (estimated — TheMealDB exposes no macros)
   static const String energy = 'energy';
   static const String protein = 'protein';
   static const String carbs = 'carbs';
   static const String fat = 'fat';
+  static const String nutritionUnavailable = 'nutritionUnavailable';
 }

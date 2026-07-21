@@ -1,20 +1,27 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/cache/hive_helper.dart';
+import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
 import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
+import 'package:super_fitness/features/home/data/models/response/meal_nutrition_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
+import 'package:super_fitness/features/home/domain/entities/meal_nutrition_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 import 'package:super_fitness/features/home/domain/repo/home_repo_contract.dart';
 
 @Injectable(as: HomeRepoContract)
 class HomeRepoImpl implements HomeRepoContract {
   final HomeRemoteDataSourceContract _remoteDataSource;
+  final HiveHelper _hiveHelper;
 
-  const HomeRepoImpl(this._remoteDataSource);
+  const HomeRepoImpl(this._remoteDataSource, this._hiveHelper);
 
   @override
   Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(
@@ -38,8 +45,6 @@ class HomeRepoImpl implements HomeRepoContract {
       }
     }
 
-    // Only fail when nothing came back at all — one dead category shouldn't
-    // blank out a meal time that has other categories behind it.
     if (buckets.isEmpty) {
       return ErrorBaseResponse(firstError ?? AppStrings.noMealsFound);
     }
@@ -55,8 +60,6 @@ class HomeRepoImpl implements HomeRepoContract {
       case SuccessBaseResponse<DetailsFoodResponseModel>():
         final meals = response.data?.meals;
 
-        // An unknown id comes back as `{"meals": null}` with a 200, so the
-        // empty case has to be turned into an error here rather than upstream.
         if (meals == null || meals.isEmpty) {
           return const ErrorBaseResponse(AppStrings.detailsFoodNotFound);
         }
@@ -68,8 +71,63 @@ class HomeRepoImpl implements HomeRepoContract {
     }
   }
 
-  /// Round-robins the categories so a multi-category meal time doesn't render
-  /// as "all the chicken, then all the pasta". Duplicate ids are dropped.
+  @override
+  Future<BaseResponse<MealNutritionEntity>> getMealNutrition(
+    DetailsFoodEntity meal,
+  ) async {
+    final cached = await _readCachedNutrition(meal.id);
+    if (cached != null) return SuccessBaseResponse(cached.toEntity());
+
+    final response = await _remoteDataSource.estimateNutrition(meal);
+
+    switch (response) {
+      case SuccessBaseResponse<MealNutritionModel>():
+        final nutrition = response.data;
+        if (nutrition == null) {
+          return const ErrorBaseResponse(AppStrings.nutritionUnavailable);
+        }
+
+        await _writeCachedNutrition(meal.id, nutrition);
+        return SuccessBaseResponse(nutrition.toEntity());
+
+      case ErrorBaseResponse<MealNutritionModel>():
+        return ErrorBaseResponse(response.errorMessage);
+    }
+  }
+
+  Future<MealNutritionModel?> _readCachedNutrition(String mealId) async {
+    if (mealId.isEmpty) return null;
+
+    try {
+      final raw = await _hiveHelper.getData<String>(
+        boxName: AppKeys.nutritionBoxName,
+        key: mealId,
+      );
+      if (raw == null) return null;
+
+      return MealNutritionModel.fromJson(
+        jsonDecode(raw) as Map<String, dynamic>,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _writeCachedNutrition(
+    String mealId,
+    MealNutritionModel nutrition,
+  ) async {
+    if (mealId.isEmpty) return;
+
+    try {
+      await _hiveHelper.cacheData(
+        boxName: AppKeys.nutritionBoxName,
+        key: mealId,
+        value: jsonEncode(nutrition.toJson()),
+      );
+    } catch (_) {}
+  }
+
   List<MealEntity> _interleave(List<List<MealModel>> buckets) {
     final longest = buckets.fold<int>(
       0,

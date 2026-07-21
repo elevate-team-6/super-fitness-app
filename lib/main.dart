@@ -7,6 +7,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'config/cache/hive_helper.dart';
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
 import 'config/services/google_auth_service.dart';
@@ -32,6 +33,10 @@ Future<void> main() async {
   );
 
   configureDependencies();
+
+  // Hive resolves its storage directory here; every `openBox` call throws until
+  // it has run, so it has to happen before anything touches a cached box.
+  await getIt<HiveHelper>().init();
 
   final results = await Future.wait([
     AuthService.isOnboardingCompleted(),

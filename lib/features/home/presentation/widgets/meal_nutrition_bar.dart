@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
+import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/features/home/domain/entities/meal_nutrition_entity.dart';
 
 class MealNutritionStat {
   final String value;
@@ -10,6 +12,25 @@ class MealNutritionStat {
   final String labelKey;
 
   const MealNutritionStat({required this.value, required this.labelKey});
+
+  static List<MealNutritionStat> listOf(MealNutritionEntity nutrition) => [
+    MealNutritionStat(
+      value: '${nutrition.calories.round()} K',
+      labelKey: AppStrings.energy,
+    ),
+    MealNutritionStat(
+      value: '${nutrition.protein.round()} g',
+      labelKey: AppStrings.protein,
+    ),
+    MealNutritionStat(
+      value: '${nutrition.carbs.round()} g',
+      labelKey: AppStrings.carbs,
+    ),
+    MealNutritionStat(
+      value: '${nutrition.fat.round()} g',
+      labelKey: AppStrings.fat,
+    ),
+  ];
 }
 
 class MealNutritionBar extends StatelessWidget {

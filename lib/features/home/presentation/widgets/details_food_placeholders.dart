@@ -20,9 +20,6 @@ abstract class DetailsFoodPlaceholders {
     ],
   );
 
-  /// PLACEHOLDER macros. TheMealDB returns no nutrition data, so these are
-  /// fixed stand-in values purely to match the design — they are NOT real and
-  /// must be swapped for a nutrition source before being trusted.
   static const nutrition = [
     MealNutritionStat(value: '100 K', labelKey: AppStrings.energy),
     MealNutritionStat(value: '15 g', labelKey: AppStrings.protein),

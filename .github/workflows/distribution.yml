@@ -85,6 +85,15 @@ jobs:
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > android/app/google-services.json
           echo "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 -d > lib/firebase_options.dart
 
+      - name: 🔑 Restore Groq Key
+        run: |
+          # env.json is gitignored, so CI rebuilds it from the secret. Written
+          # with a heredoc rather than echo so the key never appears in an
+          # argument list.
+          cat > env.json <<EOF
+          {"GROQ_API_KEY": "${{ secrets.GROQ_API_KEY }}"}
+          EOF
+
       - name: 🔑 Restore Keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
@@ -106,7 +115,7 @@ jobs:
         run: |
           # Build with Shorebird using the automated version
           echo "Building version: $NEW_VERSION"
-          shorebird release android --artifact apk -- --build-name=$NEW_VERSION --build-number=${{ github.run_number }}
+          shorebird release android --artifact apk -- --build-name=$NEW_VERSION --build-number=${{ github.run_number }} --dart-define-from-file=env.json
           
           cd android
           # Run Fastlane to upload to Firebase

@@ -29,7 +29,11 @@ abstract class DioModule {
     if (kDebugMode) {
       dio.interceptors.add(
         PrettyDioLogger(
-          requestHeader: true,
+          // Off on purpose. Request headers carry the auth bearer token and the
+          // Groq API key, and debug logs get pasted into issues and chats —
+          // printing them is how a live credential leaks. Flip it on locally
+          // only while debugging a header, then flip it back.
+          requestHeader: false,
           requestBody: true,
           responseBody: true,
           responseHeader: false,
@@ -76,7 +80,11 @@ abstract class DioModule {
     if (kDebugMode) {
       dio.interceptors.add(
         PrettyDioLogger(
-          requestHeader: true,
+          // Off on purpose. Request headers carry the auth bearer token and the
+          // Groq API key, and debug logs get pasted into issues and chats —
+          // printing them is how a live credential leaks. Flip it on locally
+          // only while debugging a header, then flip it back.
+          requestHeader: false,
           requestBody: true,
           responseBody: true,
           responseHeader: false,

@@ -65,18 +65,42 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
             context,
             DetailsFoodPlaceholders.skeleton,
             isLoading: true,
+            // Already inside the whole-screen Skeletonizer, so it needs no
+            // shimmer of its own here.
+            nutrition: const MealNutritionBar(
+              stats: DetailsFoodPlaceholders.nutrition,
+            ),
           ),
           DetailsFoodStatus.error => _buildError(context, state),
-          DetailsFoodStatus.success => _buildContent(context, state.details!),
+          DetailsFoodStatus.success => _buildContent(
+            context,
+            state.details!,
+            nutrition: _buildNutritionBar(state),
+          ),
         },
       ),
     );
+  }
+
+  Widget? _buildNutritionBar(DetailsFoodState state) {
+    final nutrition = state.nutrition;
+
+    if (state.nutritionStatus == DetailsFoodStatus.error) return null;
+
+    if (nutrition == null) {
+      return const Skeletonizer(
+        child: MealNutritionBar(stats: DetailsFoodPlaceholders.nutrition),
+      );
+    }
+
+    return MealNutritionBar(stats: MealNutritionStat.listOf(nutrition));
   }
 
   Widget _buildContent(
     BuildContext context,
     DetailsFoodEntity details, {
     bool isLoading = false,
+    Widget? nutrition,
   }) {
     final videoUrl = YoutubeUrl.watchUrlOf(details.youtubeUrl);
 
@@ -95,9 +119,7 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
                   : () => context.read<DetailsFoodCubit>().doIntent(
                       const OpenMealVideoEvent(),
                     ),
-              footer: const MealNutritionBar(
-                stats: DetailsFoodPlaceholders.nutrition,
-              ),
+              footer: nutrition,
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),

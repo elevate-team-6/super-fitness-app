@@ -146,5 +146,6 @@
   "energy": "Energy",
   "protein": "Protein",
   "carbs": "Carbs",
-  "fat": "Fat"
+  "fat": "Fat",
+  "nutritionUnavailable": "Nutrition estimate unavailable"
 }
