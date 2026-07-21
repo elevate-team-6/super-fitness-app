@@ -38,21 +38,22 @@ class CustomCachedImage extends StatelessWidget {
       placeholder: (context, url) =>
           placeholder ?? const Center(child: CircularProgressIndicator()),
 
+      // No Expanded here: CachedNetworkImage hands this widget to a SizedBox,
+      // not a Flex, so an Expanded throws a ParentDataWidget assertion on every
+      // failed load. The ColoredBox fills whatever the caller constrained us to.
       errorWidget: (context, url, error) =>
           errorWidget ??
-          Expanded(
-            child: Container(
-              color: AppColors.orange30,
-              child: Center(
-                child: SvgPicture.asset(
-                  AppIcons.workOut,
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.contain,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.primary,
-                    BlendMode.srcIn,
-                  ),
+          ColoredBox(
+            color: AppColors.orange30,
+            child: Center(
+              child: SvgPicture.asset(
+                AppIcons.workOut,
+                width: 32,
+                height: 32,
+                fit: BoxFit.contain,
+                colorFilter: ColorFilter.mode(
+                  AppColors.primary,
+                  BlendMode.srcIn,
                 ),
               ),
             ),

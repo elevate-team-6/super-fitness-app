@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 
-/// A titled block on the details screen — keeps the spacing between
-/// "Ingredients" and "Description" identical without repeating it.
 class DetailsFoodSection extends StatelessWidget {
   final String title;
   final Widget child;

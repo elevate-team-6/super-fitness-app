@@ -25,8 +25,6 @@ import 'package:super_fitness/features/home/presentation/widgets/meal_ingredient
 import 'package:super_fitness/features/home/presentation/widgets/meal_nutrition_bar.dart';
 
 class DetailsFoodScreen extends StatefulWidget {
-  /// Rendered in the hero while the real record loads, so the name doesn't pop
-  /// in — the grid already knows it when it navigates here.
   final String mealName;
 
   const DetailsFoodScreen({super.key, required this.mealName});
@@ -65,8 +63,6 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
             context,
             DetailsFoodPlaceholders.skeleton,
             isLoading: true,
-            // Already inside the whole-screen Skeletonizer, so it needs no
-            // shimmer of its own here.
             nutrition: const MealNutritionBar(
               stats: DetailsFoodPlaceholders.nutrition,
             ),
