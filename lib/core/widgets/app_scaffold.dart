@@ -52,7 +52,7 @@ class AppScaffold extends StatelessWidget {
               ),
             ),
           ),
-          SafeArea(child: body),
+          body,
         ],
       ),
     );
