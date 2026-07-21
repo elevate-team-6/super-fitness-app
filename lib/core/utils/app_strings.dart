@@ -159,4 +159,5 @@ abstract class AppStrings {
   static const String veryActive = 'veryActive';
   static const String extraActive = 'extraActive';
   static const String or = 'or';
+  static const String seeAll = 'seeAll';
 }

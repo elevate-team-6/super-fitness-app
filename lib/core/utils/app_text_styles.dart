@@ -96,9 +96,27 @@ abstract class AppTextStyles {
     color: AppColors.primary,
   );
 
+  static TextStyle get primary14500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(14),
+    fontWeight: FontWeight.w500,
+    color: AppColors.primary,
+  );
+
   static TextStyle get primary13500 => GoogleFonts.balooThambi2(
     fontSize: _sp(13),
     fontWeight: FontWeight.w500,
+    color: AppColors.primary,
+  );
+
+  static TextStyle get primary12500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(12),
+    fontWeight: FontWeight.w500,
+    color: AppColors.primary,
+  );
+
+  static TextStyle get primary10700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(10),
+    fontWeight: FontWeight.w700,
     color: AppColors.primary,
   );
 
@@ -181,6 +199,42 @@ abstract class AppTextStyles {
     color: AppColors.white,
   );
 
+  static TextStyle get white12700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(12),
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  );
+
+  static TextStyle get white12500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(12),
+    fontWeight: FontWeight.w500,
+    color: AppColors.white,
+  );
+  
+  static TextStyle get white14700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(14),
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  );
+
+  static TextStyle get white14500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(14),
+    fontWeight: FontWeight.w500,
+    color: AppColors.white,
+  );
+
+  static TextStyle get white16700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(16),
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  );
+
+  static TextStyle get white10700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(10),
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  );
+
   static TextStyle get white10500 => GoogleFonts.balooThambi2(
     fontSize: _sp(10),
     fontWeight: FontWeight.w500,
@@ -205,7 +259,18 @@ abstract class AppTextStyles {
     color: AppColors.white,
   );
 
-  // White20 Styles
+  static TextStyle get white6014500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(14),
+    fontWeight: FontWeight.w500,
+    color: AppColors.white.withValues(alpha: 0.6),
+  );
+
+  static TextStyle get white6012500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(12),
+    fontWeight: FontWeight.w500,
+    color: AppColors.white.withValues(alpha: 0.6),
+  );
+
   static TextStyle get white2031500 => GoogleFonts.balooThambi2(
     fontSize: _sp(31),
     fontWeight: FontWeight.w500,
