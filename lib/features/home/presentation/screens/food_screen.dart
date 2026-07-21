@@ -9,23 +9,17 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
+import 'package:super_fitness/core/widgets/custom_tab_bar.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
+import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_event.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_state.dart';
 import 'package:super_fitness/features/home/presentation/widgets/meal_card.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_time_tabs.dart';
+import 'package:super_fitness/features/home/presentation/widgets/meal_skeleton_placeholders.dart';
 
 class FoodScreen extends StatelessWidget {
   const FoodScreen({super.key});
-
-  /// Placeholders shaped like real cards, shown behind the skeleton shimmer.
-  static const _skeletonMeals = [
-    MealEntity(id: '1', name: 'Loading meal name', thumbnail: ''),
-    MealEntity(id: '2', name: 'Loading meal name', thumbnail: ''),
-    MealEntity(id: '3', name: 'Loading meal name', thumbnail: ''),
-    MealEntity(id: '4', name: 'Loading meal name', thumbnail: ''),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -37,46 +31,52 @@ class FoodScreen extends StatelessWidget {
         onBackPressed: () => Navigator.pop(context),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+        padding: EdgeInsets.symmetric(vertical: 8.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BlocBuilder<FoodCubit, FoodState>(
-              buildWhen: (previous, current) =>
-                  previous.selectedMealTime != current.selectedMealTime,
-              builder: (context, state) => MealTimeTabs(
-                selected: state.selectedMealTime,
-                onSelected: (mealTime) => context.read<FoodCubit>().doIntent(
-                  SelectMealTimeEvent(mealTime),
+            DefaultTabController(
+              length: MealTime.values.length,
+              initialIndex: MealTime.values.indexOf(
+                context.read<FoodCubit>().state.selectedMealTime,
+              ),
+              child: CustomTabBar(
+                padding: EdgeInsets.zero,
+                tabs: MealTime.values.map((m) => m.labelKey.tr()).toList(),
+                onTap: (index) => context.read<FoodCubit>().doIntent(
+                  SelectMealTimeEvent(MealTime.values[index]),
                 ),
               ),
             ),
             SizedBox(height: 16.h),
             Expanded(
-              child: BlocBuilder<FoodCubit, FoodState>(
-                builder: (context, state) => switch (state.status) {
-                  FoodStatus.initial || FoodStatus.loading => _buildGrid(
-                    _skeletonMeals,
-                    isLoading: true,
-                  ),
-                  // Scrollable because the shared error view is taller than the
-                  // space left under the header on short screens.
-                  FoodStatus.error => SingleChildScrollView(
-                    child: CustomErrorStateView(
-                      message: state.errorMessage,
-                      onRetry: () => context.read<FoodCubit>().doIntent(
-                        const LoadMealsEvent(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: BlocBuilder<FoodCubit, FoodState>(
+                  builder: (context, state) => switch (state.status) {
+                    FoodStatus.initial || FoodStatus.loading => _buildGrid(
+                      skeletonMeals,
+                      isLoading: true,
+                    ),
+                    // Scrollable because the shared error view is taller than the
+                    // space left under the header on short screens.
+                    FoodStatus.error => SingleChildScrollView(
+                      child: CustomErrorStateView(
+                        message: state.errorMessage,
+                        onRetry: () => context.read<FoodCubit>().doIntent(
+                          const LoadMealsEvent(),
+                        ),
                       ),
                     ),
-                  ),
-                  FoodStatus.success when state.meals.isEmpty => Center(
-                    child: Text(
-                      AppStrings.noMealsFound.tr(),
-                      style: AppTextStyles.white2016500,
+                    FoodStatus.success when state.meals.isEmpty => Center(
+                      child: Text(
+                        AppStrings.noMealsFound.tr(),
+                        style: AppTextStyles.white2016500,
+                      ),
                     ),
-                  ),
-                  FoodStatus.success => _buildGrid(state.meals),
-                },
+                    FoodStatus.success => _buildGrid(state.meals),
+                  },
+                ),
               ),
             ),
           ],
@@ -94,7 +94,9 @@ class FoodScreen extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 12.w,
           mainAxisSpacing: 12.h,
-          childAspectRatio: 0.85,
+          // Tall enough for a two-line meal name plus the country line; 0.85
+          // clipped those cards by a few pixels.
+          childAspectRatio: 0.78,
         ),
         itemBuilder: (context, index) => MealCard(meal: meals[index]),
       ),

@@ -167,8 +167,8 @@ abstract class AppTheme {
       tabBarTheme: TabBarThemeData(
         labelColor: AppColors.white,
         unselectedLabelColor: AppColors.white,
-        labelStyle: AppTextStyles.white13500,
-        unselectedLabelStyle: AppTextStyles.white13500,
+        labelStyle: AppTextStyles.white14700,
+        unselectedLabelStyle: AppTextStyles.white14700,
         indicator: BoxDecoration(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(100.r),

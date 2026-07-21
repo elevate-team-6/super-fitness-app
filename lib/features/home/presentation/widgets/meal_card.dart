@@ -31,8 +31,6 @@ class MealCard extends StatelessWidget {
 
   Widget _buildCard() {
     return Container(
-      width: 160.w,
-      margin: EdgeInsetsDirectional.only(end: 12.w),
       decoration: BoxDecoration(
         color: AppColors.black80,
         borderRadius: BorderRadius.circular(16.r),
@@ -43,7 +41,8 @@ class MealCard extends StatelessWidget {
         children: [
           CustomCachedImage(
             imageUrl: meal.thumbnail,
-            width: 160.w,
+            // Fills the grid cell, whatever width it hands the card.
+            width: double.infinity,
             height: 110.h,
             // Static rather than the default spinner — an endless animation
             // makes `pumpAndSettle` hang in widget tests.
