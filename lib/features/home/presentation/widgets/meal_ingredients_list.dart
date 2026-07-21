@@ -42,7 +42,7 @@ class _MealIngredientRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(8.w, 12.h, 8.w, 12.h),
+      padding: EdgeInsets.fromLTRB(8.w, 4.h, 8.w, 4.h),
       decoration: BoxDecoration(
         border: showDivider
             ? const Border(bottom: BorderSide(color: AppColors.black70))

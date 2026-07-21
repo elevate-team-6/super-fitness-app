@@ -118,7 +118,7 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
               footer: nutrition,
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
