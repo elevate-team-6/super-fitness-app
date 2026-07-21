@@ -45,7 +45,7 @@ class AppScaffold extends StatelessWidget {
             ),
           ),
           Positioned.fill(child: _buildOverlay()),
-          SafeArea(child: body),
+          body,
         ],
       ),
     );
