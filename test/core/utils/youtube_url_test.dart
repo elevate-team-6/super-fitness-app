@@ -11,7 +11,10 @@ void main() {
     });
 
     test('reads the id from share, embed and shorts links', () {
-      expect(YoutubeUrl.videoIdOf('https://youtu.be/xvPR2Tfw5k0'), 'xvPR2Tfw5k0');
+      expect(
+        YoutubeUrl.videoIdOf('https://youtu.be/xvPR2Tfw5k0'),
+        'xvPR2Tfw5k0',
+      );
       expect(
         YoutubeUrl.videoIdOf('https://www.youtube.com/embed/xvPR2Tfw5k0'),
         'xvPR2Tfw5k0',
@@ -59,9 +62,12 @@ void main() {
       );
     });
 
-    test('returns null when there is no video, so callers can hide the player', () {
-      expect(YoutubeUrl.watchUrlOf(null), isNull);
-      expect(YoutubeUrl.watchUrlOf('not a url at all'), isNull);
-    });
+    test(
+      'returns null when there is no video, so callers can hide the player',
+      () {
+        expect(YoutubeUrl.watchUrlOf(null), isNull);
+        expect(YoutubeUrl.watchUrlOf('not a url at all'), isNull);
+      },
+    );
   });
 }

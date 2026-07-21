@@ -61,8 +61,9 @@ void main() {
     nutritionUseCase = MockGetMealNutritionUseCase();
     // Loading the recipe always chains into the estimate, so every test needs
     // it stubbed even when it only asserts on the recipe.
-    when(nutritionUseCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(nutrition));
+    when(
+      nutritionUseCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(nutrition));
   });
 
   Widget createWidgetUnderTest(DetailsFoodCubit cubit) {
@@ -85,8 +86,9 @@ void main() {
   testWidgets('renders the description and ingredients once loaded', (
     tester,
   ) async {
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(details));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(details));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -107,8 +109,9 @@ void main() {
   });
 
   testWidgets('shows the nutrition bar with all four macros', (tester) async {
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(details));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(details));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -132,10 +135,12 @@ void main() {
   testWidgets('drops the nutrition bar when the estimate fails', (
     tester,
   ) async {
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(details));
-    when(nutritionUseCase(any))
-        .thenAnswer((_) async => const ErrorBaseResponse('quota exceeded'));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(details));
+    when(
+      nutritionUseCase(any),
+    ).thenAnswer((_) async => const ErrorBaseResponse('quota exceeded'));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -149,8 +154,9 @@ void main() {
   });
 
   testWidgets('offers the video when the recipe has one', (tester) async {
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(details));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(details));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -173,8 +179,9 @@ void main() {
       thumbnail: '',
       instructions: 'Cook it.',
     );
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(noVideo));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(noVideo));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -189,8 +196,9 @@ void main() {
   // The hero replaced the app bar, so it owns the only way back out of a
   // loaded screen.
   testWidgets('the hero back button pops the route', (tester) async {
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(details));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(details));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -226,8 +234,9 @@ void main() {
   testWidgets('shows the retry view on failure and refetches when tapped', (
     tester,
   ) async {
-    when(useCase(any))
-        .thenAnswer((_) async => const ErrorBaseResponse('offline'));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
     final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -236,8 +245,9 @@ void main() {
     expect(find.byType(CustomErrorStateView), findsOneWidget);
     expect(find.text('offline'), findsOneWidget);
 
-    when(useCase(any))
-        .thenAnswer((_) async => const SuccessBaseResponse(details));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(details));
     await tester.tap(find.text(AppStrings.retry));
     await tester.pumpAndSettle();
 

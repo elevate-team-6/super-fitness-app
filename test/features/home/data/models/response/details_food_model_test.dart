@@ -81,10 +81,14 @@ void main() {
     });
 
     test('yields an empty list when tags are null or blank', () {
-      expect(DetailsFoodModel.fromJson(payload(tags: null)).toEntity().tags,
-          isEmpty);
       expect(
-          DetailsFoodModel.fromJson(payload(tags: '')).toEntity().tags, isEmpty);
+        DetailsFoodModel.fromJson(payload(tags: null)).toEntity().tags,
+        isEmpty,
+      );
+      expect(
+        DetailsFoodModel.fromJson(payload(tags: '')).toEntity().tags,
+        isEmpty,
+      );
     });
   });
 

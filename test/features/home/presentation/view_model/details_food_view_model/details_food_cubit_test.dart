@@ -49,9 +49,9 @@ void main() {
   /// Every load chains into the nutrition request, so the tests that don't care
   /// about macros still have to stub it.
   void stubNutrition([BaseResponse<MealNutritionEntity>? response]) {
-    when(nutritionUseCase(any)).thenAnswer(
-      (_) async => response ?? const SuccessBaseResponse(nutrition),
-    );
+    when(
+      nutritionUseCase(any),
+    ).thenAnswer((_) async => response ?? const SuccessBaseResponse(nutrition));
   }
 
   DetailsFoodCubit buildCubit() =>
@@ -61,8 +61,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'emits loading then success on LoadDetailsFoodEvent',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(details));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(details));
         stubNutrition();
         return buildCubit();
       },
@@ -93,8 +94,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'keeps the details on a nutrition failure',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(details));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(details));
         stubNutrition(const ErrorBaseResponse('quota exceeded'));
         return buildCubit();
       },
@@ -117,8 +119,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'estimates the macros from the loaded recipe',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(details));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(details));
         stubNutrition();
         return buildCubit();
       },
@@ -130,8 +133,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'skips the macros when the recipe fails to load',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const ErrorBaseResponse('offline'));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
         stubNutrition();
         return buildCubit();
       },
@@ -142,8 +146,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'fetches the meal id the route was opened with',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(details));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(details));
         stubNutrition();
         return buildCubit();
       },
@@ -154,8 +159,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'emits error with the failure message',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const ErrorBaseResponse('offline'));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
         return buildCubit();
       },
       act: (cubit) => cubit.doIntent(const LoadDetailsFoodEvent()),
@@ -173,8 +179,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'downgrades a success with no payload to an error',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(null));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
         return buildCubit();
       },
       act: (cubit) => cubit.doIntent(const LoadDetailsFoodEvent()),
@@ -187,8 +194,9 @@ void main() {
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'refetches when the retry button fires the event again',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const ErrorBaseResponse('offline'));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
         return buildCubit();
       },
       act: (cubit) async {

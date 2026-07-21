@@ -183,9 +183,8 @@ void main() {
 
     test('fails when the API returns an empty meals list', () async {
       when(dataSource.getDetailsFood(any)).thenAnswer(
-        (_) async => const SuccessBaseResponse(
-          DetailsFoodResponseModel(meals: []),
-        ),
+        (_) async =>
+            const SuccessBaseResponse(DetailsFoodResponseModel(meals: [])),
       );
 
       final result = await repo.getDetailsFood('nope');
@@ -194,8 +193,9 @@ void main() {
     });
 
     test('passes a data source failure through', () async {
-      when(dataSource.getDetailsFood(any))
-          .thenAnswer((_) async => const ErrorBaseResponse('offline'));
+      when(
+        dataSource.getDetailsFood(any),
+      ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
 
       final result = await repo.getDetailsFood('52959');
 
@@ -228,8 +228,9 @@ void main() {
 
     test('estimates and caches on a cache miss', () async {
       stubCacheMiss();
-      when(dataSource.estimateNutrition(any))
-          .thenAnswer((_) async => const SuccessBaseResponse(estimate));
+      when(
+        dataSource.estimateNutrition(any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(estimate));
 
       final result = await repo.getMealNutrition(meal);
 
@@ -273,8 +274,9 @@ void main() {
           key: anyNamed('key'),
         ),
       ).thenAnswer((_) async => 'not json');
-      when(dataSource.estimateNutrition(any))
-          .thenAnswer((_) async => const SuccessBaseResponse(estimate));
+      when(
+        dataSource.estimateNutrition(any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(estimate));
 
       final result = await repo.getMealNutrition(meal);
 
@@ -285,8 +287,9 @@ void main() {
     // A failed write must not lose an estimate we already paid for.
     test('still succeeds when the cache write fails', () async {
       stubCacheMiss();
-      when(dataSource.estimateNutrition(any))
-          .thenAnswer((_) async => const SuccessBaseResponse(estimate));
+      when(
+        dataSource.estimateNutrition(any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(estimate));
       when(
         hiveHelper.cacheData<String>(
           boxName: anyNamed('boxName'),
@@ -302,8 +305,9 @@ void main() {
 
     test('passes a data source failure through', () async {
       stubCacheMiss();
-      when(dataSource.estimateNutrition(any))
-          .thenAnswer((_) async => const ErrorBaseResponse('offline'));
+      when(
+        dataSource.estimateNutrition(any),
+      ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
 
       final result = await repo.getMealNutrition(meal);
 
@@ -315,8 +319,9 @@ void main() {
 
     test('fails when a success carries no payload', () async {
       stubCacheMiss();
-      when(dataSource.estimateNutrition(any))
-          .thenAnswer((_) async => const SuccessBaseResponse(null));
+      when(
+        dataSource.estimateNutrition(any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       final result = await repo.getMealNutrition(meal);
 
