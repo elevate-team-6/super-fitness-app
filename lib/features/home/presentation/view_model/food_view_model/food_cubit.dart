@@ -12,8 +12,6 @@ import 'package:super_fitness/features/home/presentation/view_model/food_view_mo
 class FoodCubit extends BaseCubit<FoodState, BaseUiEvent> {
   final GetMealsByMealTimeUseCase _getMealsByMealTimeUseCase;
 
-  /// Keeps already-loaded meal times around so switching tabs back and forth
-  /// doesn't re-hit the network.
   final Map<MealTime, List<MealEntity>> _cache = {};
 
   FoodCubit(this._getMealsByMealTimeUseCase) : super(const FoodState());
@@ -28,8 +26,6 @@ class FoodCubit extends BaseCubit<FoodState, BaseUiEvent> {
   }
 
   void _selectMealTime(MealTime mealTime) {
-    // `initial` still needs a fetch even when the meal time already matches —
-    // that's the case when the route opens straight onto Breakfast.
     if (mealTime == state.selectedMealTime &&
         state.status != FoodStatus.initial) {
       return;
@@ -56,8 +52,6 @@ class FoodCubit extends BaseCubit<FoodState, BaseUiEvent> {
 
     final result = await _getMealsByMealTimeUseCase(mealTime);
 
-    // The user may have switched tabs while this was in flight — dropping the
-    // stale response keeps the list matching the selected tab.
     if (isClosed || mealTime != state.selectedMealTime) return;
 
     switch (result) {

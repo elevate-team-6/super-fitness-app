@@ -4,9 +4,6 @@ import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
 enum FoodStatus { initial, loading, success, error }
 
-/// Unlike the auth cubits, loading and error live in state rather than on the
-/// UI event stream: this section renders inline inside Home, so a full-screen
-/// loading dialog or a snackbar would be the wrong affordance.
 final class FoodState extends Equatable {
   final MealTime selectedMealTime;
   final FoodStatus status;

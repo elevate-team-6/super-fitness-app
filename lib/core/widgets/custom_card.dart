@@ -31,7 +31,11 @@ class CustomCard extends StatelessWidget {
         child: Stack(
           children: [
             Positioned.fill(
-              child: isNetworkImage
+              child: image.isEmpty
+                  // Image.asset('') throws, so an item with no artwork would
+                  // take the whole grid down with it.
+                  ? const ColoredBox(color: AppColors.black80)
+                  : isNetworkImage
                   ? CustomCachedImage(imageUrl: image, fit: BoxFit.cover)
                   : Image.asset(image, fit: BoxFit.cover),
             ),
@@ -50,6 +54,10 @@ class CustomCard extends StatelessWidget {
                     ),
                     child: Text(
                       title,
+                      // Unbounded, a long title grows until it swallows the
+                      // whole card and buries the artwork behind it.
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.white16700,
                       textAlign: TextAlign.center,
                     ),

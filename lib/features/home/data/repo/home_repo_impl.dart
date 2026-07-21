@@ -36,8 +36,6 @@ class HomeRepoImpl implements HomeRepoContract {
       }
     }
 
-    // Only fail when nothing came back at all — one dead category shouldn't
-    // blank out a meal time that has other categories behind it.
     if (buckets.isEmpty) {
       return ErrorBaseResponse(firstError ?? AppStrings.noMealsFound);
     }
@@ -45,8 +43,6 @@ class HomeRepoImpl implements HomeRepoContract {
     return SuccessBaseResponse(_interleave(buckets));
   }
 
-  /// Round-robins the categories so a multi-category meal time doesn't render
-  /// as "all the chicken, then all the pasta". Duplicate ids are dropped.
   List<MealEntity> _interleave(List<List<MealModel>> buckets) {
     final longest = buckets.fold<int>(
       0,
