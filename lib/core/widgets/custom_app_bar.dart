@@ -30,6 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    height ?? 90.h;
     if (backgroundImage != null) {
       return _buildImageAppBar(context);
     }
@@ -81,8 +82,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(32.r),
-                bottomRight: Radius.circular(32.r),
+                bottomLeft: Radius.circular(20.r),
+                bottomRight: Radius.circular(20.r),
               ),
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
@@ -94,74 +95,72 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (onBackPressed != null)
-                        GestureDetector(
-                          onTap: onBackPressed,
-                          child: Container(
-                            padding: EdgeInsets.all(8.w),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: SvgPicture.asset(
-                              AppIcons.back,
-                              width: 12.w,
-                              height: 12.w,
-                              matchTextDirection: true,
-                            ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (onBackPressed != null)
+                      GestureDetector(
+                        onTap: onBackPressed,
+                        child: Container(
+                          padding: EdgeInsets.all(8.w),
+                          margin: EdgeInsets.only(right: 32.w, top: height! > 100? 32.h : 16.h),
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
                           ),
-                        )
-                      else
-                        const SizedBox.shrink(),
-                      if (actions != null)
-                        Row(mainAxisSize: MainAxisSize.min, children: actions!)
-                      else
-                        const SizedBox.shrink(),
-                    ],
-                  ),
-                  const Spacer(),
-                  Column(
-                    crossAxisAlignment: centerTitle == true
-                        ? CrossAxisAlignment.center
-                        : CrossAxisAlignment.start,
-                    children: [
-                      if (title != null)
-                        title is Widget
-                            ? title
-                            : Text(
-                                title.toString(),
-                                style: AppTextStyles.white31500,
-                                textAlign: centerTitle == true
-                                    ? TextAlign.center
-                                    : TextAlign.start,
-                              ),
-                      if (subtitle != null) ...[
-                        SizedBox(height: 8.h),
-                        Text(
-                          subtitle!,
-                          style: AppTextStyles.white16500,
-                          textAlign: centerTitle == true
-                              ? TextAlign.center
-                              : TextAlign.start,
+                          child: SvgPicture.asset(
+                            AppIcons.back,
+                            width: 12.w,
+                            height: 12.w,
+                            matchTextDirection: true,
+                          ),
                         ),
-                      ],
-                      if (bottomContent != null) ...[
+                      )
+                    else
+                      const SizedBox.shrink(),
+                    if (actions != null)
+                      Row(mainAxisSize: MainAxisSize.min, children: actions!)
+                    else
+                      const SizedBox.shrink(),
+                  ],
+                ),
+                const Spacer(),
+                Column(
+                  crossAxisAlignment: centerTitle == true
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
+                  children: [
+                    if (title != null)
+                      title is Widget
+                          ? title
+                          : Text(
+                              title.toString(),
+                              style: AppTextStyles.white31500,
+                              textAlign: centerTitle == true
+                                  ? TextAlign.center
+                                  : TextAlign.start,
+                            ),
+                    if (subtitle != null) ...[
                       SizedBox(height: 8.h),
-                        bottomContent!,
-                      ],
-                      SizedBox(height: 8.h),
+                      Text(
+                        subtitle!,
+                        style: AppTextStyles.white16500,
+                        textAlign: centerTitle == true
+                            ? TextAlign.center
+                            : TextAlign.start,
+                      ),
                     ],
-                  ),
-                ],
-              ),
+                    if (bottomContent != null) ...[
+                    SizedBox(height: 8.h),
+                      bottomContent!,
+                    ],
+                    SizedBox(height: 8.h),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
