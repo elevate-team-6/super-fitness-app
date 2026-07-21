@@ -31,15 +31,12 @@ class CircularMetricIndicator extends StatelessWidget {
         children: [
           Text(
             value,
-            style: AppTextStyles.white12500.copyWith(fontSize: 10.sp),
+            style: AppTextStyles.white10500,
             textAlign: TextAlign.center,
           ),
           Text(
             label,
-            style: AppTextStyles.white12700.copyWith(
-              color: AppColors.primary,
-              fontSize: 10.sp,
-            ),
+            style: AppTextStyles.primary10700,
             textAlign: TextAlign.center,
           ),
         ],

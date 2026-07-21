@@ -31,9 +31,7 @@ class AppFilterChip extends StatelessWidget {
           label,
           style: isSelected
               ? AppTextStyles.white14700
-              : AppTextStyles.white14500.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.6),
-                ),
+              : AppTextStyles.white6014500,
         ),
       ),
     );
