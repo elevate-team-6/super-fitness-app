@@ -8,9 +8,19 @@ import 'package:super_fitness/core/utils/app_strings.dart';
 /// their results. Swap [categories] here if the backend ever returns a real
 /// meal type.
 enum MealTime {
-  breakfast(AppStrings.breakfast, ['Breakfast'], '$_categoryImages/breakfast.png'),
-  lunch(AppStrings.lunch, ['Chicken', 'Pasta', 'Seafood'], '$_categoryImages/chicken.png'),
-  dinner(AppStrings.dinner, ['Beef', 'Lamb', 'Pork'], '$_categoryImages/beef.png');
+  breakfast(AppStrings.breakfast, [
+    'Breakfast',
+  ], '$_categoryImages/breakfast.png'),
+  lunch(AppStrings.lunch, [
+    'Chicken',
+    'Pasta',
+    'Seafood',
+  ], '$_categoryImages/chicken.png'),
+  dinner(AppStrings.dinner, [
+    'Beef',
+    'Lamb',
+    'Pork',
+  ], '$_categoryImages/beef.png');
 
   const MealTime(this.labelKey, this.categories, this.thumbnail);
 

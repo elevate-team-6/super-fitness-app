@@ -49,7 +49,9 @@ void main() {
   }
 
   testWidgets('renders a card per meal once loaded', (tester) async {
-    when(useCase(any)).thenAnswer((_) async => const SuccessBaseResponse(meals));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(meals));
     final cubit = FoodCubit(useCase)..doIntent(const LoadMealsEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
@@ -72,7 +74,9 @@ void main() {
     expect(find.byType(CustomErrorStateView), findsOneWidget);
     expect(find.text('boom'), findsOneWidget);
 
-    when(useCase(any)).thenAnswer((_) async => const SuccessBaseResponse(meals));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(meals));
     await tester.tap(find.text(AppStrings.retry));
     await tester.pumpAndSettle();
 
@@ -98,7 +102,9 @@ void main() {
   });
 
   testWidgets('tapping a tab loads that meal time', (tester) async {
-    when(useCase(any)).thenAnswer((_) async => const SuccessBaseResponse(meals));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(meals));
     final cubit = FoodCubit(useCase)..doIntent(const LoadMealsEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));

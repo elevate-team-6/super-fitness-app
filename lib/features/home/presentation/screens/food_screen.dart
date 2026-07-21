@@ -56,7 +56,7 @@ class FoodScreen extends StatelessWidget {
               SizedBox(height: 16.h),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: BlocBuilder<FoodCubit, FoodState>(
                     builder: (context, state) => switch (state.status) {
                       FoodStatus.initial || FoodStatus.loading => _buildGrid(

@@ -52,9 +52,10 @@ void main() {
       final result = await dataSource.getMealsByCategory('Chicken');
 
       expect(result, isA<SuccessBaseResponse<MealsResponseModel>>());
-      final meal =
-          (result as SuccessBaseResponse<MealsResponseModel>).data!.meals!
-              .single;
+      final meal = (result as SuccessBaseResponse<MealsResponseModel>)
+          .data!
+          .meals!
+          .single;
       expect(meal.idMeal, '52940');
       expect(meal.strMeal, 'Brown Stew Chicken');
     });
@@ -74,23 +75,26 @@ void main() {
       );
     });
 
-    test('wraps a Dio failure in ErrorBaseResponse instead of throwing', () async {
-      when(mockApiClient.getMealsByCategory(any)).thenThrow(
-        DioException(
-          requestOptions: RequestOptions(path: '/filter.php'),
-          type: DioExceptionType.connectionTimeout,
-        ),
-      );
+    test(
+      'wraps a Dio failure in ErrorBaseResponse instead of throwing',
+      () async {
+        when(mockApiClient.getMealsByCategory(any)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/filter.php'),
+            type: DioExceptionType.connectionTimeout,
+          ),
+        );
 
-      final result = await dataSource.getMealsByCategory('Chicken');
+        final result = await dataSource.getMealsByCategory('Chicken');
 
-      // ErrorHandler must swallow the exception and surface it as a response.
-      expect(result, isA<ErrorBaseResponse<MealsResponseModel>>());
-      expect(
-        (result as ErrorBaseResponse<MealsResponseModel>).errorMessage,
-        isNotEmpty,
-      );
-    });
+        // ErrorHandler must swallow the exception and surface it as a response.
+        expect(result, isA<ErrorBaseResponse<MealsResponseModel>>());
+        expect(
+          (result as ErrorBaseResponse<MealsResponseModel>).errorMessage,
+          isNotEmpty,
+        );
+      },
+    );
 
     test('wraps a 500 bad response in ErrorBaseResponse', () async {
       when(mockApiClient.getMealsByCategory(any)).thenThrow(
