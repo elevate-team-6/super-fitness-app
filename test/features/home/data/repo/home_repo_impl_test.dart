@@ -40,64 +40,82 @@ void main() {
   });
 
   MealsResponseModel mealsOf(List<String> ids) => MealsResponseModel(
-    meals: ids
-        .map((id) => MealModel(idMeal: id, strMeal: 'Meal $id'))
-        .toList(),
+    meals: ids.map((id) => MealModel(idMeal: id, strMeal: 'Meal $id')).toList(),
   );
 
   group('HomeRepoImpl.getMealsByMealTime', () {
     test('interleaves the categories of a multi-category meal time', () async {
       // MealTime.lunch is Chicken + Pasta + Seafood.
-      when(dataSource.getMealsByCategory('Chicken'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['c1', 'c2'])));
-      when(dataSource.getMealsByCategory('Pasta'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['p1'])));
-      when(dataSource.getMealsByCategory('Seafood'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['s1', 's2'])));
+      when(
+        dataSource.getMealsByCategory('Chicken'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['c1', 'c2'])));
+      when(
+        dataSource.getMealsByCategory('Pasta'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['p1'])));
+      when(
+        dataSource.getMealsByCategory('Seafood'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['s1', 's2'])));
 
       final result = await repo.getMealsByMealTime(MealTime.lunch);
 
       expect(result, isA<SuccessBaseResponse>());
-      final ids = (result as SuccessBaseResponse<List<MealEntity>>).data!.map((m) => m.id);
+      final ids = (result as SuccessBaseResponse<List<MealEntity>>).data!.map(
+        (m) => m.id,
+      );
       expect(ids, ['c1', 'p1', 's1', 'c2', 's2']);
     });
 
     test('drops duplicate meals that appear in two categories', () async {
-      when(dataSource.getMealsByCategory('Chicken'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['shared'])));
-      when(dataSource.getMealsByCategory('Pasta'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['shared'])));
-      when(dataSource.getMealsByCategory('Seafood'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['s1'])));
+      when(
+        dataSource.getMealsByCategory('Chicken'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['shared'])));
+      when(
+        dataSource.getMealsByCategory('Pasta'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['shared'])));
+      when(
+        dataSource.getMealsByCategory('Seafood'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['s1'])));
 
       final result = await repo.getMealsByMealTime(MealTime.lunch);
 
-      final ids = (result as SuccessBaseResponse<List<MealEntity>>).data!.map((m) => m.id);
+      final ids = (result as SuccessBaseResponse<List<MealEntity>>).data!.map(
+        (m) => m.id,
+      );
       expect(ids, ['shared', 's1']);
     });
 
     test('still succeeds when only some categories fail', () async {
-      when(dataSource.getMealsByCategory('Chicken'))
-          .thenAnswer((_) async => const ErrorBaseResponse('boom'));
-      when(dataSource.getMealsByCategory('Pasta'))
-          .thenAnswer((_) async => SuccessBaseResponse(mealsOf(['p1'])));
-      when(dataSource.getMealsByCategory('Seafood'))
-          .thenAnswer((_) async => const ErrorBaseResponse('boom'));
+      when(
+        dataSource.getMealsByCategory('Chicken'),
+      ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
+      when(
+        dataSource.getMealsByCategory('Pasta'),
+      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['p1'])));
+      when(
+        dataSource.getMealsByCategory('Seafood'),
+      ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
 
       final result = await repo.getMealsByMealTime(MealTime.lunch);
 
       expect(result, isA<SuccessBaseResponse>());
-      expect((result as SuccessBaseResponse<List<MealEntity>>).data!.single.id, 'p1');
+      expect(
+        (result as SuccessBaseResponse<List<MealEntity>>).data!.single.id,
+        'p1',
+      );
     });
 
     test('fails with the first error when every category fails', () async {
-      when(dataSource.getMealsByCategory(any))
-          .thenAnswer((_) async => const ErrorBaseResponse('boom'));
+      when(
+        dataSource.getMealsByCategory(any),
+      ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
 
       final result = await repo.getMealsByMealTime(MealTime.lunch);
 
       expect(result, isA<ErrorBaseResponse>());
-      expect((result as ErrorBaseResponse<List<MealEntity>>).errorMessage, 'boom');
+      expect(
+        (result as ErrorBaseResponse<List<MealEntity>>).errorMessage,
+        'boom',
+      );
     });
 
     test('fails when the API returns a null meals list', () async {

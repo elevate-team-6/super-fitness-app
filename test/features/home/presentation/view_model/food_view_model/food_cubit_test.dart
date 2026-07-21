@@ -29,8 +29,9 @@ void main() {
     blocTest<FoodCubit, FoodState>(
       'emits loading then success on LoadMealsEvent',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(meals));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(meals));
         return FoodCubit(useCase);
       },
       act: (cubit) => cubit.doIntent(const LoadMealsEvent()),
@@ -43,8 +44,9 @@ void main() {
     blocTest<FoodCubit, FoodState>(
       'emits error with the failure message',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const ErrorBaseResponse('boom'));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
         return FoodCubit(useCase);
       },
       act: (cubit) => cubit.doIntent(const LoadMealsEvent()),
@@ -58,8 +60,9 @@ void main() {
       'loads the meal time the screen opens on, even though it matches the '
       'default selection',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(meals));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(meals));
         return FoodCubit(useCase);
       },
       act: (cubit) =>
@@ -70,11 +73,13 @@ void main() {
     blocTest<FoodCubit, FoodState>(
       'switches meal time and fetches the new one',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(meals));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(meals));
         return FoodCubit(useCase);
       },
-      act: (cubit) => cubit.doIntent(const SelectMealTimeEvent(MealTime.dinner)),
+      act: (cubit) =>
+          cubit.doIntent(const SelectMealTimeEvent(MealTime.dinner)),
       expect: () => [
         const FoodState(selectedMealTime: MealTime.dinner),
         const FoodState(
@@ -92,8 +97,9 @@ void main() {
     blocTest<FoodCubit, FoodState>(
       'serves an already-loaded meal time from cache instead of refetching',
       build: () {
-        when(useCase(any))
-            .thenAnswer((_) async => const SuccessBaseResponse(meals));
+        when(
+          useCase(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(meals));
         return FoodCubit(useCase);
       },
       act: (cubit) async {

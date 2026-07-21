@@ -8,7 +8,6 @@ sealed class FoodEvents extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Loads the currently selected meal time — also used by the retry button.
 class LoadMealsEvent extends FoodEvents {
   const LoadMealsEvent();
 }

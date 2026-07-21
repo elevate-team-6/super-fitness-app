@@ -13,7 +13,7 @@ import 'package:super_fitness/features/home/domain/use_cases/get_meals_by_meal_t
 import 'package:super_fitness/features/home/presentation/screens/food_screen.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_event.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_card.dart';
+import 'package:super_fitness/core/widgets/custom_card.dart';
 
 import 'food_screen_test.mocks.dart';
 
@@ -23,6 +23,8 @@ import 'food_screen_test.mocks.dart';
 void main() {
   late MockGetMealsByMealTimeUseCase useCase;
 
+  // Blank thumbnails on purpose: CustomCard renders those as a flat box, while
+  // a real URL would sit on CustomCachedImage's spinner and hang pumpAndSettle.
   const meals = [
     MealEntity(id: '1', name: 'Brown Stew Chicken', thumbnail: ''),
     MealEntity(id: '2', name: 'Chicken Alfredo', thumbnail: ''),
@@ -47,13 +49,15 @@ void main() {
   }
 
   testWidgets('renders a card per meal once loaded', (tester) async {
-    when(useCase(any)).thenAnswer((_) async => const SuccessBaseResponse(meals));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(meals));
     final cubit = FoodCubit(useCase)..doIntent(const LoadMealsEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));
     await tester.pumpAndSettle();
 
-    expect(find.byType(MealCard), findsNWidgets(2));
+    expect(find.byType(CustomCard), findsNWidgets(2));
     expect(find.text('Brown Stew Chicken'), findsOneWidget);
     await cubit.close();
   });
@@ -70,12 +74,14 @@ void main() {
     expect(find.byType(CustomErrorStateView), findsOneWidget);
     expect(find.text('boom'), findsOneWidget);
 
-    when(useCase(any)).thenAnswer((_) async => const SuccessBaseResponse(meals));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(meals));
     await tester.tap(find.text(AppStrings.retry));
     await tester.pumpAndSettle();
 
     expect(find.byType(CustomErrorStateView), findsNothing);
-    expect(find.byType(MealCard), findsNWidgets(2));
+    expect(find.byType(CustomCard), findsNWidgets(2));
     await cubit.close();
   });
 
@@ -91,12 +97,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(AppStrings.noMealsFound), findsOneWidget);
-    expect(find.byType(MealCard), findsNothing);
+    expect(find.byType(CustomCard), findsNothing);
     await cubit.close();
   });
 
   testWidgets('tapping a tab loads that meal time', (tester) async {
-    when(useCase(any)).thenAnswer((_) async => const SuccessBaseResponse(meals));
+    when(
+      useCase(any),
+    ).thenAnswer((_) async => const SuccessBaseResponse(meals));
     final cubit = FoodCubit(useCase)..doIntent(const LoadMealsEvent());
 
     await tester.pumpWidget(createWidgetUnderTest(cubit));

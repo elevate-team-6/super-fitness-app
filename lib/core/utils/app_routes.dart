@@ -89,8 +89,9 @@ abstract class AppRoutes {
 
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => getIt<FoodCubit>()
-                ..doIntent(SelectMealTimeEvent(args.mealTime)),
+              create: (_) =>
+                  getIt<FoodCubit>()
+                    ..doIntent(SelectMealTimeEvent(args.mealTime)),
               child: const FoodScreen(),
             ),
           );

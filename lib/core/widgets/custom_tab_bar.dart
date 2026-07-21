@@ -39,13 +39,15 @@ class CustomTabBar extends StatelessWidget {
         indicatorSize: TabBarIndicatorSize.label,
         dividerColor: Colors.transparent,
         tabs: tabs
-            .map((title) => Tab(
-                  height: 30.h,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: Text(title),
-                  ),
-                ))
+            .map(
+              (title) => Tab(
+                height: 30.h,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: Text(title),
+                ),
+              ),
+            )
             .toList(),
       ),
     );

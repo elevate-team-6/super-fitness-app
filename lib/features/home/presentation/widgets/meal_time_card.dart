@@ -6,8 +6,6 @@ import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/custom_cached_image.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
-/// One of the three cards in Home's "Recommendation For You" row. Tapping it
-/// opens the food screen already filtered to that meal time.
 class MealTimeCard extends StatelessWidget {
   final MealTime mealTime;
   final VoidCallback onTap;
@@ -29,18 +27,17 @@ class MealTimeCard extends StatelessWidget {
           children: [
             CustomCachedImage(
               imageUrl: mealTime.thumbnail,
-              // A static placeholder instead of the default spinner: this card
-              // renders on Home's first frame, and an endless animation makes
-              // `pumpAndSettle` hang in every widget test that reaches Home.
               placeholder: const ColoredBox(color: AppColors.black80),
             ),
-            // Keeps the label readable over the photo.
             DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, AppColors.black.withValues(alpha: 0.7)],
+                  colors: [
+                    Colors.transparent,
+                    AppColors.black.withValues(alpha: 0.7),
+                  ],
                 ),
               ),
             ),
