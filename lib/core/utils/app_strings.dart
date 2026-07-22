@@ -159,4 +159,24 @@ abstract class AppStrings {
   static const String veryActive = 'veryActive';
   static const String extraActive = 'extraActive';
   static const String or = 'or';
+
+  // Home
+  static const String hi = 'hi';
+  static const String letsStartYourDay = 'lets_start_your_day';
+  static const String category = 'category';
+  static const String gym = 'gym';
+  static const String fitness = 'fitness';
+  static const String yoga = 'yoga';
+  static const String aerobics = 'aerobics';
+  static const String trainer = 'trainer';
+  static const String upcomingFeature = 'upcoming_feature';
+  static const String recommendationToday = 'recommendation_today';
+  static const String upcomingWorkouts = 'upcoming_workouts';
+  static const String seeAll = 'see_all';
+  static const String recommendationForYou = 'recommendation_for_you';
+  static const String popularTraining = 'popular_training';
+  static const String tasksCount = 'tasks_count';
+  static const String beginner = 'beginner';
+  static const String intermediate = 'intermediate';
+  static const String advanced = 'advanced';
 }
