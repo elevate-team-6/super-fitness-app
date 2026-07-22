@@ -15,6 +15,7 @@ class CustomCachedImage extends StatelessWidget {
 
   final Widget? placeholder;
   final Widget? errorWidget;
+  final String? placeholderIcon;
 
   const CustomCachedImage({
     super.key,
@@ -25,6 +26,7 @@ class CustomCachedImage extends StatelessWidget {
     this.borderRadius,
     this.placeholder,
     this.errorWidget,
+    this.placeholderIcon,
   });
 
   @override
@@ -34,29 +36,8 @@ class CustomCachedImage extends StatelessWidget {
       width: width,
       height: height,
       fit: fit,
-
-      placeholder: (context, url) =>
-          placeholder ?? const Center(child: CircularProgressIndicator()),
-
-      errorWidget: (context, url, error) =>
-          errorWidget ??
-          Expanded(
-            child: Container(
-              color: AppColors.orange30,
-              child: Center(
-                child: SvgPicture.asset(
-                  AppIcons.workOut,
-                  width: 32,
-                  height: 32,
-                  fit: BoxFit.contain,
-                  colorFilter: ColorFilter.mode(
-                    AppColors.primary,
-                    BlendMode.srcIn,
-                  ),
-                ),
-              ),
-            ),
-          ),
+      placeholder: (context, url) => placeholder ?? _buildPlaceholder(),
+      errorWidget: (context, url, error) => errorWidget ?? _buildPlaceholder(),
     );
 
     if (borderRadius != null) {
@@ -64,5 +45,25 @@ class CustomCachedImage extends StatelessWidget {
     }
 
     return image;
+  }
+
+  Widget _buildPlaceholder() {
+    return Container(
+      width: width,
+      height: height,
+      color: AppColors.orange20,
+      child: Center(
+        child: SvgPicture.asset(
+          placeholderIcon ?? AppIcons.workOut,
+          width: 32.w,
+          height: 32.w,
+          fit: BoxFit.contain,
+          colorFilter: const ColorFilter.mode(
+            AppColors.primary,
+            BlendMode.srcIn,
+          ),
+        ),
+      ),
+    );
   }
 }
