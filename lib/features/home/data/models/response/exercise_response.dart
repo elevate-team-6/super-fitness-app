@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../domain/entities/exercise_entity.dart';
+
 part 'exercise_response.g.dart';
 
 @JsonSerializable()
@@ -26,12 +28,12 @@ class ExerciseResponse extends Equatable {
 
   @override
   List<Object?> get props => [
-        message,
-        totalExercises,
-        totalPages,
-        currentPage,
-        exercises,
-      ];
+    message,
+    totalExercises,
+    totalPages,
+    currentPage,
+    exercises,
+  ];
 }
 
 @JsonSerializable()
@@ -142,41 +144,50 @@ class ExerciseModel extends Equatable {
 
   Map<String, dynamic> toJson() => _$ExerciseModelToJson(this);
 
+  ExerciseEntity toEntity() => ExerciseEntity(
+    id: id ?? '',
+    name: exercise ?? '',
+    difficulty: difficultyLevel ?? '',
+    targetMuscle: targetMuscleGroup ?? '',
+    videoUrl:
+        shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink ?? '',
+  );
+
   @override
   List<Object?> get props => [
-        id,
-        exercise,
-        shortYoutubeDemonstration,
-        inDepthYoutubeExplanation,
-        difficultyLevel,
-        targetMuscleGroup,
-        primeMoverMuscle,
-        secondaryMuscle,
-        tertiaryMuscle,
-        primaryEquipment,
-        primaryItems,
-        secondaryEquipment,
-        secondaryItems,
-        posture,
-        singleOrDoubleArm,
-        continuousOrAlternatingArms,
-        grip,
-        loadPositionEnding,
-        continuousOrAlternatingLegs,
-        footElevation,
-        combinationExercises,
-        movementPattern1,
-        movementPattern2,
-        movementPattern3,
-        planeOfMotion1,
-        planeOfMotion2,
-        planeOfMotion3,
-        bodyRegion,
-        forceType,
-        mechanics,
-        laterality,
-        primaryExerciseClassification,
-        shortYoutubeDemonstrationLink,
-        inDepthYoutubeExplanationLink,
-      ];
+    id,
+    exercise,
+    shortYoutubeDemonstration,
+    inDepthYoutubeExplanation,
+    difficultyLevel,
+    targetMuscleGroup,
+    primeMoverMuscle,
+    secondaryMuscle,
+    tertiaryMuscle,
+    primaryEquipment,
+    primaryItems,
+    secondaryEquipment,
+    secondaryItems,
+    posture,
+    singleOrDoubleArm,
+    continuousOrAlternatingArms,
+    grip,
+    loadPositionEnding,
+    continuousOrAlternatingLegs,
+    footElevation,
+    combinationExercises,
+    movementPattern1,
+    movementPattern2,
+    movementPattern3,
+    planeOfMotion1,
+    planeOfMotion2,
+    planeOfMotion3,
+    bodyRegion,
+    forceType,
+    mechanics,
+    laterality,
+    primaryExerciseClassification,
+    shortYoutubeDemonstrationLink,
+    inDepthYoutubeExplanationLink,
+  ];
 }

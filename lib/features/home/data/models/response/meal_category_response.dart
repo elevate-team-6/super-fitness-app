@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../domain/entities/meal_category_entity.dart';
+
 part 'meal_category_response.g.dart';
 
 @JsonSerializable()
@@ -37,11 +39,17 @@ class MealCategoryModel extends Equatable {
 
   Map<String, dynamic> toJson() => _$MealCategoryModelToJson(this);
 
+  MealCategoryEntity toEntity() => MealCategoryEntity(
+    id: idCategory ?? '',
+    name: strCategory ?? '',
+    image: strCategoryThumb ?? '',
+  );
+
   @override
   List<Object?> get props => [
-        idCategory,
-        strCategory,
-        strCategoryThumb,
-        strCategoryDescription,
-      ];
+    idCategory,
+    strCategory,
+    strCategoryThumb,
+    strCategoryDescription,
+  ];
 }

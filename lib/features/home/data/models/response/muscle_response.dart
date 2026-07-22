@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../domain/entities/muscle_entity.dart';
+
 part 'muscle_response.g.dart';
 
 @JsonSerializable()
@@ -31,6 +33,8 @@ class MuscleModel extends Equatable {
       _$MuscleModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$MuscleModelToJson(this);
+
+  MuscleEntity toEntity() => MuscleEntity(id: id ?? '', name: name ?? '');
 
   @override
   List<Object?> get props => [id, name];

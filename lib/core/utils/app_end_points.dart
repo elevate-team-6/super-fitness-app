@@ -11,6 +11,17 @@ abstract class AppEndPoints {
   static const String resetPassword = "$baseUrl/auth/resetPassword";
   static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
 
+  // Exercises
+  static const String exercises = "$baseUrl/exercises";
+  static const String randomExercises = "$baseUrl/exercises/random";
+
+  // Muscles
+  static const String muscles = "$baseUrl/muscles";
+
+  // Meals
+  static const String mealCategories =
+      "https://www.themealdb.com/api/json/v1/1/categories.php";
+
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
   // 1. Group them by feature (e.g., // Products, // Cart).
