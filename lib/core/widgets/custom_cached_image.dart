@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 
@@ -55,8 +56,8 @@ class CustomCachedImage extends StatelessWidget {
       child: Center(
         child: SvgPicture.asset(
           placeholderIcon ?? AppIcons.workOut,
-          width: 32.w,
-          height: 32.w,
+          width: 72.w,
+          height: 72.w,
           fit: BoxFit.contain,
           colorFilter: const ColorFilter.mode(
             AppColors.primary,
