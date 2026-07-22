@@ -12,6 +12,9 @@ import 'package:super_fitness/features/auth/presentation/screens/login_screen.da
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
+import '../../features/home/presentation/view_models/home_view_model/home_cubit.dart';
+import '../../features/home/presentation/view_models/home_view_model/home_event.dart';
+import '../../features/main_layout/presentation/cubit/main_layout_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 
@@ -25,6 +28,9 @@ abstract class AppRoutes {
   static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
   static const String mainLayout = 'mainLayout';
+  static const String food = 'food';
+  static const String detailsFood = 'detailsFood';
+  static const String exerciseScreen = 'exercise';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -73,7 +79,19 @@ abstract class AppRoutes {
           );
 
         case mainLayout:
-          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
+          return MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<MainLayoutCubit>()),
+                BlocProvider(
+                  create: (_) =>
+                      getIt<HomeCubit>()
+                        ..doEvent(const FetchAllHomeDataEvent()),
+                ),
+              ],
+              child: const MainLayoutScreen(),
+            ),
+          );
 
         default:
           return _unDefinedRoute(settings.name);
