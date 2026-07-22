@@ -27,6 +27,13 @@ abstract class AppIcons {
   static const String google = '${_iconsPath}google.svg';
   static const String facebook = '${_iconsPath}facebook.svg';
   static const String apple = '${_iconsPath}apple.svg';
+  static const String gym = '${_iconsPath}gym_icon.png';
+  static const String fitness = '${_iconsPath}fitness_icon.png';
+  static const String yoga = '${_iconsPath}yoga_icon.png';
+  static const String aerobics = '${_iconsPath}aerobics_icon.png';
+  static const String trainer = '${_iconsPath}trainer_icon.png';
+  static const String meal =
+      '${_iconsPath}meal.svg'; // Placeholder if specific meal icon not found
 }
 
 abstract class AppImages {

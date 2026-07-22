@@ -102,6 +102,12 @@ abstract class AppTextStyles {
     color: AppColors.primary,
   );
 
+  static TextStyle get primary12700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(12),
+    fontWeight: FontWeight.w700,
+    color: AppColors.primary,
+  );
+
   static TextStyle get primary10500 => GoogleFonts.balooThambi2(
     fontSize: _sp(10),
     fontWeight: FontWeight.w500,
@@ -215,6 +221,24 @@ abstract class AppTextStyles {
     fontSize: _sp(5),
     fontWeight: FontWeight.w500,
     color: AppColors.white,
+  );
+
+  static TextStyle get white12500 => GoogleFonts.balooThambi2(
+    fontSize: _sp(12),
+    fontWeight: FontWeight.w500,
+    color: AppColors.white,
+  );
+
+  static TextStyle get white18700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(18),
+    fontWeight: FontWeight.w700,
+    color: AppColors.white,
+  );
+
+  static TextStyle get primary14700 => GoogleFonts.balooThambi2(
+    fontSize: _sp(14),
+    fontWeight: FontWeight.w700,
+    color: AppColors.primary,
   );
 
   // White20 Styles

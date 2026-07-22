@@ -24,46 +24,43 @@ class MainLayoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MainLayoutCubit(),
-      child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
-        builder: (context, state) {
-          return Scaffold(
-            body: IndexedStack(index: state.currentIndex, children: _screens),
-            extendBody: true,
-            bottomNavigationBar: Padding(
-              padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 32.h),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.r),
-                child: NavigationBar(
-                  selectedIndex: state.currentIndex,
-                  onDestinationSelected: (index) {
-                    context.read<MainLayoutCubit>().changeTab(index);
-                  },
-                  destinations: [
-                    NavigationDestination(
-                      icon: const CustomSvgIcon(iconPath: AppIcons.home),
-                      label: AppStrings.explore.tr(),
-                    ),
-                    NavigationDestination(
-                      icon: const CustomSvgIcon(iconPath: AppIcons.chat),
-                      label: AppStrings.chat.tr(),
-                    ),
-                    NavigationDestination(
-                      icon: const CustomSvgIcon(iconPath: AppIcons.workOut),
-                      label: AppStrings.workouts.tr(),
-                    ),
-                    NavigationDestination(
-                      icon: const CustomSvgIcon(iconPath: AppIcons.profile),
-                      label: AppStrings.profile.tr(),
-                    ),
-                  ],
-                ),
+    return BlocBuilder<MainLayoutCubit, MainLayoutState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: IndexedStack(index: state.currentIndex, children: _screens),
+          extendBody: true,
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 32.h),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.r),
+              child: NavigationBar(
+                selectedIndex: state.currentIndex,
+                onDestinationSelected: (index) {
+                  context.read<MainLayoutCubit>().changeTab(index);
+                },
+                destinations: [
+                  NavigationDestination(
+                    icon: const CustomSvgIcon(iconPath: AppIcons.home),
+                    label: AppStrings.explore.tr(),
+                  ),
+                  NavigationDestination(
+                    icon: const CustomSvgIcon(iconPath: AppIcons.chat),
+                    label: AppStrings.chat.tr(),
+                  ),
+                  NavigationDestination(
+                    icon: const CustomSvgIcon(iconPath: AppIcons.workOut),
+                    label: AppStrings.workouts.tr(),
+                  ),
+                  NavigationDestination(
+                    icon: const CustomSvgIcon(iconPath: AppIcons.profile),
+                    label: AppStrings.profile.tr(),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
