@@ -9,13 +9,7 @@ class GetAllExercisesUseCase {
 
   GetAllExercisesUseCase(this._repo);
 
-  Future<BaseResponse<List<ExerciseEntity>>> call({
-    int? page,
-    int? limit,
-  }) {
-    return _repo.getAllExercises(
-      page: page,
-      limit: limit,
-    );
+  Future<BaseResponse<List<ExerciseEntity>>> call({int? page, int? limit}) {
+    return _repo.getAllExercises(page: page, limit: limit);
   }
 }
