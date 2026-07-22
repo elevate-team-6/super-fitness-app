@@ -18,6 +18,16 @@ import 'home_repo_impl_test.mocks.dart';
 
 @GenerateMocks([HomeRemoteDataSourceContract, SecureCacheHelper])
 void main() {
+  provideDummy<BaseResponse<ExerciseResponse>>(
+    const SuccessBaseResponse(ExerciseResponse()),
+  );
+  provideDummy<BaseResponse<MuscleResponse>>(
+    const SuccessBaseResponse(MuscleResponse()),
+  );
+  provideDummy<BaseResponse<MealCategoryResponse>>(
+    const SuccessBaseResponse(MealCategoryResponse()),
+  );
+
   late HomeRepoImpl repo;
   late MockHomeRemoteDataSourceContract mockRemoteDataSource;
   late MockSecureCacheHelper mockCacheHelper;
@@ -29,65 +39,87 @@ void main() {
   });
 
   group('getCachedUserData', () {
-    test('should return SuccessBaseResponse with UserEntity when cache has data', () async {
-      // arrange
-      when(mockCacheHelper.readData(key: AppKeys.userNameKey)).thenAnswer((_) async => 'Test User');
-      when(mockCacheHelper.readData(key: AppKeys.userImageKey)).thenAnswer((_) async => 'image_url');
+    test(
+      'should return SuccessBaseResponse with UserEntity when cache has data',
+      () async {
+        // arrange
+        when(
+          mockCacheHelper.readData(key: AppKeys.userNameKey),
+        ).thenAnswer((_) async => 'Test User');
+        when(
+          mockCacheHelper.readData(key: AppKeys.userImageKey),
+        ).thenAnswer((_) async => 'image_url');
 
-      // act
-      final result = await repo.getCachedUserData();
+        // act
+        final result = await repo.getCachedUserData();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<HomeUserEntity>>());
-      final data = (result as SuccessBaseResponse<HomeUserEntity>).data;
-      expect(data?.name, 'Test User');
-      expect(data?.image, 'image_url');
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<HomeUserEntity>>());
+        final data = (result as SuccessBaseResponse<HomeUserEntity>).data;
+        expect(data?.name, 'Test User');
+        expect(data?.image, 'image_url');
+      },
+    );
 
-    test('should return SuccessBaseResponse with empty HomeUserEntity when cache read fails', () async {
-      // arrange
-      when(mockCacheHelper.readData(key: anyNamed('key'))).thenThrow(Exception());
+    test(
+      'should return SuccessBaseResponse with empty HomeUserEntity when cache read fails',
+      () async {
+        // arrange
+        when(
+          mockCacheHelper.readData(key: anyNamed('key')),
+        ).thenThrow(Exception());
 
-      // act
-      final result = await repo.getCachedUserData();
+        // act
+        final result = await repo.getCachedUserData();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<HomeUserEntity>>());
-      expect((result as SuccessBaseResponse<HomeUserEntity>).data, HomeUserEntity.empty);
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<HomeUserEntity>>());
+        expect(
+          (result as SuccessBaseResponse<HomeUserEntity>).data,
+          HomeUserEntity.empty,
+        );
+      },
+    );
   });
 
   group('getRandomExercises', () {
     const tModel = ExerciseModel(id: '1', exercise: 'Exercise 1');
     const tResponse = ExerciseResponse(exercises: [tModel]);
 
-    test('should return SuccessBaseResponse with List<ExerciseEntity> when remote call is successful', () async {
-      // arrange
-      when(mockRemoteDataSource.getRandomExercises(
-        language: anyNamed('language'),
-        targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-        difficultyLevelId: anyNamed('difficultyLevelId'),
-        limit: anyNamed('limit'),
-      )).thenAnswer((_) async => const SuccessBaseResponse(tResponse));
+    test(
+      'should return SuccessBaseResponse with List<ExerciseEntity> when remote call is successful',
+      () async {
+        // arrange
+        when(
+          mockRemoteDataSource.getRandomExercises(
+            language: anyNamed('language'),
+            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+            limit: anyNamed('limit'),
+          ),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tResponse));
 
-      // act
-      final result = await repo.getRandomExercises();
+        // act
+        final result = await repo.getRandomExercises();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
-      final data = (result as SuccessBaseResponse<List<ExerciseEntity>>).data;
-      expect(data?.length, 1);
-      expect(data?.first.id, '1');
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
+        final data = (result as SuccessBaseResponse<List<ExerciseEntity>>).data;
+        expect(data?.length, 1);
+        expect(data?.first.id, '1');
+      },
+    );
 
     test('should return ErrorBaseResponse when remote call fails', () async {
       // arrange
-      when(mockRemoteDataSource.getRandomExercises(
-        language: anyNamed('language'),
-        targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-        difficultyLevelId: anyNamed('difficultyLevelId'),
-        limit: anyNamed('limit'),
-      )).thenAnswer((_) async => const ErrorBaseResponse('Error'));
+      when(
+        mockRemoteDataSource.getRandomExercises(
+          language: anyNamed('language'),
+          targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+          difficultyLevelId: anyNamed('difficultyLevelId'),
+          limit: anyNamed('limit'),
+        ),
+      ).thenAnswer((_) async => const ErrorBaseResponse('Error'));
 
       // act
       final result = await repo.getRandomExercises();
@@ -101,56 +133,81 @@ void main() {
     const tModel = MuscleModel(id: '1', name: 'Muscle 1');
     const tResponse = MuscleResponse(musclesGroup: [tModel]);
 
-    test('should return SuccessBaseResponse with List<MuscleEntity> when remote call is successful', () async {
-      // arrange
-      when(mockRemoteDataSource.getMuscleGroups(language: anyNamed('language')))
-          .thenAnswer((_) async => const SuccessBaseResponse(tResponse));
+    test(
+      'should return SuccessBaseResponse with List<MuscleEntity> when remote call is successful',
+      () async {
+        // arrange
+        when(
+          mockRemoteDataSource.getMuscleGroups(language: anyNamed('language')),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tResponse));
 
-      // act
-      final result = await repo.getMuscleGroups();
+        // act
+        final result = await repo.getMuscleGroups();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
-      expect((result as SuccessBaseResponse<List<MuscleEntity>>).data?.first.name, 'Muscle 1');
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
+        expect(
+          (result as SuccessBaseResponse<List<MuscleEntity>>).data?.first.name,
+          'Muscle 1',
+        );
+      },
+    );
   });
 
   group('getMealsCategories', () {
     const tModel = MealCategoryModel(idCategory: '1', strCategory: 'Cat 1');
     const tResponse = MealCategoryResponse(categories: [tModel]);
 
-    test('should return SuccessBaseResponse with List<MealCategoryEntity> when remote call is successful', () async {
-      // arrange
-      when(mockRemoteDataSource.getMealsCategories())
-          .thenAnswer((_) async => const SuccessBaseResponse(tResponse));
+    test(
+      'should return SuccessBaseResponse with List<MealCategoryEntity> when remote call is successful',
+      () async {
+        // arrange
+        when(
+          mockRemoteDataSource.getMealsCategories(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tResponse));
 
-      // act
-      final result = await repo.getMealsCategories();
+        // act
+        final result = await repo.getMealsCategories();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<List<MealCategoryEntity>>>());
-      expect((result as SuccessBaseResponse<List<MealCategoryEntity>>).data?.first.name, 'Cat 1');
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<List<MealCategoryEntity>>>());
+        expect(
+          (result as SuccessBaseResponse<List<MealCategoryEntity>>)
+              .data
+              ?.first
+              .name,
+          'Cat 1',
+        );
+      },
+    );
   });
 
   group('getAllExercises', () {
     const tModel = ExerciseModel(id: '1', exercise: 'Exercise 1');
     const tResponse = ExerciseResponse(exercises: [tModel]);
 
-    test('should return SuccessBaseResponse with List<ExerciseEntity> when remote call is successful', () async {
-      // arrange
-      when(mockRemoteDataSource.getAllExercises(
-        language: anyNamed('language'),
-        page: anyNamed('page'),
-        limit: anyNamed('limit'),
-      )).thenAnswer((_) async => const SuccessBaseResponse(tResponse));
+    test(
+      'should return SuccessBaseResponse with List<ExerciseEntity> when remote call is successful',
+      () async {
+        // arrange
+        when(
+          mockRemoteDataSource.getAllExercises(
+            language: anyNamed('language'),
+            page: anyNamed('page'),
+            limit: anyNamed('limit'),
+          ),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tResponse));
 
-      // act
-      final result = await repo.getAllExercises();
+        // act
+        final result = await repo.getAllExercises();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
-      expect((result as SuccessBaseResponse<List<ExerciseEntity>>).data?.first.id, '1');
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
+        expect(
+          (result as SuccessBaseResponse<List<ExerciseEntity>>).data?.first.id,
+          '1',
+        );
+      },
+    );
   });
 }

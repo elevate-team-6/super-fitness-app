@@ -4,6 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
+import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/features/home/domain/entities/exercise_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/home_user_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_category_entity.dart';
@@ -27,6 +28,17 @@ import 'home_cubit_test.mocks.dart';
   GetCachedUserDataUseCase,
 ])
 void main() {
+  provideDummy<BaseResponse<HomeUserEntity>>(
+    const SuccessBaseResponse(HomeUserEntity.empty),
+  );
+  provideDummy<BaseResponse<List<MuscleEntity>>>(const SuccessBaseResponse([]));
+  provideDummy<BaseResponse<List<ExerciseEntity>>>(
+    const SuccessBaseResponse([]),
+  );
+  provideDummy<BaseResponse<List<MealCategoryEntity>>>(
+    const SuccessBaseResponse([]),
+  );
+
   late HomeCubit cubit;
   late MockGetRandomExercisesUseCase mockGetRandomExercises;
   late MockGetMuscleGroupsUseCase mockGetMuscleGroups;
@@ -55,7 +67,9 @@ void main() {
     blocTest<HomeCubit, HomeState>(
       'emits [loading, success] when data is fetched successfully',
       build: () {
-        when(mockGetCachedUserData()).thenAnswer((_) async => const SuccessBaseResponse(tUser));
+        when(
+          mockGetCachedUserData(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tUser));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(FetchHomeUserEvent()),
@@ -66,49 +80,95 @@ void main() {
     );
   });
 
-  group('FetchMuscleGroupsEvent', () {
-    const tMuscles = [MuscleEntity(id: '1', name: 'Abs')];
+  group('FetchRandomExercisesEvent Failure', () {
+    const tErrorMessage = 'Connection Error';
     blocTest<HomeCubit, HomeState>(
-      'emits [loading, success] and triggers exercise fetch when muscles found',
+      'emits [loading, error] and UI error event when fetch fails',
       build: () {
-        when(mockGetMuscleGroups()).thenAnswer((_) async => const SuccessBaseResponse(tMuscles));
-        when(mockGetAllExercises(limit: anyNamed('limit'))).thenAnswer((_) async => const SuccessBaseResponse([]));
+        when(
+          mockGetRandomExercises(
+            limit: anyNamed('limit'),
+            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+          ),
+        ).thenAnswer((_) async => const ErrorBaseResponse(tErrorMessage));
         return cubit;
       },
-      act: (cubit) => cubit.doEvent(FetchMuscleGroupsEvent()),
+      act: (cubit) {
+        // Listen before acting
+        cubit.eventStream.listen(
+          expectAsync1((event) {
+            expect(event, isA<DisplayErrorEvent>());
+            expect((event as DisplayErrorEvent).errorMessage, tErrorMessage);
+          }),
+        );
+        cubit.doEvent(FetchRandomExercisesEvent());
+      },
       expect: () => [
-        const HomeState(upcomingWorkoutsTabsStatus: BaseState(isLoading: true)),
+        const HomeState(recommendationTodayStatus: BaseState(isLoading: true)),
         const HomeState(
-          upcomingWorkoutsTabsStatus: BaseState(data: tMuscles),
-          activeMuscleId: '1',
-        ),
-        const HomeState(
-          upcomingWorkoutsTabsStatus: BaseState(data: tMuscles),
-          activeMuscleId: '1',
-          upcomingWorkoutsStatus: BaseState(isLoading: true),
-        ),
-        const HomeState(
-          upcomingWorkoutsTabsStatus: BaseState(data: tMuscles),
-          activeMuscleId: '1',
-          upcomingWorkoutsStatus: BaseState(data: []),
+          recommendationTodayStatus: BaseState(errorMessage: tErrorMessage),
         ),
       ],
     );
   });
 
-  group('ChangeMuscleTabEvent', () {
+  group('FetchAllHomeDataEvent', () {
+    const tMuscles = [MuscleEntity(id: '1', name: 'Abs')];
+
     blocTest<HomeCubit, HomeState>(
-      'emits new activeMuscleId and triggers fetch',
+      'triggers all sub-fetch methods and calls exercises twice (popular + muscle fetch)',
       build: () {
-        when(mockGetAllExercises(limit: anyNamed('limit'))).thenAnswer((_) async => const SuccessBaseResponse([]));
+        when(mockGetCachedUserData()).thenAnswer(
+          (_) async => const SuccessBaseResponse(HomeUserEntity.empty),
+        );
+        when(
+          mockGetRandomExercises(
+            limit: anyNamed('limit'),
+            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+          ),
+        ).thenAnswer((_) async => const SuccessBaseResponse([]));
+        when(
+          mockGetMuscleGroups(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tMuscles));
+        when(
+          mockGetMealsCategories(),
+        ).thenAnswer((_) async => const SuccessBaseResponse([]));
+        when(
+          mockGetAllExercises(limit: anyNamed('limit')),
+        ).thenAnswer((_) async => const SuccessBaseResponse([]));
         return cubit;
       },
-      act: (cubit) => cubit.doEvent(const ChangeMuscleTabEvent('2')),
-      expect: () => [
-        const HomeState(activeMuscleId: '2'),
-        const HomeState(activeMuscleId: '2', upcomingWorkoutsStatus: BaseState(isLoading: true)),
-        const HomeState(activeMuscleId: '2', upcomingWorkoutsStatus: BaseState(data: [])),
-      ],
+      act: (cubit) => cubit.doEvent(const FetchAllHomeDataEvent()),
+      verify: (_) {
+        verify(mockGetCachedUserData()).called(1);
+        verify(
+          mockGetRandomExercises(
+            limit: anyNamed('limit'),
+            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+          ),
+        ).called(1);
+        verify(mockGetMuscleGroups()).called(1);
+        verify(mockGetMealsCategories()).called(1);
+        verify(mockGetAllExercises(limit: anyNamed('limit'))).called(2);
+      },
+    );
+  });
+
+  group('ChangeMuscleTabEvent Optimization', () {
+    blocTest<HomeCubit, HomeState>(
+      'does NOT trigger new fetch if same tab is selected',
+      build: () {
+        return cubit;
+      },
+      seed: () => const HomeState(activeMuscleId: '1'),
+      act: (cubit) => cubit.doEvent(const ChangeMuscleTabEvent('1')),
+      expect: () => [],
+      verify: (_) {
+        verifyNever(mockGetAllExercises(limit: anyNamed('limit')));
+      },
     );
   });
 }

@@ -25,92 +25,115 @@ void main() {
   group('getRandomExercises', () {
     const tExerciseResponse = ExerciseResponse(exercises: []);
 
-    test('should return SuccessBaseResponse when API call is successful', () async {
-      // arrange
-      when(mockApiClient.getRandomExercises(
-        language: anyNamed('language'),
-        targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-        difficultyLevelId: anyNamed('difficultyLevelId'),
-        limit: anyNamed('limit'),
-      )).thenAnswer((_) async => tExerciseResponse);
+    test(
+      'should return SuccessBaseResponse when API call is successful',
+      () async {
+        // arrange
+        when(
+          mockApiClient.getRandomExercises(
+            language: anyNamed('language'),
+            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+            limit: anyNamed('limit'),
+          ),
+        ).thenAnswer((_) async => tExerciseResponse);
 
-      // act
-      final result = await dataSource.getRandomExercises(language: tLanguage);
+        // act
+        final result = await dataSource.getRandomExercises(language: tLanguage);
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<ExerciseResponse>>());
-      expect((result as SuccessBaseResponse).data, tExerciseResponse);
-      verify(mockApiClient.getRandomExercises(language: tLanguage));
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<ExerciseResponse>>());
+        expect((result as SuccessBaseResponse).data, tExerciseResponse);
+        verify(mockApiClient.getRandomExercises(language: tLanguage));
+      },
+    );
 
-    test('should return ErrorBaseResponse when API call throws an exception', () async {
-      // arrange
-      when(mockApiClient.getRandomExercises(
-        language: anyNamed('language'),
-        targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-        difficultyLevelId: anyNamed('difficultyLevelId'),
-        limit: anyNamed('limit'),
-      )).thenThrow(Exception('Server Error'));
+    test(
+      'should return ErrorBaseResponse when API call throws an exception',
+      () async {
+        // arrange
+        when(
+          mockApiClient.getRandomExercises(
+            language: anyNamed('language'),
+            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+            limit: anyNamed('limit'),
+          ),
+        ).thenThrow(Exception('Server Error'));
 
-      // act
-      final result = await dataSource.getRandomExercises(language: tLanguage);
+        // act
+        final result = await dataSource.getRandomExercises(language: tLanguage);
 
-      // assert
-      expect(result, isA<ErrorBaseResponse<ExerciseResponse>>());
-    });
+        // assert
+        expect(result, isA<ErrorBaseResponse<ExerciseResponse>>());
+      },
+    );
   });
 
   group('getMuscleGroups', () {
     const tMuscleResponse = MuscleResponse(musclesGroup: []);
 
-    test('should return SuccessBaseResponse when API call is successful', () async {
-      // arrange
-      when(mockApiClient.getMuscleGroups(language: anyNamed('language')))
-          .thenAnswer((_) async => tMuscleResponse);
+    test(
+      'should return SuccessBaseResponse when API call is successful',
+      () async {
+        // arrange
+        when(
+          mockApiClient.getMuscleGroups(language: anyNamed('language')),
+        ).thenAnswer((_) async => tMuscleResponse);
 
-      // act
-      final result = await dataSource.getMuscleGroups(language: tLanguage);
+        // act
+        final result = await dataSource.getMuscleGroups(language: tLanguage);
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<MuscleResponse>>());
-      verify(mockApiClient.getMuscleGroups(language: tLanguage));
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<MuscleResponse>>());
+        verify(mockApiClient.getMuscleGroups(language: tLanguage));
+      },
+    );
   });
 
   group('getMealsCategories', () {
     const tMealCategoryResponse = MealCategoryResponse(categories: []);
 
-    test('should return SuccessBaseResponse when API call is successful', () async {
-      // arrange
-      when(mockApiClient.getMealsCategories())
-          .thenAnswer((_) async => tMealCategoryResponse);
+    test(
+      'should return SuccessBaseResponse when API call is successful',
+      () async {
+        // arrange
+        when(
+          mockApiClient.getMealsCategories(),
+        ).thenAnswer((_) async => tMealCategoryResponse);
 
-      // act
-      final result = await dataSource.getMealsCategories();
+        // act
+        final result = await dataSource.getMealsCategories();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<MealCategoryResponse>>());
-      verify(mockApiClient.getMealsCategories());
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<MealCategoryResponse>>());
+        verify(mockApiClient.getMealsCategories());
+      },
+    );
   });
 
   group('getAllExercises', () {
     const tExerciseResponse = ExerciseResponse(exercises: []);
 
-    test('should return SuccessBaseResponse when API call is successful', () async {
-      // arrange
-      when(mockApiClient.getAllExercises(
-        language: anyNamed('language'),
-        page: anyNamed('page'),
-        limit: anyNamed('limit'),
-      )).thenAnswer((_) async => tExerciseResponse);
+    test(
+      'should return SuccessBaseResponse when API call is successful',
+      () async {
+        // arrange
+        when(
+          mockApiClient.getAllExercises(
+            language: anyNamed('language'),
+            page: anyNamed('page'),
+            limit: anyNamed('limit'),
+          ),
+        ).thenAnswer((_) async => tExerciseResponse);
 
-      // act
-      final result = await dataSource.getAllExercises(language: tLanguage);
+        // act
+        final result = await dataSource.getAllExercises(language: tLanguage);
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<ExerciseResponse>>());
-      verify(mockApiClient.getAllExercises(language: tLanguage));
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<ExerciseResponse>>());
+        verify(mockApiClient.getAllExercises(language: tLanguage));
+      },
+    );
   });
 }
