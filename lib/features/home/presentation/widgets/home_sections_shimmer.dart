@@ -5,6 +5,18 @@ import '../../../../core/widgets/app_shimmer.dart';
 class HomeSectionsShimmer extends StatelessWidget {
   const HomeSectionsShimmer._();
 
+  static Widget userInfoShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppShimmer(width: 120.w, height: 16.h),
+        SizedBox(height: 8.h),
+        AppShimmer(width: 200.w, height: 24.h),
+      ],
+    );
+  }
+
   static Widget recommendationToday() {
     return SizedBox(
       height: 104.h,
@@ -25,42 +37,43 @@ class HomeSectionsShimmer extends StatelessWidget {
     );
   }
 
-  static Widget upcomingWorkouts() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: List.generate(
-            3,
-            (index) => Padding(
-              padding: EdgeInsetsDirectional.only(end: 8.w),
-              child: AppShimmer(
-                width: 80.w,
-                height: 32.h,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-            ),
+  static Widget upcomingWorkoutsTabs() {
+    return SizedBox(
+      height: 32.h,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 6,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsetsDirectional.only(end: 8.w),
+          child: AppShimmer(
+            width: 80.w,
+            height: 32.h,
+            borderRadius: BorderRadius.circular(20.r),
           ),
         ),
-        SizedBox(height: 16.h),
-        SizedBox(
-          height: 80.h,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 4,
-            padding: EdgeInsets.zero,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) => Padding(
-              padding: EdgeInsetsDirectional.only(end: 12.w),
-              child: AppShimmer(
-                width: 80.w,
-                height: 80.h,
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-            ),
+      ),
+    );
+  }
+
+  static Widget upcomingWorkoutsList() {
+    return SizedBox(
+      height: 80.h,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsetsDirectional.only(end: 12.w),
+          child: AppShimmer(
+            width: 80.w,
+            height: 80.h,
+            borderRadius: BorderRadius.circular(20.r),
           ),
         ),
-      ],
+      ),
     );
   }
 

@@ -16,7 +16,7 @@ class PopularTrainingCard extends StatelessWidget {
   const PopularTrainingCard({
     super.key,
     required this.title,
-    required this.image,
+    this.image = '',
     required this.tasks,
     required this.difficulty,
     this.onTap,
@@ -27,18 +27,14 @@ class PopularTrainingCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 250.w,
-        height: 250.h,
+        width: 200.w,
+        height: 175.h,
         margin: EdgeInsetsDirectional.only(end: 16.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24.r),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.r)),
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
-            Positioned.fill(
-              child: CustomCachedImage(imageUrl: image),
-            ),
+            Positioned.fill(child: CustomCachedImage(imageUrl: image)),
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -57,12 +53,13 @@ class PopularTrainingCard extends StatelessWidget {
               padding: EdgeInsets.all(16.w),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.white18700,
+                    style: AppTextStyles.white14700,
                     maxLines: 2,
+                    textAlign: TextAlign.center,
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 12.h),
@@ -83,9 +80,19 @@ class PopularTrainingCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        difficulty,
-                        style: AppTextStyles.primary14700,
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12.w,
+                          vertical: 4.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.white.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Text(
+                          difficulty,
+                          style: AppTextStyles.primary12700,
+                        ),
                       ),
                     ],
                   ),

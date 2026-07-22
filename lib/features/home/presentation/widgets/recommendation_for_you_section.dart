@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/meal_category_entity.dart';
@@ -28,8 +29,8 @@ class RecommendationForYouSection extends StatelessWidget {
           return HomeErrorWidget(
             message: status.errorMessage!,
             onRetry: () => context.read<HomeCubit>().doEvent(
-                  const FetchMealCategoriesEvent(),
-                ),
+              const FetchMealCategoriesEvent(),
+            ),
           );
         }
 
@@ -38,7 +39,9 @@ class RecommendationForYouSection extends StatelessWidget {
           children: [
             SectionHeader(
               title: AppStrings.recommendationForYou.tr(),
-              onSeeAll: () {},
+              onSeeAll: () {
+                Navigator.pushNamed(context, AppRoutes.food);
+              },
             ),
             if (status.isLoading)
               HomeSectionsShimmer.recommendationForYou()
@@ -55,7 +58,9 @@ class RecommendationForYouSection extends StatelessWidget {
                       title: category.name,
                       image: category.image,
                       placeholderIcon: AppIcons.meal,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.detailsFood);
+                      },
                       height: 104.h,
                       width: 104.w,
                     );

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/exercise_entity.dart';
 import '../view_models/home_view_model/home_cubit.dart';
@@ -27,8 +28,8 @@ class RecommendationTodaySection extends StatelessWidget {
           return HomeErrorWidget(
             message: status.errorMessage!,
             onRetry: () => context.read<HomeCubit>().doEvent(
-                  const FetchRandomExercisesEvent(),
-                ),
+              const FetchRandomExercisesEvent(),
+            ),
           );
         }
 
@@ -36,7 +37,7 @@ class RecommendationTodaySection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SectionHeader(title: AppStrings.recommendationToday.tr()),
-            SizedBox(height: 16.h),
+            SizedBox(height: 8.h),
             if (status.isLoading)
               HomeSectionsShimmer.recommendationToday()
             else
@@ -51,7 +52,13 @@ class RecommendationTodaySection extends StatelessWidget {
                     return HomeCard(
                       title: exercise.name,
                       image: exercise.videoUrl,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.exerciseScreen,
+                          arguments: exercise.id,
+                        );
+                      },
                     );
                   },
                 ),

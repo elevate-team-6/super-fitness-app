@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/widgets/custom_tab_bar.dart';
+import '../../../main_layout/presentation/cubit/main_layout_cubit.dart';
 import '../../domain/entities/exercise_entity.dart';
 import '../view_models/home_view_model/home_cubit.dart';
 import '../view_models/home_view_model/home_event.dart';
@@ -31,8 +33,8 @@ class UpcomingWorkoutsSection extends StatelessWidget {
           return HomeErrorWidget(
             message: tabsStatus.errorMessage!,
             onRetry: () => context.read<HomeCubit>().doEvent(
-                  const FetchMuscleGroupsEvent(),
-                ),
+              const FetchMuscleGroupsEvent(),
+            ),
           );
         }
 
@@ -42,7 +44,9 @@ class UpcomingWorkoutsSection extends StatelessWidget {
             children: [
               SectionHeader(title: AppStrings.upcomingWorkouts.tr()),
               SizedBox(height: 16.h),
-              HomeSectionsShimmer.upcomingWorkouts(),
+              HomeSectionsShimmer.upcomingWorkoutsTabs(),
+              SizedBox(height: 16.h),
+              HomeSectionsShimmer.upcomingWorkoutsList(),
             ],
           );
         }
@@ -57,7 +61,9 @@ class UpcomingWorkoutsSection extends StatelessWidget {
             children: [
               SectionHeader(
                 title: AppStrings.upcomingWorkouts.tr(),
-                onSeeAll: () {},
+                onSeeAll: () {
+                  context.read<MainLayoutCubit>().changeTab(2);
+                },
               ),
               CustomTabBar(
                 tabs: tabs,
@@ -65,31 +71,13 @@ class UpcomingWorkoutsSection extends StatelessWidget {
                 onTap: (index) {
                   final id = tabsStatus.data?[index].id;
                   if (id != null) {
-                    context.read<HomeCubit>().doEvent(
-                          ChangeMuscleTabEvent(id),
-                        );
+                    context.read<HomeCubit>().doEvent(ChangeMuscleTabEvent(id));
                   }
                 },
               ),
               SizedBox(height: 16.h),
               if (workoutsStatus.isLoading)
-                HomeSectionsShimmer.upcomingWorkouts().build(context) // Fallback but we want the list part
-                // Actually the Shimmer has the list part. Let's adjust HomeSectionsShimmer.upcomingWorkouts() or use it correctly.
-                // For simplicity, I'll just use the full shimmer layout for now.
-                // But better to only shimmer the list if tabs are already there.
-                // For now, let's keep it consistent.
-                else if (workoutsStatus.isLoading)
-                SizedBox(
-                  height: 80.h,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 4,
-                    itemBuilder: (context, index) => Padding(
-                      padding: EdgeInsetsDirectional.only(end: 12.w),
-                      child: HomeSectionsShimmer.upcomingWorkouts(), // This is not ideal, need to adjust Shimmer
-                    ),
-                  ),
-                )
+                HomeSectionsShimmer.upcomingWorkoutsList()
               else
                 SizedBox(
                   height: 80.h,
@@ -101,8 +89,14 @@ class UpcomingWorkoutsSection extends StatelessWidget {
                           workoutsStatus.data?[index] ?? ExerciseEntity.empty;
                       return HomeCard(
                         title: exercise.name,
-                        image: 'https://via.placeholder.com/150',
-                        onTap: () {},
+                        image: '',
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.exerciseScreen,
+                            arguments: exercise.id,
+                          );
+                        },
                         height: 80.h,
                         width: 80.w,
                       );

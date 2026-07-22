@@ -26,8 +26,8 @@ class PopularTrainingSection extends StatelessWidget {
           return HomeErrorWidget(
             message: status.errorMessage!,
             onRetry: () => context.read<HomeCubit>().doEvent(
-                  const FetchPopularExercisesEvent(),
-                ),
+              const FetchPopularExercisesEvent(),
+            ),
           );
         }
 
@@ -35,7 +35,7 @@ class PopularTrainingSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SectionHeader(title: AppStrings.popularTraining.tr()),
-            SizedBox(height: 16.h),
+            SizedBox(height: 8.h),
             if (status.isLoading)
               HomeSectionsShimmer.popularTraining()
             else

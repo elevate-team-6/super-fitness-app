@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_fitness/features/home/presentation/widgets/section_header.dart';
 
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -15,48 +16,54 @@ class HomeCategoryIcons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 16.h),
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _CategoryItem(
-            icon: AppIcons.gym,
-            label: AppStrings.gym.tr(),
-            onTap: () => _showUpcoming(context),
+    return Column(
+      children: [
+        SectionHeader(title: AppStrings.category.tr()),
+        SizedBox(height: 8.h),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 8.h),
+          decoration: BoxDecoration(
+            color: AppColors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(16.r),
           ),
-          _buildDivider(),
-          _CategoryItem(
-            icon: AppIcons.fitness,
-            label: AppStrings.fitness.tr(),
-            onTap: () => _showUpcoming(context),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _CategoryItem(
+                icon: AppIcons.gym,
+                label: AppStrings.gym.tr(),
+                onTap: () => _showUpcoming(context),
+              ),
+              _buildDivider(),
+              _CategoryItem(
+                icon: AppIcons.fitness,
+                label: AppStrings.fitness.tr(),
+                onTap: () => _showUpcoming(context),
+              ),
+              _buildDivider(),
+              _CategoryItem(
+                icon: AppIcons.yoga,
+                label: AppStrings.yoga.tr(),
+                onTap: () => _showUpcoming(context),
+              ),
+              _buildDivider(),
+              _CategoryItem(
+                icon: AppIcons.aerobics,
+                label: AppStrings.aerobics.tr(),
+                onTap: () => _showUpcoming(context),
+              ),
+              _buildDivider(),
+              _CategoryItem(
+                icon: AppIcons.trainer,
+                label: AppStrings.trainer.tr(),
+                onTap: () {
+                  context.read<MainLayoutCubit>().changeTab(1);
+                },
+              ),
+            ],
           ),
-          _buildDivider(),
-          _CategoryItem(
-            icon: AppIcons.yoga,
-            label: AppStrings.yoga.tr(),
-            onTap: () => _showUpcoming(context),
-          ),
-          _buildDivider(),
-          _CategoryItem(
-            icon: AppIcons.aerobics,
-            label: AppStrings.aerobics.tr(),
-            onTap: () => _showUpcoming(context),
-          ),
-          _buildDivider(),
-          _CategoryItem(
-            icon: AppIcons.trainer,
-            label: AppStrings.trainer.tr(),
-            onTap: () {
-              context.read<MainLayoutCubit>().changeTab(1);
-            },
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -91,7 +98,7 @@ class _CategoryItem extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(icon, width: 40.w, height: 40.w),
+          Image.asset(icon, width: 56.w, height: 56.w),
           SizedBox(height: 8.h),
           Text(label, style: AppTextStyles.white12500),
         ],

@@ -9,11 +9,7 @@ class HomeProfileImage extends StatelessWidget {
   final String? userPhoto;
   final bool isLoading;
 
-  const HomeProfileImage({
-    super.key,
-    this.userPhoto,
-    this.isLoading = false,
-  });
+  const HomeProfileImage({super.key, this.userPhoto, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {

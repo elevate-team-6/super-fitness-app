@@ -6,7 +6,7 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
 
-class HomeHorizontalCard extends StatelessWidget {
+class HomeCard extends StatelessWidget {
   final String title;
   final String image;
   final String? placeholderIcon;
@@ -14,7 +14,7 @@ class HomeHorizontalCard extends StatelessWidget {
   final double? width;
   final double? height;
 
-  const HomeHorizontalCard({
+  const HomeCard({
     super.key,
     required this.title,
     required this.image,
@@ -28,15 +28,13 @@ class HomeHorizontalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveWidth = width ?? 104.w;
     final effectiveHeight = height ?? 104.h;
-     return GestureDetector(
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         width: effectiveWidth,
         height: effectiveHeight,
         margin: EdgeInsetsDirectional.only(end: 12.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.r),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.r)),
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
@@ -61,7 +59,7 @@ class HomeHorizontalCard extends StatelessWidget {
                     color: AppColors.black80.withValues(alpha: 0.5),
                     child: Text(
                       title,
-                      style: AppTextStyles.white10500,
+                      style: AppTextStyles.white12500,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
