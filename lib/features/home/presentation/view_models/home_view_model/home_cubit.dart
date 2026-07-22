@@ -4,9 +4,11 @@ import '../../../../../config/base_response/base_response.dart';
 import '../../../../../config/base_state/base_state.dart';
 import '../../../../../config/base_ui_event/base_ui_event.dart';
 import '../../../domain/entities/exercise_entity.dart';
+import '../../../domain/entities/home_user_entity.dart';
 import '../../../domain/entities/meal_category_entity.dart';
 import '../../../domain/entities/muscle_entity.dart';
 import '../../../domain/use_cases/get_all_exercises_use_case.dart';
+import '../../../domain/use_cases/get_cached_user_data_use_case.dart';
 import '../../../domain/use_cases/get_meals_categories_use_case.dart';
 import '../../../domain/use_cases/get_muscle_groups_use_case.dart';
 import '../../../domain/use_cases/get_random_exercises_use_case.dart';
@@ -19,18 +21,22 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
   final GetMuscleGroupsUseCase _getMuscleGroupsUseCase;
   final GetMealsCategoriesUseCase _getMealsCategoriesUseCase;
   final GetAllExercisesUseCase _getAllExercisesUseCase;
+  final GetCachedUserDataUseCase _getCachedUserDataUseCase;
 
   HomeCubit(
     this._getRandomExercisesUseCase,
     this._getMuscleGroupsUseCase,
     this._getMealsCategoriesUseCase,
     this._getAllExercisesUseCase,
+    this._getCachedUserDataUseCase,
   ) : super(const HomeState());
 
   void doEvent(HomeEvent event) {
     switch (event) {
       case FetchAllHomeDataEvent():
         _fetchAllHomeData();
+      case FetchHomeUserEvent():
+        _fetchHomeUser();
       case FetchRandomExercisesEvent():
         _fetchRandomExercises();
       case FetchMuscleGroupsEvent():
@@ -41,103 +47,164 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
         _fetchPopularExercises();
       case ChangeMuscleTabEvent():
         _changeMuscleTab(event.muscleId);
-      case ChangeMealCategoryTabEvent():
-        _changeMealCategoryTab(event.categoryId);
     }
   }
 
   void _fetchAllHomeData() {
+    _fetchHomeUser();
     _fetchRandomExercises();
     _fetchMuscleGroups();
     _fetchMealCategories();
     _fetchPopularExercises();
   }
 
+  Future<void> _fetchHomeUser() async {
+    emit(state.copyWith(homeUserStatus: const BaseState(isLoading: true)));
+    final result = await _getCachedUserDataUseCase();
+
+    switch (result) {
+      case SuccessBaseResponse<HomeUserEntity>():
+        emit(state.copyWith(homeUserStatus: BaseState(data: result.data)));
+      case ErrorBaseResponse<HomeUserEntity>():
+        emit(
+          state.copyWith(
+            homeUserStatus: BaseState(errorMessage: result.errorMessage),
+          ),
+        );
+    }
+  }
+
   Future<void> _fetchRandomExercises() async {
-    emit(state.copyWith(
-        recommendationTodayStatus: const BaseState(isLoading: true)));
-    final result = await _getRandomExercisesUseCase(limit: 5);
+    emit(
+      state.copyWith(
+        recommendationTodayStatus: const BaseState(isLoading: true),
+      ),
+    );
+    final result = await _getRandomExercisesUseCase(
+      limit: 5,
+      targetMuscleGroupId: '69d982ed85f6bfa972bf2218', // Default: Abdominals
+      difficultyLevelId: '69d982ed85f6bfa972bf2216', // Default: Beginner
+    );
 
     switch (result) {
       case SuccessBaseResponse<List<ExerciseEntity>>():
-        emit(state.copyWith(
-            recommendationTodayStatus: BaseState(data: result.data)));
+        emit(
+          state.copyWith(
+            recommendationTodayStatus: BaseState(data: result.data),
+          ),
+        );
       case ErrorBaseResponse<List<ExerciseEntity>>():
-        emit(state.copyWith(
-            recommendationTodayStatus:
-                BaseState(errorMessage: result.errorMessage)));
+        emit(
+          state.copyWith(
+            recommendationTodayStatus: BaseState(
+              errorMessage: result.errorMessage,
+            ),
+          ),
+        );
         emitUiEvent(DisplayErrorEvent(result.errorMessage));
     }
   }
 
   Future<void> _fetchMuscleGroups() async {
-    emit(state.copyWith(
-        upcomingWorkoutsTabsStatus: const BaseState(isLoading: true)));
+    emit(
+      state.copyWith(
+        upcomingWorkoutsTabsStatus: const BaseState(isLoading: true),
+      ),
+    );
     final result = await _getMuscleGroupsUseCase();
 
     switch (result) {
       case SuccessBaseResponse<List<MuscleEntity>>():
         final muscles = result.data ?? [];
-        emit(state.copyWith(
-          upcomingWorkoutsTabsStatus: BaseState(data: muscles),
-          activeMuscleId: muscles.isNotEmpty ? muscles.first.id : '',
-        ));
+        emit(
+          state.copyWith(
+            upcomingWorkoutsTabsStatus: BaseState(data: muscles),
+            activeMuscleId: muscles.isNotEmpty ? muscles.first.id : '',
+          ),
+        );
         if (state.activeMuscleId.isNotEmpty) {
-          _fetchExercisesByMuscle(state.activeMuscleId);
+          await _fetchExercisesByMuscle(state.activeMuscleId);
         }
       case ErrorBaseResponse<List<MuscleEntity>>():
-        emit(state.copyWith(
-            upcomingWorkoutsTabsStatus:
-                BaseState(errorMessage: result.errorMessage)));
+        emit(
+          state.copyWith(
+            upcomingWorkoutsTabsStatus: BaseState(
+              errorMessage: result.errorMessage,
+            ),
+          ),
+        );
         emitUiEvent(DisplayErrorEvent(result.errorMessage));
     }
   }
 
   Future<void> _fetchExercisesByMuscle(String muscleId) async {
-    emit(state.copyWith(upcomingWorkoutsStatus: const BaseState(isLoading: true)));
+    emit(
+      state.copyWith(upcomingWorkoutsStatus: const BaseState(isLoading: true)),
+    );
     // Note: In a real scenario, you'd use a usecase that filters by muscleId.
     // For now, using getAllExercises as a placeholder or assuming the usecase supports filtering.
     final result = await _getAllExercisesUseCase(limit: 10);
 
     switch (result) {
       case SuccessBaseResponse<List<ExerciseEntity>>():
-        emit(state.copyWith(upcomingWorkoutsStatus: BaseState(data: result.data)));
+        emit(
+          state.copyWith(upcomingWorkoutsStatus: BaseState(data: result.data)),
+        );
       case ErrorBaseResponse<List<ExerciseEntity>>():
-        emit(state.copyWith(
-            upcomingWorkoutsStatus: BaseState(errorMessage: result.errorMessage)));
+        emit(
+          state.copyWith(
+            upcomingWorkoutsStatus: BaseState(
+              errorMessage: result.errorMessage,
+            ),
+          ),
+        );
     }
   }
 
   Future<void> _fetchMealCategories() async {
-    emit(state.copyWith(
-        recommendationForYouTabsStatus: const BaseState(isLoading: true)));
+    emit(
+      state.copyWith(
+        recommendationForYouTabsStatus: const BaseState(isLoading: true),
+      ),
+    );
     final result = await _getMealsCategoriesUseCase();
 
     switch (result) {
       case SuccessBaseResponse<List<MealCategoryEntity>>():
-        final categories = result.data ?? [];
-        emit(state.copyWith(
-          recommendationForYouTabsStatus: BaseState(data: categories),
-          activeMealCategoryId: categories.isNotEmpty ? categories.first.id : '',
-        ));
+        emit(
+          state.copyWith(
+            recommendationForYouTabsStatus: BaseState(data: result.data),
+          ),
+        );
       case ErrorBaseResponse<List<MealCategoryEntity>>():
-        emit(state.copyWith(
-            recommendationForYouTabsStatus:
-                BaseState(errorMessage: result.errorMessage)));
+        emit(
+          state.copyWith(
+            recommendationForYouTabsStatus: BaseState(
+              errorMessage: result.errorMessage,
+            ),
+          ),
+        );
         emitUiEvent(DisplayErrorEvent(result.errorMessage));
     }
   }
 
   Future<void> _fetchPopularExercises() async {
-    emit(state.copyWith(popularTrainingStatus: const BaseState(isLoading: true)));
+    emit(
+      state.copyWith(popularTrainingStatus: const BaseState(isLoading: true)),
+    );
     final result = await _getAllExercisesUseCase(limit: 10);
 
     switch (result) {
       case SuccessBaseResponse<List<ExerciseEntity>>():
-        emit(state.copyWith(popularTrainingStatus: BaseState(data: result.data)));
+        emit(
+          state.copyWith(popularTrainingStatus: BaseState(data: result.data)),
+        );
       case ErrorBaseResponse<List<ExerciseEntity>>():
-        emit(state.copyWith(
-            popularTrainingStatus: BaseState(errorMessage: result.errorMessage)));
+        emit(
+          state.copyWith(
+            popularTrainingStatus: BaseState(errorMessage: result.errorMessage),
+          ),
+        );
         emitUiEvent(DisplayErrorEvent(result.errorMessage));
     }
   }
@@ -146,11 +213,5 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
     if (state.activeMuscleId == muscleId) return;
     emit(state.copyWith(activeMuscleId: muscleId));
     _fetchExercisesByMuscle(muscleId);
-  }
-
-  void _changeMealCategoryTab(String categoryId) {
-    if (state.activeMealCategoryId == categoryId) return;
-    emit(state.copyWith(activeMealCategoryId: categoryId));
-    // Fetch meals by category logic would go here
   }
 }

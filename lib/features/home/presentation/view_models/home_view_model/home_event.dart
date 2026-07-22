@@ -6,6 +6,10 @@ class FetchAllHomeDataEvent extends HomeEvent {
   const FetchAllHomeDataEvent();
 }
 
+class FetchHomeUserEvent extends HomeEvent {
+  const FetchHomeUserEvent();
+}
+
 class FetchRandomExercisesEvent extends HomeEvent {
   const FetchRandomExercisesEvent();
 }
@@ -25,9 +29,4 @@ class FetchPopularExercisesEvent extends HomeEvent {
 class ChangeMuscleTabEvent extends HomeEvent {
   final String muscleId;
   const ChangeMuscleTabEvent(this.muscleId);
-}
-
-class ChangeMealCategoryTabEvent extends HomeEvent {
-  final String categoryId;
-  const ChangeMealCategoryTabEvent(this.categoryId);
 }
