@@ -55,7 +55,7 @@ class _AppShimmerState extends State<AppShimmer>
               begin: const Alignment(-1.0, -0.3),
               end: const Alignment(1.0, 0.3),
               stops: const [0.4, 0.5, 0.6],
-              colors: [
+              colors: const [
                 AppColors.black80,
                 AppColors.black70,
                 AppColors.black80,
@@ -63,7 +63,8 @@ class _AppShimmerState extends State<AppShimmer>
               transform: _SlidingGradientTransform(offset: _animation.value),
             ).createShader(bounds);
           },
-          child: widget.child ??
+          child:
+              widget.child ??
               Container(
                 width: widget.width,
                 height: widget.height,

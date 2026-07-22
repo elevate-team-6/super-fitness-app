@@ -52,15 +52,15 @@ class CustomCachedImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: AppColors.orange20,
+      color: AppColors.black80,
       child: Center(
         child: SvgPicture.asset(
           placeholderIcon ?? AppIcons.workOut,
           width: 72.w,
           height: 72.w,
           fit: BoxFit.contain,
-          colorFilter: const ColorFilter.mode(
-            AppColors.primary,
+          colorFilter: ColorFilter.mode(
+            AppColors.primary.withValues(alpha: 0.5),
             BlendMode.srcIn,
           ),
         ),
