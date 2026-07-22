@@ -21,7 +21,7 @@ class DifficultyLevelsResponse extends Equatable {
   factory DifficultyLevelsResponse.fromJson(Map<String, dynamic> json) =>
       _$DifficultyLevelsResponseFromJson(json);
 
-  List<DifficultyLevelEntity> toEntityList() =>
+  List<DifficultyLevelEntity> toEntity() =>
       difficultyLevels?.map((e) => e.toEntity()).toList() ?? [];
 
   @override
