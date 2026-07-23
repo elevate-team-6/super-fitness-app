@@ -11,6 +11,7 @@ import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
+import 'package:super_fitness/features/workouts/domain/entities/difficulty_level_entity.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_event.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_state.dart';
@@ -26,8 +27,10 @@ class ExerciseScreen extends StatefulWidget {
   State<ExerciseScreen> createState() => _ExerciseScreenState();
 }
 
-class _ExerciseScreenState extends State<ExerciseScreen> with UiEventHandler {
+class _ExerciseScreenState extends State<ExerciseScreen>
+    with UiEventHandler, TickerProviderStateMixin {
   StreamSubscription<BaseUiEvent>? _uiEventSubscription;
+  TabController? _tabController;
 
   @override
   void initState() {
@@ -41,9 +44,18 @@ class _ExerciseScreenState extends State<ExerciseScreen> with UiEventHandler {
     );
   }
 
+  void _updateTabController(List<DifficultyLevelEntity> levels) {
+    if (levels.isEmpty) return;
+    if (_tabController == null || _tabController!.length != levels.length) {
+      _tabController?.dispose();
+      _tabController = TabController(length: levels.length, vsync: this);
+    }
+  }
+
   @override
   void dispose() {
     _uiEventSubscription?.cancel();
+    _tabController?.dispose();
     super.dispose();
   }
 
@@ -53,31 +65,35 @@ class _ExerciseScreenState extends State<ExerciseScreen> with UiEventHandler {
       backgroundImage: AppImages.homeBackground,
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(
+        hasBottomBorderRadius: false,
         centerTitle: true,
         height: 260.h,
         backgroundImage: AppImages.homeBackground,
         title: BlocSelector<ExerciseCubit, ExerciseState, String>(
-          selector: (state) =>
-              state.selectedDifficulty?.name ?? AppStrings.workouts.tr(),
-          builder: (context, title) {
-            return Text(
-              AppStrings.workouts.tr(),
-              style: AppTextStyles.white24700,
-            );
+          selector: (state) => state.exercises.isNotEmpty
+              ? state.exercises.first.primeMoverMuscle
+              : '',
+          builder: (context, primeMoverMuscle) {
+            return Text(primeMoverMuscle, style: AppTextStyles.white24700);
           },
         ),
-        subtitle: 'Find the best exercises for you',
+        subtitle: AppStrings.findBestExercisesForYou.tr(),
         onBackPressed: () => Navigator.pop(context),
         bottomContent: BlocSelector<ExerciseCubit, ExerciseState, int>(
           selector: (state) => state.totalExercises,
           builder: (context, total) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            return Column(
               children: [
-                _InfoBadge(label: '30 MIN'),
-                _InfoBadge(
-                  label: '$total ${total == 1 ? 'Exercise' : 'Exercises'}',
-                  isPrimary: true,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _InfoBadge(label: AppStrings.min30.tr()),
+                    _InfoBadge(
+                      label:
+                          '$total ${total == 1 ? AppStrings.exerciseSingle.tr() : AppStrings.exercisePlural.tr()}',
+                      isPrimary: true,
+                    ),
+                  ],
                 ),
               ],
             );
@@ -89,8 +105,17 @@ class _ExerciseScreenState extends State<ExerciseScreen> with UiEventHandler {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16.h),
-            const DifficultyLevelsSection(),
+            BlocSelector<
+              ExerciseCubit,
+              ExerciseState,
+              List<DifficultyLevelEntity>
+            >(
+              selector: (state) => state.difficultyLevels,
+              builder: (context, levels) {
+                _updateTabController(levels);
+                return DifficultyLevelsSection(tabController: _tabController);
+              },
+            ),
             SizedBox(height: 16.h),
             const Expanded(child: ExercisesSection()),
           ],
@@ -109,9 +134,9 @@ class _InfoBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
-        color: isPrimary ? Colors.transparent : Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20.r),
         border: Border.all(
           color: isPrimary

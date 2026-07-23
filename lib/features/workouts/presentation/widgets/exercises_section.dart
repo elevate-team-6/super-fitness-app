@@ -1,9 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
-import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/custom_empty_state_view.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_event.dart';
@@ -73,7 +73,9 @@ class _ExercisesSectionState extends State<ExercisesSection> {
 
         if (state.exercises.isEmpty) {
           return Center(
-            child: CustomEmptyStateView(message: "AppStrings.noExercises.tr()"),
+            child: CustomEmptyStateView(
+              message: AppStrings.noExercisesFound.tr(),
+            ),
           );
         }
         return RefreshIndicator(
@@ -87,11 +89,11 @@ class _ExercisesSectionState extends State<ExercisesSection> {
               (s) => !s.isRefreshing,
             );
           },
-          child: ListView.separated(
+          child: ListView.builder(
             controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             itemCount: state.exercises.length + (state.isLoadingMore ? 1 : 0),
-            separatorBuilder: (context, i) => SizedBox(height: 12.h),
+
             itemBuilder: (context, index) {
               if (index == state.exercises.length) {
                 return const PaginationLoader();
@@ -110,21 +112,8 @@ class _ExercisesSectionState extends State<ExercisesSection> {
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       itemCount: 5,
-      separatorBuilder: (context, i) => SizedBox(height: 12.h),
+      separatorBuilder: (context, i) => SizedBox(height: 4.h),
       itemBuilder: (context, i) => const ExerciseSkeleton(),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(32.r),
-        child: Text(
-          'No exercises found',
-          style: AppTextStyles.white16500.copyWith(color: AppColors.white60),
-          textAlign: TextAlign.center,
-        ),
-      ),
     );
   }
 }

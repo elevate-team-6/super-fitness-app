@@ -131,5 +131,10 @@
   "moderatelyActive": "نشاط متوسط",
   "veryActive": "نشط جداً",
   "extraActive": "نشاط فائق",
-  "or": "أو"
+  "or": "أو",
+  "find_best_exercises_for_you": "اكتشف أفضل التمارين المناسبة لك",
+  "min_30": "٣٠ دقيقة",
+  "exercise_single": "تمرين",
+  "exercise_plural": "تمارين",
+  "no_exercises_found": "لم يتم العثور على تمارين"
 }

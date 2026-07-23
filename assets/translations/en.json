@@ -130,5 +130,10 @@
   "moderatelyActive": "Moderately",
   "veryActive": "Very Active",
   "extraActive": "Extra Active",
-  "or": "Or"
+  "or": "Or",
+  "find_best_exercises_for_you": "Find the best exercises for you",
+  "min_30": "30 MIN",
+  "exercise_single": "Exercise",
+  "exercise_plural": "Exercises",
+  "no_exercises_found": "No exercises found"
 }
