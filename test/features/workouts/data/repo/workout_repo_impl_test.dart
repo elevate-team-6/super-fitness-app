@@ -57,63 +57,88 @@ void main() {
   });
 
   group('getDifficultyLevelsByPrimeMover', () {
-    test('returns SuccessBaseResponse with List<DifficultyLevelEntity> when data source succeeds', () async {
-      when(mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .thenAnswer((_) async => const SuccessBaseResponse(tDifficultyLevelsResponse));
+    test(
+      'returns SuccessBaseResponse with List<DifficultyLevelEntity> when data source succeeds',
+      () async {
+        when(
+          mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
+        ).thenAnswer(
+          (_) async => const SuccessBaseResponse(tDifficultyLevelsResponse),
+        );
 
-      final result =
-          await repository.getDifficultyLevelsByPrimeMover(tMuscleId);
+        final result = await repository.getDifficultyLevelsByPrimeMover(
+          tMuscleId,
+        );
 
-      expect(result, isA<SuccessBaseResponse<List<DifficultyLevelEntity>>>());
-      final data =
-          (result as SuccessBaseResponse<List<DifficultyLevelEntity>>).data;
-      expect(data?.length, 2);
-      expect(data?[0].name, 'Beginner');
-      expect(data?[1].name, 'Intermediate');
-      verify(mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .called(1);
-    });
+        expect(result, isA<SuccessBaseResponse<List<DifficultyLevelEntity>>>());
+        final data =
+            (result as SuccessBaseResponse<List<DifficultyLevelEntity>>).data;
+        expect(data?.length, 2);
+        expect(data?[0].name, 'Beginner');
+        expect(data?[1].name, 'Intermediate');
+        verify(
+          mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
+        ).called(1);
+      },
+    );
 
     test('returns ErrorBaseResponse when data source fails', () async {
-      when(mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .thenAnswer((_) async => const ErrorBaseResponse('Server Error'));
+      when(
+        mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
+      ).thenAnswer((_) async => const ErrorBaseResponse('Server Error'));
 
-      final result =
-          await repository.getDifficultyLevelsByPrimeMover(tMuscleId);
+      final result = await repository.getDifficultyLevelsByPrimeMover(
+        tMuscleId,
+      );
 
       expect(result, isA<ErrorBaseResponse<List<DifficultyLevelEntity>>>());
       final error = result as ErrorBaseResponse<List<DifficultyLevelEntity>>;
       expect(error.errorMessage, 'Server Error');
-      verify(mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .called(1);
+      verify(
+        mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
+      ).called(1);
     });
   });
 
   group('getExercisesByMuscleDifficulty', () {
-    test('returns SuccessBaseResponse with ExercisesEntity when data source succeeds', () async {
-      when(mockRemoteDataSource.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .thenAnswer((_) async => const SuccessBaseResponse(tExercisesResponse));
+    test(
+      'returns SuccessBaseResponse with ExercisesEntity when data source succeeds',
+      () async {
+        when(
+          mockRemoteDataSource.getExercisesByMuscleDifficulty(
+            tMuscleId,
+            tDifficultyId,
+          ),
+        ).thenAnswer(
+          (_) async => const SuccessBaseResponse(tExercisesResponse),
+        );
 
-      final result = await repository.getExercisesByMuscleDifficulty(
-        tMuscleId,
-        tDifficultyId,
-      );
+        final result = await repository.getExercisesByMuscleDifficulty(
+          tMuscleId,
+          tDifficultyId,
+        );
 
-      expect(result, isA<SuccessBaseResponse<ExercisesEntity>>());
-      final data = (result as SuccessBaseResponse<ExercisesEntity>).data;
-      expect(data?.totalExercises, 10);
-      expect(data?.exercises.length, 1);
-      expect(data?.exercises.first.exercise, 'Bench Press');
-      verify(mockRemoteDataSource.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .called(1);
-    });
+        expect(result, isA<SuccessBaseResponse<ExercisesEntity>>());
+        final data = (result as SuccessBaseResponse<ExercisesEntity>).data;
+        expect(data?.totalExercises, 10);
+        expect(data?.exercises.length, 1);
+        expect(data?.exercises.first.exercise, 'Bench Press');
+        verify(
+          mockRemoteDataSource.getExercisesByMuscleDifficulty(
+            tMuscleId,
+            tDifficultyId,
+          ),
+        ).called(1);
+      },
+    );
 
     test('returns ErrorBaseResponse when data source fails', () async {
-      when(mockRemoteDataSource.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .thenAnswer((_) async => const ErrorBaseResponse('Network Error'));
+      when(
+        mockRemoteDataSource.getExercisesByMuscleDifficulty(
+          tMuscleId,
+          tDifficultyId,
+        ),
+      ).thenAnswer((_) async => const ErrorBaseResponse('Network Error'));
 
       final result = await repository.getExercisesByMuscleDifficulty(
         tMuscleId,
@@ -123,9 +148,12 @@ void main() {
       expect(result, isA<ErrorBaseResponse<ExercisesEntity>>());
       final error = result as ErrorBaseResponse<ExercisesEntity>;
       expect(error.errorMessage, 'Network Error');
-      verify(mockRemoteDataSource.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .called(1);
+      verify(
+        mockRemoteDataSource.getExercisesByMuscleDifficulty(
+          tMuscleId,
+          tDifficultyId,
+        ),
+      ).called(1);
     });
   });
 }

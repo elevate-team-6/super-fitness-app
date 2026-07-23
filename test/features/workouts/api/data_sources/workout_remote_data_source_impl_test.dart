@@ -50,38 +50,44 @@ void main() {
 
   group('getDifficultyLevelsByPrimeMover', () {
     test('returns SuccessBaseResponse when API call succeeds', () async {
-      when(mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .thenAnswer((_) async => tDifficultyLevelsResponse);
+      when(
+        mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId),
+      ).thenAnswer((_) async => tDifficultyLevelsResponse);
 
-      final result =
-          await dataSource.getDifficultyLevelsByPrimeMover(tMuscleId);
+      final result = await dataSource.getDifficultyLevelsByPrimeMover(
+        tMuscleId,
+      );
 
       expect(result, isA<SuccessBaseResponse<DifficultyLevelsResponse>>());
       final data =
           (result as SuccessBaseResponse<DifficultyLevelsResponse>).data;
       expect(data, tDifficultyLevelsResponse);
-      verify(mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .called(1);
+      verify(
+        mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId),
+      ).called(1);
     });
 
     test('returns ErrorBaseResponse when API call throws exception', () async {
-      when(mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .thenThrow(DioException(requestOptions: RequestOptions(path: '')));
+      when(
+        mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId),
+      ).thenThrow(DioException(requestOptions: RequestOptions(path: '')));
 
-      final result =
-          await dataSource.getDifficultyLevelsByPrimeMover(tMuscleId);
+      final result = await dataSource.getDifficultyLevelsByPrimeMover(
+        tMuscleId,
+      );
 
       expect(result, isA<ErrorBaseResponse<DifficultyLevelsResponse>>());
-      verify(mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId))
-          .called(1);
+      verify(
+        mockApiClient.getDifficultyLevelsByPrimeMover(tMuscleId),
+      ).called(1);
     });
   });
 
   group('getExercisesByMuscleDifficulty', () {
     test('returns SuccessBaseResponse when API call succeeds', () async {
-      when(mockApiClient.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .thenAnswer((_) async => tExercisesResponse);
+      when(
+        mockApiClient.getExercisesByMuscleDifficulty(tMuscleId, tDifficultyId),
+      ).thenAnswer((_) async => tExercisesResponse);
 
       final result = await dataSource.getExercisesByMuscleDifficulty(
         tMuscleId,
@@ -89,20 +95,22 @@ void main() {
       );
 
       expect(
-          result, isA<SuccessBaseResponse<ExercisesByMuscleDifficultyResponse>>());
+        result,
+        isA<SuccessBaseResponse<ExercisesByMuscleDifficultyResponse>>(),
+      );
       final data =
           (result as SuccessBaseResponse<ExercisesByMuscleDifficultyResponse>)
               .data;
       expect(data, tExercisesResponse);
-      verify(mockApiClient.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .called(1);
+      verify(
+        mockApiClient.getExercisesByMuscleDifficulty(tMuscleId, tDifficultyId),
+      ).called(1);
     });
 
     test('returns ErrorBaseResponse when API call throws exception', () async {
-      when(mockApiClient.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .thenThrow(DioException(requestOptions: RequestOptions(path: '')));
+      when(
+        mockApiClient.getExercisesByMuscleDifficulty(tMuscleId, tDifficultyId),
+      ).thenThrow(DioException(requestOptions: RequestOptions(path: '')));
 
       final result = await dataSource.getExercisesByMuscleDifficulty(
         tMuscleId,
@@ -110,10 +118,12 @@ void main() {
       );
 
       expect(
-          result, isA<ErrorBaseResponse<ExercisesByMuscleDifficultyResponse>>());
-      verify(mockApiClient.getExercisesByMuscleDifficulty(
-              tMuscleId, tDifficultyId))
-          .called(1);
+        result,
+        isA<ErrorBaseResponse<ExercisesByMuscleDifficultyResponse>>(),
+      );
+      verify(
+        mockApiClient.getExercisesByMuscleDifficulty(tMuscleId, tDifficultyId),
+      ).called(1);
     });
   });
 }

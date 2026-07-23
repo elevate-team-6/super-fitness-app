@@ -16,11 +16,7 @@ class ExerciseSkeleton extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Row(
         children: [
-          Container(
-            width: 100.w,
-            height: 100.h,
-            color: AppColors.black70,
-          ),
+          Container(width: 100.w, height: 100.h, color: AppColors.black70),
           SizedBox(width: 12.w),
           Expanded(
             child: Column(

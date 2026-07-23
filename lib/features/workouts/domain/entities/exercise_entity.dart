@@ -33,20 +33,20 @@ class ExerciseEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        exercise,
-        difficultyLevel,
-        targetMuscleGroup,
-        primeMoverMuscle,
-        primaryEquipment,
-        posture,
-        bodyRegion,
-        mechanics,
-        laterality,
-        primaryExerciseClassification,
-        shortYoutubeDemonstrationLink,
-        inDepthYoutubeExplanationLink,
-      ];
+    id,
+    exercise,
+    difficultyLevel,
+    targetMuscleGroup,
+    primeMoverMuscle,
+    primaryEquipment,
+    posture,
+    bodyRegion,
+    mechanics,
+    laterality,
+    primaryExerciseClassification,
+    shortYoutubeDemonstrationLink,
+    inDepthYoutubeExplanationLink,
+  ];
 }
 
 class ExercisesEntity extends Equatable {
@@ -66,10 +66,10 @@ class ExercisesEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        message,
-        totalExercises,
-        totalPages,
-        currentPage,
-        exercises,
-      ];
+    message,
+    totalExercises,
+    totalPages,
+    currentPage,
+    exercises,
+  ];
 }

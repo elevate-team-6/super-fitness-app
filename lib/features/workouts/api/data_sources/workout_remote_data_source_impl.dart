@@ -13,9 +13,8 @@ class WorkoutRemoteDataSourceImpl implements WorkoutRemoteDataSourceContract {
   const WorkoutRemoteDataSourceImpl(this._apiClient);
 
   @override
-  Future<BaseResponse<DifficultyLevelsResponse>> getDifficultyLevelsByPrimeMover(
-    String primeMoverMuscleId,
-  ) {
+  Future<BaseResponse<DifficultyLevelsResponse>>
+  getDifficultyLevelsByPrimeMover(String primeMoverMuscleId) {
     return ErrorHandler.handleApiCall(
       () => _apiClient.getDifficultyLevelsByPrimeMover(primeMoverMuscleId),
     );
@@ -23,7 +22,7 @@ class WorkoutRemoteDataSourceImpl implements WorkoutRemoteDataSourceContract {
 
   @override
   Future<BaseResponse<ExercisesByMuscleDifficultyResponse>>
-      getExercisesByMuscleDifficulty(
+  getExercisesByMuscleDifficulty(
     String primeMoverMuscleId,
     String difficultyLevelId,
   ) {

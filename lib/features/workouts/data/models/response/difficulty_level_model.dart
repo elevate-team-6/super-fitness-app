@@ -14,10 +14,8 @@ class DifficultyLevelModel extends Equatable {
   factory DifficultyLevelModel.fromJson(Map<String, dynamic> json) =>
       _$DifficultyLevelModelFromJson(json);
 
-  DifficultyLevelEntity toEntity() => DifficultyLevelEntity(
-        id: id ?? '',
-        name: name ?? '',
-      );
+  DifficultyLevelEntity toEntity() =>
+      DifficultyLevelEntity(id: id ?? '', name: name ?? '');
 
   @override
   List<Object?> get props => [id, name];

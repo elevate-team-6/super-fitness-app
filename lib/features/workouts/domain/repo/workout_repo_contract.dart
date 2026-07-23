@@ -4,7 +4,7 @@ import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.
 
 abstract interface class WorkoutRepoContract {
   Future<BaseResponse<List<DifficultyLevelEntity>>>
-      getDifficultyLevelsByPrimeMover(String primeMoverMuscleId);
+  getDifficultyLevelsByPrimeMover(String primeMoverMuscleId);
 
   Future<BaseResponse<ExercisesEntity>> getExercisesByMuscleDifficulty(
     String primeMoverMuscleId,

@@ -83,7 +83,9 @@ abstract class AppRoutes {
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
               create: (_) => getIt<ExerciseCubit>(),
-              child: ExerciseScreen(primeMoverMuscleId: args.primeMoverMuscleId),
+              child: ExerciseScreen(
+                primeMoverMuscleId: args.primeMoverMuscleId,
+              ),
             ),
           );
 

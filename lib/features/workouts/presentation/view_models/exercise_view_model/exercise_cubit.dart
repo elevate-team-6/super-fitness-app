@@ -13,9 +13,9 @@ import 'package:super_fitness/features/workouts/presentation/view_models/exercis
 @injectable
 class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
   final GetDifficultyLevelsByPrimeMoverUseCase
-      _getDifficultyLevelsByPrimeMoverUseCase;
+  _getDifficultyLevelsByPrimeMoverUseCase;
   final GetExercisesByMuscleDifficultyUseCase
-      _getExercisesByMuscleDifficultyUseCase;
+  _getExercisesByMuscleDifficultyUseCase;
 
   ExerciseCubit(
     this._getDifficultyLevelsByPrimeMoverUseCase,

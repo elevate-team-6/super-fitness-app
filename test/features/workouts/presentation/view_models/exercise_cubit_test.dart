@@ -17,7 +17,8 @@ import 'exercise_cubit_test.mocks.dart';
 ])
 void main() {
   late ExerciseCubit cubit;
-  late MockGetDifficultyLevelsByPrimeMoverUseCase mockGetDifficultyLevelsUseCase;
+  late MockGetDifficultyLevelsByPrimeMoverUseCase
+  mockGetDifficultyLevelsUseCase;
   late MockGetExercisesByMuscleDifficultyUseCase mockGetExercisesUseCase;
 
   setUp(() {
@@ -28,7 +29,8 @@ void main() {
       const ErrorBaseResponse('dummy'),
     );
 
-    mockGetDifficultyLevelsUseCase = MockGetDifficultyLevelsByPrimeMoverUseCase();
+    mockGetDifficultyLevelsUseCase =
+        MockGetDifficultyLevelsByPrimeMoverUseCase();
     mockGetExercisesUseCase = MockGetExercisesByMuscleDifficultyUseCase();
     cubit = ExerciseCubit(
       mockGetDifficultyLevelsUseCase,
@@ -92,70 +94,86 @@ void main() {
       exercises: [tExercise2],
     );
 
-    test('InitializeExerciseScreen loads levels, auto-selects level 1, and loads page 1 exercises', () async {
-      when(mockGetDifficultyLevelsUseCase(
-        primeMoverMuscleId: tMuscleId,
-      )).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
+    test(
+      'InitializeExerciseScreen loads levels, auto-selects level 1, and loads page 1 exercises',
+      () async {
+        when(
+          mockGetDifficultyLevelsUseCase(primeMoverMuscleId: tMuscleId),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
 
-      when(mockGetExercisesUseCase(
-        primeMoverMuscleId: tMuscleId,
-        difficultyLevelId: '1',
-      )).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
+        when(
+          mockGetExercisesUseCase(
+            primeMoverMuscleId: tMuscleId,
+            difficultyLevelId: '1',
+          ),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
 
-      cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
-      await Future.delayed(Duration.zero);
+        cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
+        await Future.delayed(Duration.zero);
 
-      expect(cubit.state.isLoadingLevels, false);
-      expect(cubit.state.difficultyLevels, tLevels);
-      expect(cubit.state.selectedDifficulty, tLevels.first);
-      expect(cubit.state.isLoadingExercises, false);
-      expect(cubit.state.exercises, [tExercise1]);
-      expect(cubit.state.hasReachedMax, false);
-      expect(cubit.state.activePrimeMoverMuscleId, tMuscleId);
-    });
+        expect(cubit.state.isLoadingLevels, false);
+        expect(cubit.state.difficultyLevels, tLevels);
+        expect(cubit.state.selectedDifficulty, tLevels.first);
+        expect(cubit.state.isLoadingExercises, false);
+        expect(cubit.state.exercises, [tExercise1]);
+        expect(cubit.state.hasReachedMax, false);
+        expect(cubit.state.activePrimeMoverMuscleId, tMuscleId);
+      },
+    );
 
-    test('ChangeDifficulty updates selected level and loads new exercises', () async {
-      when(mockGetDifficultyLevelsUseCase(
-        primeMoverMuscleId: tMuscleId,
-      )).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
+    test(
+      'ChangeDifficulty updates selected level and loads new exercises',
+      () async {
+        when(
+          mockGetDifficultyLevelsUseCase(primeMoverMuscleId: tMuscleId),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
 
-      when(mockGetExercisesUseCase(
-        primeMoverMuscleId: tMuscleId,
-        difficultyLevelId: '1',
-      )).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
+        when(
+          mockGetExercisesUseCase(
+            primeMoverMuscleId: tMuscleId,
+            difficultyLevelId: '1',
+          ),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
 
-      when(mockGetExercisesUseCase(
-        primeMoverMuscleId: tMuscleId,
-        difficultyLevelId: '2',
-      )).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage2));
+        when(
+          mockGetExercisesUseCase(
+            primeMoverMuscleId: tMuscleId,
+            difficultyLevelId: '2',
+          ),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage2));
 
-      cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
-      await Future.delayed(Duration.zero);
+        cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
+        await Future.delayed(Duration.zero);
 
-      cubit.doIntent(ChangeDifficulty(tLevels[1]));
-      await Future.delayed(Duration.zero);
+        cubit.doIntent(ChangeDifficulty(tLevels[1]));
+        await Future.delayed(Duration.zero);
 
-      expect(cubit.state.selectedDifficulty, tLevels[1]);
-      expect(cubit.state.exercises, [tExercise2]);
-    });
+        expect(cubit.state.selectedDifficulty, tLevels[1]);
+        expect(cubit.state.exercises, [tExercise2]);
+      },
+    );
 
     test('LoadMoreExercises appends exercises to current list', () async {
-      when(mockGetDifficultyLevelsUseCase(
-        primeMoverMuscleId: tMuscleId,
-      )).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
+      when(
+        mockGetDifficultyLevelsUseCase(primeMoverMuscleId: tMuscleId),
+      ).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
 
-      when(mockGetExercisesUseCase(
-        primeMoverMuscleId: tMuscleId,
-        difficultyLevelId: '1',
-      )).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
+      when(
+        mockGetExercisesUseCase(
+          primeMoverMuscleId: tMuscleId,
+          difficultyLevelId: '1',
+        ),
+      ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
 
       cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
       await Future.delayed(Duration.zero);
 
-      when(mockGetExercisesUseCase(
-        primeMoverMuscleId: tMuscleId,
-        difficultyLevelId: '1',
-      )).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage2));
+      when(
+        mockGetExercisesUseCase(
+          primeMoverMuscleId: tMuscleId,
+          difficultyLevelId: '1',
+        ),
+      ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage2));
 
       cubit.doIntent(const LoadMoreExercises());
       await Future.delayed(Duration.zero);
@@ -166,14 +184,16 @@ void main() {
     });
 
     test('RefreshExercises replaces exercise list from page 1', () async {
-      when(mockGetDifficultyLevelsUseCase(
-        primeMoverMuscleId: tMuscleId,
-      )).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
+      when(
+        mockGetDifficultyLevelsUseCase(primeMoverMuscleId: tMuscleId),
+      ).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
 
-      when(mockGetExercisesUseCase(
-        primeMoverMuscleId: tMuscleId,
-        difficultyLevelId: '1',
-      )).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
+      when(
+        mockGetExercisesUseCase(
+          primeMoverMuscleId: tMuscleId,
+          difficultyLevelId: '1',
+        ),
+      ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
 
       cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
       await Future.delayed(Duration.zero);

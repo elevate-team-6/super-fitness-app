@@ -22,23 +22,23 @@ class ExercisesByMuscleDifficultyResponse extends Equatable {
   });
 
   factory ExercisesByMuscleDifficultyResponse.fromJson(
-          Map<String, dynamic> json) =>
-      _$ExercisesByMuscleDifficultyResponseFromJson(json);
+    Map<String, dynamic> json,
+  ) => _$ExercisesByMuscleDifficultyResponseFromJson(json);
 
   ExercisesEntity toEntity() => ExercisesEntity(
-        message: message ?? '',
-        totalExercises: totalExercises ?? 0,
-        totalPages: totalPages ?? 0,
-        currentPage: currentPage ?? 1,
-        exercises: exercises?.map((e) => e.toEntity()).toList() ?? [],
-      );
+    message: message ?? '',
+    totalExercises: totalExercises ?? 0,
+    totalPages: totalPages ?? 0,
+    currentPage: currentPage ?? 1,
+    exercises: exercises?.map((e) => e.toEntity()).toList() ?? [],
+  );
 
   @override
   List<Object?> get props => [
-        message,
-        totalExercises,
-        totalPages,
-        currentPage,
-        exercises,
-      ];
+    message,
+    totalExercises,
+    totalPages,
+    currentPage,
+    exercises,
+  ];
 }

@@ -49,35 +49,35 @@ class ExerciseModel extends Equatable {
       _$ExerciseModelFromJson(json);
 
   ExerciseEntity toEntity() => ExerciseEntity(
-        id: id ?? '',
-        exercise: exercise ?? '',
-        difficultyLevel: difficultyLevel ?? '',
-        targetMuscleGroup: targetMuscleGroup ?? '',
-        primeMoverMuscle: primeMoverMuscle ?? '',
-        primaryEquipment: primaryEquipment ?? '',
-        posture: posture ?? '',
-        bodyRegion: bodyRegion ?? '',
-        mechanics: mechanics ?? '',
-        laterality: laterality ?? '',
-        primaryExerciseClassification: primaryExerciseClassification ?? '',
-        shortYoutubeDemonstrationLink: shortYoutubeDemonstrationLink ?? '',
-        inDepthYoutubeExplanationLink: inDepthYoutubeExplanationLink ?? '',
-      );
+    id: id ?? '',
+    exercise: exercise ?? '',
+    difficultyLevel: difficultyLevel ?? '',
+    targetMuscleGroup: targetMuscleGroup ?? '',
+    primeMoverMuscle: primeMoverMuscle ?? '',
+    primaryEquipment: primaryEquipment ?? '',
+    posture: posture ?? '',
+    bodyRegion: bodyRegion ?? '',
+    mechanics: mechanics ?? '',
+    laterality: laterality ?? '',
+    primaryExerciseClassification: primaryExerciseClassification ?? '',
+    shortYoutubeDemonstrationLink: shortYoutubeDemonstrationLink ?? '',
+    inDepthYoutubeExplanationLink: inDepthYoutubeExplanationLink ?? '',
+  );
 
   @override
   List<Object?> get props => [
-        id,
-        exercise,
-        difficultyLevel,
-        targetMuscleGroup,
-        primeMoverMuscle,
-        primaryEquipment,
-        posture,
-        bodyRegion,
-        mechanics,
-        laterality,
-        primaryExerciseClassification,
-        shortYoutubeDemonstrationLink,
-        inDepthYoutubeExplanationLink,
-      ];
+    id,
+    exercise,
+    difficultyLevel,
+    targetMuscleGroup,
+    primeMoverMuscle,
+    primaryEquipment,
+    posture,
+    bodyRegion,
+    mechanics,
+    laterality,
+    primaryExerciseClassification,
+    shortYoutubeDemonstrationLink,
+    inDepthYoutubeExplanationLink,
+  ];
 }

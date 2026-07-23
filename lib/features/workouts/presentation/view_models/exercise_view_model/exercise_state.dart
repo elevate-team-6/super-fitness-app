@@ -66,26 +66,27 @@ class ExerciseState extends Equatable {
       activePrimeMoverMuscleId:
           activePrimeMoverMuscleId ?? this.activePrimeMoverMuscleId,
       levelsError: levelsError != null ? levelsError() : this.levelsError,
-      exercisesError:
-          exercisesError != null ? exercisesError() : this.exercisesError,
+      exercisesError: exercisesError != null
+          ? exercisesError()
+          : this.exercisesError,
     );
   }
 
   @override
   List<Object?> get props => [
-        isLoadingLevels,
-        isLoadingExercises,
-        isLoadingMore,
-        isRefreshing,
-        hasReachedMax,
-        difficultyLevels,
-        selectedDifficulty,
-        exercises,
-        totalExercises,
-        totalPages,
-        currentPage,
-        activePrimeMoverMuscleId,
-        levelsError,
-        exercisesError,
-      ];
+    isLoadingLevels,
+    isLoadingExercises,
+    isLoadingMore,
+    isRefreshing,
+    hasReachedMax,
+    difficultyLevels,
+    selectedDifficulty,
+    exercises,
+    totalExercises,
+    totalPages,
+    currentPage,
+    activePrimeMoverMuscleId,
+    levelsError,
+    exercisesError,
+  ];
 }

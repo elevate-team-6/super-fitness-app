@@ -4,10 +4,7 @@ class DifficultyLevelEntity extends Equatable {
   final String id;
   final String name;
 
-  const DifficultyLevelEntity({
-    required this.id,
-    required this.name,
-  });
+  const DifficultyLevelEntity({required this.id, required this.name});
 
   @override
   List<Object?> get props => [id, name];
