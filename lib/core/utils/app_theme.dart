@@ -90,27 +90,10 @@ abstract class AppTheme {
         showSelectedLabels: true,
       ),
 
-      // Navigation Bar Theme
-      navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.black80,
+      // Navigation Bar Theme (Simplified as we use a custom one)
+      navigationBarTheme: const NavigationBarThemeData(
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        height: 55.h,
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        labelPadding: EdgeInsets.zero,
-        indicatorColor: Colors.transparent,
-        overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return AppTextStyles.primary13500;
-          }
-          return AppTextStyles.white13500;
-        }),
-        iconTheme: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return IconThemeData(color: AppColors.primary, size: 40.sp);
-          }
-          return IconThemeData(color: AppColors.white, size: 46.sp);
-        }),
       ),
 
       // card theme
