@@ -1,8 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
