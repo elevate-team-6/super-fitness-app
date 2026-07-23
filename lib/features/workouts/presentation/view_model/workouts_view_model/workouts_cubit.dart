@@ -42,7 +42,7 @@ class WorkoutsCubit extends BaseCubit<WorkoutsState, BaseUiEvent> {
         final groups = response.data ?? [];
         emit(state.copyWith(muscleGroupsState: BaseState(data: groups)));
         if (groups.isNotEmpty) {
-          _getMusclesByGroupId(groups[0].id);
+          await _getMusclesByGroupId(groups[0].id);
         }
       case ErrorBaseResponse<List<MuscleGroupEntity>>():
         emit(
