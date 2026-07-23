@@ -15,9 +15,6 @@ class MuscleModel {
     );
   }
 
-  MuscleEntity toEntity() => MuscleEntity(
-    id: id ?? '',
-    name: name ?? '',
-    image: image ?? '',
-  );
+  MuscleEntity toEntity() =>
+      MuscleEntity(id: id ?? '', name: name ?? '', image: image ?? '');
 }

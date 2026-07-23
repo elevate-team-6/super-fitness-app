@@ -12,7 +12,9 @@ class MusclesResponse {
     return MusclesResponse(
       message: json['message'] as String?,
       muscleGroup: json['muscleGroup'] != null
-          ? MuscleGroupModel.fromJson(json['muscleGroup'] as Map<String, dynamic>)
+          ? MuscleGroupModel.fromJson(
+              json['muscleGroup'] as Map<String, dynamic>,
+            )
           : null,
       muscles: (json['muscles'] as List?)
           ?.map((e) => MuscleModel.fromJson(e as Map<String, dynamic>))

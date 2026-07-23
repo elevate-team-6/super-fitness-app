@@ -8,11 +8,7 @@ class MuscleGridItem extends StatelessWidget {
   final MuscleEntity muscle;
   final VoidCallback? onTap;
 
-  const MuscleGridItem({
-    super.key,
-    required this.muscle,
-    this.onTap,
-  });
+  const MuscleGridItem({super.key, required this.muscle, this.onTap});
 
   @override
   Widget build(BuildContext context) {

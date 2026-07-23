@@ -24,10 +24,10 @@ import 'workouts_screen_test.mocks.dart';
 class _InMemoryAssetLoader extends AssetLoader {
   @override
   Future<Map<String, dynamic>> load(String path, Locale locale) async => {
-        'workouts': 'Workouts',
-        'noMusclesFound': 'No muscles found',
-        'selectMuscleGroup': 'Select Muscle Group',
-      };
+    'workouts': 'Workouts',
+    'noMusclesFound': 'No muscles found',
+    'selectMuscleGroup': 'Select Muscle Group',
+  };
 }
 
 @GenerateMocks([WorkoutsCubit])
@@ -96,7 +96,9 @@ void main() {
   const tMuscles = [tMuscle];
 
   group('WorkoutsScreen Rendering Tests', () {
-    testWidgets('should display loading when muscleGroupsState is loading', (tester) async {
+    testWidgets('should display loading when muscleGroupsState is loading', (
+      tester,
+    ) async {
       when(mockCubit.state).thenReturn(
         const WorkoutsState(muscleGroupsState: BaseState(isLoading: true)),
       );
@@ -104,28 +106,33 @@ void main() {
       await pumpWorkoutsScreen(tester);
       // استخدام pump إضافي لضمان معالجة الـ Stream الأولية
       await tester.pump();
-      
+
       expect(find.byType(CustomLoading), findsWidgets);
     });
 
-    testWidgets('should display muscle groups and muscles when data is loaded', (tester) async {
-      when(mockCubit.state).thenReturn(
-        const WorkoutsState(
-          muscleGroupsState: BaseState(data: tMuscleGroups),
-          musclesState: BaseState(data: tMuscles),
-          selectedMuscleGroupId: '1',
-        ),
-      );
+    testWidgets(
+      'should display muscle groups and muscles when data is loaded',
+      (tester) async {
+        when(mockCubit.state).thenReturn(
+          const WorkoutsState(
+            muscleGroupsState: BaseState(data: tMuscleGroups),
+            musclesState: BaseState(data: tMuscles),
+            selectedMuscleGroupId: '1',
+          ),
+        );
 
-      await pumpWorkoutsScreen(tester);
-      await tester.pump();
+        await pumpWorkoutsScreen(tester);
+        await tester.pump();
 
-      expect(find.text('Abs'), findsOneWidget);
-      expect(find.byType(MuscleGridItem), findsOneWidget);
-      expect(find.text('Crunch'), findsOneWidget);
-    });
+        expect(find.text('Abs'), findsOneWidget);
+        expect(find.byType(MuscleGridItem), findsOneWidget);
+        expect(find.text('Crunch'), findsOneWidget);
+      },
+    );
 
-    testWidgets('should display error message when musclesState has error', (tester) async {
+    testWidgets('should display error message when musclesState has error', (
+      tester,
+    ) async {
       when(mockCubit.state).thenReturn(
         const WorkoutsState(
           muscleGroupsState: BaseState(data: tMuscleGroups),
@@ -139,7 +146,9 @@ void main() {
       expect(find.text('Error message'), findsOneWidget);
     });
 
-    testWidgets('should display empty message when no muscles found', (tester) async {
+    testWidgets('should display empty message when no muscles found', (
+      tester,
+    ) async {
       when(mockCubit.state).thenReturn(
         const WorkoutsState(
           muscleGroupsState: BaseState(data: tMuscleGroups),
@@ -153,21 +162,26 @@ void main() {
       expect(find.text('No muscles found'), findsOneWidget);
     });
 
-    testWidgets('should call GetMusclesByGroupIdEvent when a muscle group is tapped', (tester) async {
-      when(mockCubit.state).thenReturn(
-        const WorkoutsState(
-          muscleGroupsState: BaseState(data: tMuscleGroups),
-          selectedMuscleGroupId: '1',
-        ),
-      );
+    testWidgets(
+      'should call GetMusclesByGroupIdEvent when a muscle group is tapped',
+      (tester) async {
+        when(mockCubit.state).thenReturn(
+          const WorkoutsState(
+            muscleGroupsState: BaseState(data: tMuscleGroups),
+            selectedMuscleGroupId: '1',
+          ),
+        );
 
-      await pumpWorkoutsScreen(tester);
-      await tester.pump();
+        await pumpWorkoutsScreen(tester);
+        await tester.pump();
 
-      await tester.tap(find.text('Abs'));
-      await tester.pump();
-      
-      verify(mockCubit.doEvent(argThat(isA<GetMusclesByGroupIdEvent>()))).called(1);
-    });
+        await tester.tap(find.text('Abs'));
+        await tester.pump();
+
+        verify(
+          mockCubit.doEvent(argThat(isA<GetMusclesByGroupIdEvent>())),
+        ).called(1);
+      },
+    );
   });
 }

@@ -57,9 +57,7 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> with UiEventHandler {
               ),
             ),
             const _MuscleGroupsTabs(),
-            const Expanded(
-              child: _MusclesGrid(),
-            ),
+            const Expanded(child: _MusclesGrid()),
           ],
         ),
       ),
@@ -89,9 +87,9 @@ class _MuscleGroupsTabs extends StatelessWidget {
           child: CustomTabBar(
             tabs: groups.map((group) => group.name).toList(),
             onTap: (index) {
-              context
-                  .read<WorkoutsCubit>()
-                  .doEvent(GetMusclesByGroupIdEvent(groups[index].id));
+              context.read<WorkoutsCubit>().doEvent(
+                GetMusclesByGroupIdEvent(groups[index].id),
+              );
             },
           ),
         );
@@ -147,10 +145,7 @@ class _MusclesGrid extends StatelessWidget {
         return CustomGridView(
           itemCount: muscles.length,
           itemBuilder: (context, index) {
-            return MuscleGridItem(
-              muscle: muscles[index],
-              onTap: () {},
-            );
+            return MuscleGridItem(muscle: muscles[index], onTap: () {});
           },
         );
       },

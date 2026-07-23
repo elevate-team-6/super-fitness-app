@@ -49,20 +49,18 @@ void main() {
     blocTest<WorkoutsCubit, WorkoutsState>(
       'emits [loading, success] and calls getMusclesByGroupId when muscle groups are fetched successfully',
       build: () {
-        when(mockGetMuscleGroupsUseCase()).thenAnswer(
-          (_) async => const SuccessBaseResponse(tMuscleGroups),
-        );
-        when(mockGetMusclesByGroupIdUseCase(id: '1')).thenAnswer(
-          (_) async => const SuccessBaseResponse(tMuscles),
-        );
+        when(
+          mockGetMuscleGroupsUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tMuscleGroups));
+        when(
+          mockGetMusclesByGroupIdUseCase(id: '1'),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tMuscles));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(GetMuscleGroupsEvent()),
       expect: () => [
         const WorkoutsState(muscleGroupsState: BaseState(isLoading: true)),
-        const WorkoutsState(
-          muscleGroupsState: BaseState(data: tMuscleGroups),
-        ),
+        const WorkoutsState(muscleGroupsState: BaseState(data: tMuscleGroups)),
         const WorkoutsState(
           muscleGroupsState: BaseState(data: tMuscleGroups),
           musclesState: BaseState(isLoading: true),
@@ -83,9 +81,9 @@ void main() {
     blocTest<WorkoutsCubit, WorkoutsState>(
       'emits [loading, success] with empty list when no muscle groups are found',
       build: () {
-        when(mockGetMuscleGroupsUseCase()).thenAnswer(
-          (_) async => const SuccessBaseResponse([]),
-        );
+        when(
+          mockGetMuscleGroupsUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse([]));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(GetMuscleGroupsEvent()),
@@ -98,9 +96,9 @@ void main() {
     blocTest<WorkoutsCubit, WorkoutsState>(
       'emits [loading, error] when fetching muscle groups fails',
       build: () {
-        when(mockGetMuscleGroupsUseCase()).thenAnswer(
-          (_) async => const ErrorBaseResponse('server error'),
-        );
+        when(
+          mockGetMuscleGroupsUseCase(),
+        ).thenAnswer((_) async => const ErrorBaseResponse('server error'));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(GetMuscleGroupsEvent()),
@@ -117,9 +115,9 @@ void main() {
     blocTest<WorkoutsCubit, WorkoutsState>(
       'emits [loading, success] when muscles are fetched successfully',
       build: () {
-        when(mockGetMusclesByGroupIdUseCase(id: '1')).thenAnswer(
-          (_) async => const SuccessBaseResponse(tMuscles),
-        );
+        when(
+          mockGetMusclesByGroupIdUseCase(id: '1'),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tMuscles));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
@@ -138,9 +136,9 @@ void main() {
     blocTest<WorkoutsCubit, WorkoutsState>(
       'emits [loading, error] when fetching muscles fails',
       build: () {
-        when(mockGetMusclesByGroupIdUseCase(id: '1')).thenAnswer(
-          (_) async => const ErrorBaseResponse('not found'),
-        );
+        when(
+          mockGetMusclesByGroupIdUseCase(id: '1'),
+        ).thenAnswer((_) async => const ErrorBaseResponse('not found'));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
@@ -158,9 +156,9 @@ void main() {
     blocTest<WorkoutsCubit, WorkoutsState>(
       'emits [loading, success] with empty list when no muscles are found',
       build: () {
-        when(mockGetMusclesByGroupIdUseCase(id: '1')).thenAnswer(
-          (_) async => const SuccessBaseResponse([]),
-        );
+        when(
+          mockGetMusclesByGroupIdUseCase(id: '1'),
+        ).thenAnswer((_) async => const SuccessBaseResponse([]));
         return cubit;
       },
       act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),

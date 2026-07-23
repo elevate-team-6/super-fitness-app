@@ -57,10 +57,7 @@ class CustomLoading extends StatelessWidget {
       child: SizedBox(
         width: width ?? 100.w,
         height: height ?? 100.h,
-        child: Lottie.asset(
-          AppLottie.loading,
-          fit: BoxFit.contain,
-        ),
+        child: Lottie.asset(AppLottie.loading, fit: BoxFit.contain),
       ),
     );
   }

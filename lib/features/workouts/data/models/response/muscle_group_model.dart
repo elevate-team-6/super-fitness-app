@@ -13,8 +13,6 @@ class MuscleGroupModel {
     );
   }
 
-  MuscleGroupEntity toEntity() => MuscleGroupEntity(
-    id: id ?? '',
-    name: name ?? '',
-  );
+  MuscleGroupEntity toEntity() =>
+      MuscleGroupEntity(id: id ?? '', name: name ?? '');
 }

@@ -19,9 +19,8 @@ class WorkoutRepoImpl implements WorkoutRepoContract {
 
     switch (response) {
       case SuccessBaseResponse<MuscleGroupsResponse>():
-        final entities = response.data?.musclesGroup
-                ?.map((e) => e.toEntity())
-                .toList() ??
+        final entities =
+            response.data?.musclesGroup?.map((e) => e.toEntity()).toList() ??
             [];
         return SuccessBaseResponse(entities);
       case ErrorBaseResponse<MuscleGroupsResponse>():
@@ -30,15 +29,15 @@ class WorkoutRepoImpl implements WorkoutRepoContract {
   }
 
   @override
-  Future<BaseResponse<List<MuscleEntity>>> getMusclesByGroupId(String id) async {
+  Future<BaseResponse<List<MuscleEntity>>> getMusclesByGroupId(
+    String id,
+  ) async {
     final response = await _remoteDataSource.getMusclesByGroupId(id);
 
     switch (response) {
       case SuccessBaseResponse<MusclesResponse>():
-        final entities = response.data?.muscles
-                ?.map((e) => e.toEntity())
-                .toList() ??
-            [];
+        final entities =
+            response.data?.muscles?.map((e) => e.toEntity()).toList() ?? [];
         return SuccessBaseResponse(entities);
       case ErrorBaseResponse<MusclesResponse>():
         return ErrorBaseResponse(response.errorMessage);

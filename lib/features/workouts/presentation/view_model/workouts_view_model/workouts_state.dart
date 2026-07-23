@@ -22,14 +22,15 @@ class WorkoutsState extends Equatable {
     return WorkoutsState(
       muscleGroupsState: muscleGroupsState ?? this.muscleGroupsState,
       musclesState: musclesState ?? this.musclesState,
-      selectedMuscleGroupId: selectedMuscleGroupId ?? this.selectedMuscleGroupId,
+      selectedMuscleGroupId:
+          selectedMuscleGroupId ?? this.selectedMuscleGroupId,
     );
   }
 
   @override
   List<Object?> get props => [
-        muscleGroupsState,
-        musclesState,
-        selectedMuscleGroupId,
-      ];
+    muscleGroupsState,
+    musclesState,
+    selectedMuscleGroupId,
+  ];
 }

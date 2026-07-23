@@ -44,76 +44,105 @@ void main() {
     );
     const tMuscleGroupEntity = MuscleGroupEntity(id: '1', name: 'Abs');
 
-    test('should return SuccessBaseResponse with List<MuscleGroupEntity> when remote data source returns SuccessBaseResponse', () async {
-      // arrange
-      when(mockRemoteDataSource.getMuscleGroups()).thenAnswer(
-        (_) async => const SuccessBaseResponse(tMuscleGroupsResponse),
-      );
+    test(
+      'should return SuccessBaseResponse with List<MuscleGroupEntity> when remote data source returns SuccessBaseResponse',
+      () async {
+        // arrange
+        when(mockRemoteDataSource.getMuscleGroups()).thenAnswer(
+          (_) async => const SuccessBaseResponse(tMuscleGroupsResponse),
+        );
 
-      // act
-      final result = await repo.getMuscleGroups();
+        // act
+        final result = await repo.getMuscleGroups();
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<List<MuscleGroupEntity>>>());
-      expect((result as SuccessBaseResponse).data, equals([tMuscleGroupEntity]));
-      verify(mockRemoteDataSource.getMuscleGroups()).called(1);
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<List<MuscleGroupEntity>>>());
+        expect(
+          (result as SuccessBaseResponse).data,
+          equals([tMuscleGroupEntity]),
+        );
+        verify(mockRemoteDataSource.getMuscleGroups()).called(1);
+      },
+    );
 
-    test('should return ErrorBaseResponse when remote data source returns ErrorBaseResponse', () async {
-      // arrange
-      const tErrorMessage = 'Something went wrong';
-      when(mockRemoteDataSource.getMuscleGroups()).thenAnswer(
-        (_) async => const ErrorBaseResponse(tErrorMessage),
-      );
+    test(
+      'should return ErrorBaseResponse when remote data source returns ErrorBaseResponse',
+      () async {
+        // arrange
+        const tErrorMessage = 'Something went wrong';
+        when(
+          mockRemoteDataSource.getMuscleGroups(),
+        ).thenAnswer((_) async => const ErrorBaseResponse(tErrorMessage));
 
-      // act
-      final result = await repo.getMuscleGroups();
+        // act
+        final result = await repo.getMuscleGroups();
 
-      // assert
-      expect(result, isA<ErrorBaseResponse<List<MuscleGroupEntity>>>());
-      expect((result as ErrorBaseResponse).errorMessage, equals(tErrorMessage));
-      verify(mockRemoteDataSource.getMuscleGroups()).called(1);
-    });
+        // assert
+        expect(result, isA<ErrorBaseResponse<List<MuscleGroupEntity>>>());
+        expect(
+          (result as ErrorBaseResponse).errorMessage,
+          equals(tErrorMessage),
+        );
+        verify(mockRemoteDataSource.getMuscleGroups()).called(1);
+      },
+    );
   });
 
   group('getMusclesByGroupId', () {
     const tGroupId = '1';
-    const tMuscleModel = MuscleModel(id: 'm1', name: 'Biceps', image: 'image.png');
+    const tMuscleModel = MuscleModel(
+      id: 'm1',
+      name: 'Biceps',
+      image: 'image.png',
+    );
     const tMusclesResponse = MusclesResponse(
       message: 'success',
       muscles: [tMuscleModel],
     );
-    const tMuscleEntity = MuscleEntity(id: 'm1', name: 'Biceps', image: 'image.png');
+    const tMuscleEntity = MuscleEntity(
+      id: 'm1',
+      name: 'Biceps',
+      image: 'image.png',
+    );
 
-    test('should return SuccessBaseResponse with List<MuscleEntity> when remote data source returns SuccessBaseResponse', () async {
-      // arrange
-      when(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).thenAnswer(
-        (_) async => const SuccessBaseResponse(tMusclesResponse),
-      );
+    test(
+      'should return SuccessBaseResponse with List<MuscleEntity> when remote data source returns SuccessBaseResponse',
+      () async {
+        // arrange
+        when(
+          mockRemoteDataSource.getMusclesByGroupId(tGroupId),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tMusclesResponse));
 
-      // act
-      final result = await repo.getMusclesByGroupId(tGroupId);
+        // act
+        final result = await repo.getMusclesByGroupId(tGroupId);
 
-      // assert
-      expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
-      expect((result as SuccessBaseResponse).data, equals([tMuscleEntity]));
-      verify(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).called(1);
-    });
+        // assert
+        expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
+        expect((result as SuccessBaseResponse).data, equals([tMuscleEntity]));
+        verify(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).called(1);
+      },
+    );
 
-    test('should return ErrorBaseResponse when remote data source returns ErrorBaseResponse', () async {
-      // arrange
-      const tErrorMessage = 'Something went wrong';
-      when(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).thenAnswer(
-        (_) async => const ErrorBaseResponse(tErrorMessage),
-      );
+    test(
+      'should return ErrorBaseResponse when remote data source returns ErrorBaseResponse',
+      () async {
+        // arrange
+        const tErrorMessage = 'Something went wrong';
+        when(
+          mockRemoteDataSource.getMusclesByGroupId(tGroupId),
+        ).thenAnswer((_) async => const ErrorBaseResponse(tErrorMessage));
 
-      // act
-      final result = await repo.getMusclesByGroupId(tGroupId);
+        // act
+        final result = await repo.getMusclesByGroupId(tGroupId);
 
-      // assert
-      expect(result, isA<ErrorBaseResponse<List<MuscleEntity>>>());
-      expect((result as ErrorBaseResponse).errorMessage, equals(tErrorMessage));
-      verify(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).called(1);
-    });
+        // assert
+        expect(result, isA<ErrorBaseResponse<List<MuscleEntity>>>());
+        expect(
+          (result as ErrorBaseResponse).errorMessage,
+          equals(tErrorMessage),
+        );
+        verify(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).called(1);
+      },
+    );
   });
 }
