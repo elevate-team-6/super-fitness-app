@@ -14,6 +14,8 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/workouts/presentation/screens/exercise_screen.dart';
+import '../../features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -25,6 +27,7 @@ abstract class AppRoutes {
   static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
   static const String mainLayout = 'mainLayout';
+  static const String exerciseScreen = 'exerciseScreen';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -75,6 +78,17 @@ abstract class AppRoutes {
         case mainLayout:
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
 
+        case exerciseScreen:
+          final args = settings.arguments as ExerciseArgs;
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ExerciseCubit>(),
+              child: ExerciseScreen(
+                primeMoverMuscleId: args.primeMoverMuscleId,
+              ),
+            ),
+          );
+
         default:
           return _unDefinedRoute(settings.name);
       }
@@ -123,4 +137,10 @@ class CompleteRegisterArgs {
   final SocialSignupEntity? socialData;
 
   CompleteRegisterArgs({this.cubit, this.socialData});
+}
+
+class ExerciseArgs {
+  final String primeMoverMuscleId;
+
+  const ExerciseArgs({required this.primeMoverMuscleId});
 }

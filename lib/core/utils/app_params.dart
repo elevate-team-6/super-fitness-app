@@ -18,4 +18,8 @@ abstract class ApiParameters {
   static const String goal = 'goal';
   static const String photo = 'photo';
   static const String createdAt = 'createdAt';
+
+  // Workouts
+  static const String primeMoverMuscleId = 'primeMoverMuscleId';
+  static const String difficultyLevelId = 'difficultyLevelId';
 }
