@@ -44,29 +44,4 @@ abstract class ApiParameters {
   // Meals query params
   static const String category = 'c';
   static const String mealId = 'i';
-
-  // Nutrition (Groq chat completions — OpenAI wire format)
-  static const String model = 'model';
-  static const String messages = 'messages';
-  static const String role = 'role';
-  static const String content = 'content';
-  static const String systemRole = 'system';
-  static const String userRole = 'user';
-  static const String temperature = 'temperature';
-  static const String responseFormat = 'response_format';
-  static const String jsonSchemaType = 'json_schema';
-  static const String name = 'name';
-  static const String strict = 'strict';
-  static const String schema = 'schema';
-  static const String choices = 'choices';
-  static const String type = 'type';
-  static const String properties = 'properties';
-  static const String required = 'required';
-  static const String additionalProperties = 'additionalProperties';
-
-  // Nutrition payload (the JSON the model is constrained to return)
-  static const String caloriesKcal = 'calories_kcal';
-  static const String proteinG = 'protein_g';
-  static const String carbsG = 'carbs_g';
-  static const String fatG = 'fat_g';
 }

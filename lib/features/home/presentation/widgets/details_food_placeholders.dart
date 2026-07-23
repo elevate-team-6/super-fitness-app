@@ -1,7 +1,5 @@
-import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_nutrition_bar.dart';
 
 abstract class DetailsFoodPlaceholders {
   static const skeleton = DetailsFoodEntity(
@@ -19,11 +17,4 @@ abstract class DetailsFoodPlaceholders {
       MealIngredientEntity(name: 'Ingredient', measure: '1 tsp'),
     ],
   );
-
-  static const nutrition = [
-    MealNutritionStat(value: '100 K', labelKey: AppStrings.energy),
-    MealNutritionStat(value: '15 g', labelKey: AppStrings.protein),
-    MealNutritionStat(value: '58 g', labelKey: AppStrings.carbs),
-    MealNutritionStat(value: '20 g', labelKey: AppStrings.fat),
-  ];
 }

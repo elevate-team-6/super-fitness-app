@@ -142,10 +142,5 @@
   "detailsFoodNotFound": "We couldn't find this meal",
   "ingredients": "Ingredients",
   "description": "Description",
-  "watchVideo": "Watch Video",
-  "energy": "Energy",
-  "protein": "Protein",
-  "carbs": "Carbs",
-  "fat": "Fat",
-  "nutritionUnavailable": "Nutrition estimate unavailable"
+  "watchVideo": "Watch Video"
 }

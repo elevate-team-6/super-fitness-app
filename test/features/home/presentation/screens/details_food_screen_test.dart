@@ -9,24 +9,20 @@ import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_nutrition_entity.dart';
 import 'package:super_fitness/features/home/domain/use_cases/get_details_food_use_case.dart';
-import 'package:super_fitness/features/home/domain/use_cases/get_meal_nutrition_use_case.dart';
 import 'package:super_fitness/features/home/presentation/screens/details_food_screen.dart';
 import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
 import 'package:super_fitness/features/home/presentation/widgets/details_food_hero.dart';
 import 'package:super_fitness/features/home/presentation/widgets/meal_ingredients_list.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_nutrition_bar.dart';
 
 import 'details_food_screen_test.mocks.dart';
 
 // easy_localization isn't initialized here, so `.tr()` returns the raw key —
 // same convention the other widget tests in this repo rely on.
-@GenerateMocks([GetDetailsFoodUseCase, GetMealNutritionUseCase])
+@GenerateMocks([GetDetailsFoodUseCase])
 void main() {
   late MockGetDetailsFoodUseCase useCase;
-  late MockGetMealNutritionUseCase nutritionUseCase;
 
   const details = DetailsFoodEntity(
     id: '52959',
@@ -43,27 +39,11 @@ void main() {
     ],
   );
 
-  const nutrition = MealNutritionEntity(
-    calories: 1250,
-    protein: 88,
-    carbs: 42,
-    fat: 71,
-  );
-
   setUp(() {
     provideDummy<BaseResponse<DetailsFoodEntity>>(
       const ErrorBaseResponse('dummy'),
     );
-    provideDummy<BaseResponse<MealNutritionEntity>>(
-      const ErrorBaseResponse('dummy'),
-    );
     useCase = MockGetDetailsFoodUseCase();
-    nutritionUseCase = MockGetMealNutritionUseCase();
-    // Loading the recipe always chains into the estimate, so every test needs
-    // it stubbed even when it only asserts on the recipe.
-    when(
-      nutritionUseCase(any),
-    ).thenAnswer((_) async => const SuccessBaseResponse(nutrition));
   });
 
   Widget createWidgetUnderTest(DetailsFoodCubit cubit) {
@@ -81,7 +61,7 @@ void main() {
   }
 
   DetailsFoodCubit buildCubit() =>
-      DetailsFoodCubit(useCase, nutritionUseCase)..setMealId('52959');
+      DetailsFoodCubit(useCase)..setMealId('52959');
 
   testWidgets('renders the description and ingredients once loaded', (
     tester,
@@ -104,51 +84,6 @@ void main() {
     expect(find.byType(MealIngredientsList), findsOneWidget);
     expect(find.text('Salmon'), findsOneWidget);
     expect(find.text('350g'), findsOneWidget);
-
-    await cubit.close();
-  });
-
-  testWidgets('shows the nutrition bar with all four macros', (tester) async {
-    when(
-      useCase(any),
-    ).thenAnswer((_) async => const SuccessBaseResponse(details));
-    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
-
-    await tester.pumpWidget(createWidgetUnderTest(cubit));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MealNutritionBar), findsOneWidget);
-    expect(find.text(AppStrings.energy), findsOneWidget);
-    expect(find.text(AppStrings.protein), findsOneWidget);
-    expect(find.text(AppStrings.carbs), findsOneWidget);
-    expect(find.text(AppStrings.fat), findsOneWidget);
-
-    // The estimate, not the skeleton values.
-    expect(find.text('1250 K'), findsOneWidget);
-    expect(find.text('88 g'), findsOneWidget);
-
-    await cubit.close();
-  });
-
-  // Showing zeroes, or the skeleton's stand-in numbers, would read as a real
-  // estimate — so a failed estimate takes the bar with it.
-  testWidgets('drops the nutrition bar when the estimate fails', (
-    tester,
-  ) async {
-    when(
-      useCase(any),
-    ).thenAnswer((_) async => const SuccessBaseResponse(details));
-    when(
-      nutritionUseCase(any),
-    ).thenAnswer((_) async => const ErrorBaseResponse('quota exceeded'));
-    final cubit = buildCubit()..doIntent(const LoadDetailsFoodEvent());
-
-    await tester.pumpWidget(createWidgetUnderTest(cubit));
-    await tester.pumpAndSettle();
-
-    expect(find.byType(MealNutritionBar), findsNothing);
-    // The recipe itself still renders.
-    expect(find.text(AppStrings.ingredients), findsOneWidget);
 
     await cubit.close();
   });

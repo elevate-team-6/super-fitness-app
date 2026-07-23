@@ -46,7 +46,12 @@ class ErrorHandler {
       return AppStrings.unexpectedErrorTryAgain.tr();
     }
 
-    final serverMessage = _extractMessage(response.data);
+    final dynamic data = response.data;
+    String? serverMessage;
+
+    if (data is Map<String, dynamic>) {
+      serverMessage = data['message'] ?? data['error'];
+    }
 
     if (serverMessage != null) {
       return _mapErrorMessage(serverMessage);
@@ -66,29 +71,6 @@ class ErrorHandler {
       default:
         return AppStrings.defaultError.tr();
     }
-  }
-
-  /// Pulls a human-readable message out of an error body.
-  ///
-  /// Our own API answers with a flat `{"message": "..."}`, but third parties
-  /// don't: Google nests it as `{"error": {"code": 404, "message": "..."}}`.
-  /// Both shapes are handled, and anything else falls through to null so the
-  /// status code decides — a body we can't read must never be shown to a user
-  /// or, worse, assigned to a String and thrown as a type error.
-  static String? _extractMessage(dynamic data) {
-    if (data is! Map) return null;
-
-    final message = data['message'];
-    if (message is String && message.isNotEmpty) return message;
-
-    final error = data['error'];
-    if (error is String && error.isNotEmpty) return error;
-    if (error is Map) {
-      final nested = error['message'];
-      if (nested is String && nested.isNotEmpty) return nested;
-    }
-
-    return null;
   }
 
   static String _mapErrorMessage(String message) {

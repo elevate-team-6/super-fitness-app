@@ -22,7 +22,6 @@ import 'package:super_fitness/features/home/presentation/widgets/details_food_he
 import 'package:super_fitness/features/home/presentation/widgets/details_food_placeholders.dart';
 import 'package:super_fitness/features/home/presentation/widgets/details_food_section.dart';
 import 'package:super_fitness/features/home/presentation/widgets/meal_ingredients_list.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_nutrition_bar.dart';
 
 class DetailsFoodScreen extends StatefulWidget {
   final String mealName;
@@ -63,40 +62,18 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
             context,
             DetailsFoodPlaceholders.skeleton,
             isLoading: true,
-            nutrition: const MealNutritionBar(
-              stats: DetailsFoodPlaceholders.nutrition,
-            ),
           ),
           DetailsFoodStatus.error => _buildError(context, state),
-          DetailsFoodStatus.success => _buildContent(
-            context,
-            state.details!,
-            nutrition: _buildNutritionBar(state),
-          ),
+          DetailsFoodStatus.success => _buildContent(context, state.details!),
         },
       ),
     );
-  }
-
-  Widget? _buildNutritionBar(DetailsFoodState state) {
-    final nutrition = state.nutrition;
-
-    if (state.nutritionStatus == DetailsFoodStatus.error) return null;
-
-    if (nutrition == null) {
-      return const Skeletonizer(
-        child: MealNutritionBar(stats: DetailsFoodPlaceholders.nutrition),
-      );
-    }
-
-    return MealNutritionBar(stats: MealNutritionStat.listOf(nutrition));
   }
 
   Widget _buildContent(
     BuildContext context,
     DetailsFoodEntity details, {
     bool isLoading = false,
-    Widget? nutrition,
   }) {
     final videoUrl = YoutubeUrl.watchUrlOf(details.youtubeUrl);
 
@@ -115,7 +92,6 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
                   : () => context.read<DetailsFoodCubit>().doIntent(
                       const OpenMealVideoEvent(),
                     ),
-              footer: nutrition,
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),

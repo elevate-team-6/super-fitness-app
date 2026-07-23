@@ -86,8 +86,6 @@ ios/fastlane/README.md
 .env
 .env.local
 *.env.local
-# --dart-define-from-file input. env.example.json is the committed template.
-env.json
 
 # Service Account Files (Contains credentials!)
 **/service-account*.json

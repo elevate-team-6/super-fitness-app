@@ -1,42 +1,31 @@
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/config/cache/hive_helper.dart';
-import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
 import 'package:super_fitness/features/home/data/models/response/details_food_model.dart';
 import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
-import 'package:super_fitness/features/home/data/models/response/meal_nutrition_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 import 'package:super_fitness/features/home/data/repo/home_repo_impl.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_nutrition_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
 import 'home_repo_impl_test.mocks.dart';
 
-@GenerateMocks([HomeRemoteDataSourceContract, HiveHelper])
+@GenerateMocks([HomeRemoteDataSourceContract])
 void main() {
   late MockHomeRemoteDataSourceContract dataSource;
-  late MockHiveHelper hiveHelper;
   late HomeRepoImpl repo;
 
   setUp(() {
     provideDummy<BaseResponse<MealsResponseModel>>(
       const ErrorBaseResponse('dummy'),
     );
-    provideDummy<BaseResponse<MealNutritionModel>>(
-      const ErrorBaseResponse('dummy'),
-    );
     dataSource = MockHomeRemoteDataSourceContract();
-    hiveHelper = MockHiveHelper();
-    repo = HomeRepoImpl(dataSource, hiveHelper);
+    repo = HomeRepoImpl(dataSource);
   });
 
   MealsResponseModel mealsOf(List<String> ids) => MealsResponseModel(
@@ -203,131 +192,6 @@ void main() {
       expect(
         (result as ErrorBaseResponse<DetailsFoodEntity>).errorMessage,
         'offline',
-      );
-    });
-  });
-
-  group('HomeRepoImpl.getMealNutrition', () {
-    const meal = DetailsFoodEntity(id: '52959', name: 'Salmon', thumbnail: '');
-
-    const estimate = MealNutritionModel(
-      caloriesKcal: 1250,
-      proteinG: 88,
-      carbsG: 42,
-      fatG: 71,
-    );
-
-    void stubCacheMiss() {
-      when(
-        hiveHelper.getData<String>(
-          boxName: anyNamed('boxName'),
-          key: anyNamed('key'),
-        ),
-      ).thenAnswer((_) async => null);
-    }
-
-    test('estimates and caches on a cache miss', () async {
-      stubCacheMiss();
-      when(
-        dataSource.estimateNutrition(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(estimate));
-
-      final result = await repo.getMealNutrition(meal);
-
-      expect(result, isA<SuccessBaseResponse>());
-      expect(
-        (result as SuccessBaseResponse<MealNutritionEntity>).data!.calories,
-        1250,
-      );
-      verify(
-        hiveHelper.cacheData(
-          boxName: AppKeys.nutritionBoxName,
-          key: '52959',
-          value: jsonEncode(estimate.toJson()),
-        ),
-      ).called(1);
-    });
-
-    // The whole point of the cache: macros can't change, and each miss costs a
-    // model call out of a daily free-tier quota.
-    test('serves a cache hit without calling the data source', () async {
-      when(
-        hiveHelper.getData<String>(
-          boxName: AppKeys.nutritionBoxName,
-          key: '52959',
-        ),
-      ).thenAnswer((_) async => jsonEncode(estimate.toJson()));
-
-      final result = await repo.getMealNutrition(meal);
-
-      expect(
-        (result as SuccessBaseResponse<MealNutritionEntity>).data!.protein,
-        88,
-      );
-      verifyNever(dataSource.estimateNutrition(any));
-    });
-
-    test('refetches when the cached entry is unreadable', () async {
-      when(
-        hiveHelper.getData<String>(
-          boxName: anyNamed('boxName'),
-          key: anyNamed('key'),
-        ),
-      ).thenAnswer((_) async => 'not json');
-      when(
-        dataSource.estimateNutrition(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(estimate));
-
-      final result = await repo.getMealNutrition(meal);
-
-      expect(result, isA<SuccessBaseResponse>());
-      verify(dataSource.estimateNutrition(any)).called(1);
-    });
-
-    // A failed write must not lose an estimate we already paid for.
-    test('still succeeds when the cache write fails', () async {
-      stubCacheMiss();
-      when(
-        dataSource.estimateNutrition(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(estimate));
-      when(
-        hiveHelper.cacheData<String>(
-          boxName: anyNamed('boxName'),
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        ),
-      ).thenThrow(Exception('disk full'));
-
-      final result = await repo.getMealNutrition(meal);
-
-      expect(result, isA<SuccessBaseResponse>());
-    });
-
-    test('passes a data source failure through', () async {
-      stubCacheMiss();
-      when(
-        dataSource.estimateNutrition(any),
-      ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
-
-      final result = await repo.getMealNutrition(meal);
-
-      expect(
-        (result as ErrorBaseResponse<MealNutritionEntity>).errorMessage,
-        'offline',
-      );
-    });
-
-    test('fails when a success carries no payload', () async {
-      stubCacheMiss();
-      when(
-        dataSource.estimateNutrition(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
-
-      final result = await repo.getMealNutrition(meal);
-
-      expect(
-        (result as ErrorBaseResponse<MealNutritionEntity>).errorMessage,
-        AppStrings.nutritionUnavailable,
       );
     });
   });
