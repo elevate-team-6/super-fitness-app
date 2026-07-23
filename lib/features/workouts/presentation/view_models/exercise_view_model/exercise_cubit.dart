@@ -40,6 +40,7 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
       state.copyWith(
         activePrimeMoverMuscleId: primeMoverMuscleId,
         isLoadingLevels: true,
+        isLoadingExercises: true,
         levelsError: () => null,
       ),
     );
@@ -58,16 +59,20 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
             isLoadingLevels: false,
             difficultyLevels: levels,
             selectedDifficulty: firstLevel,
+            isLoadingExercises: firstLevel != null,
           ),
         );
 
         if (firstLevel != null) {
           await _loadExercises();
+        } else {
+          emit(state.copyWith(isLoadingExercises: false));
         }
       case ErrorBaseResponse<List<DifficultyLevelEntity>>():
         emit(
           state.copyWith(
             isLoadingLevels: false,
+            isLoadingExercises: false,
             levelsError: () => response.errorMessage.tr(),
           ),
         );
