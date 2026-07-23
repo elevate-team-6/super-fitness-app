@@ -11,6 +11,10 @@ abstract class AppEndPoints {
   static const String resetPassword = "$baseUrl/auth/resetPassword";
   static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
 
+  // Workouts
+  static const String muscles = "$baseUrl/muscles";
+  static const String musclesGroup = "$baseUrl/musclesGroup";
+
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
   // 1. Group them by feature (e.g., // Products, // Cart).

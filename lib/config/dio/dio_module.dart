@@ -43,10 +43,10 @@ abstract class DioModule {
   }
 
   void _configureDio(
-    Dio dio,
-    AuthInterceptor authInterceptor,
-    CacheStore cacheStore,
-  ) {
+      Dio dio,
+      AuthInterceptor authInterceptor,
+      CacheStore cacheStore,
+      ) {
     dio.options.baseUrl = AppEndPoints.baseUrl;
     dio.options.connectTimeout = const Duration(seconds: 30);
     dio.options.receiveTimeout = const Duration(seconds: 30);
@@ -97,9 +97,9 @@ abstract class DioModule {
             options.extra.addAll(
               cacheOptions
                   .copyWith(
-                    policy: CachePolicy.forceCache,
-                    maxStale: Duration(hours: cacheHours),
-                  )
+                policy: CachePolicy.forceCache,
+                maxStale: Duration(hours: cacheHours),
+              )
                   .toExtra(),
             );
           }

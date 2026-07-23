@@ -45,6 +45,27 @@ class LoadingDialog extends StatefulWidget {
   }
 }
 
+class CustomLoading extends StatelessWidget {
+  final double? width;
+  final double? height;
+
+  const CustomLoading({super.key, this.width, this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SizedBox(
+        width: width ?? 100.w,
+        height: height ?? 100.h,
+        child: Lottie.asset(
+          AppLottie.loading,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+}
+
 class _LoadingDialogState extends State<LoadingDialog>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
+import 'package:super_fitness/core/widgets/custom_loading.dart';
 
 import '../utils/app_assets.dart';
 
@@ -49,7 +50,7 @@ class CustomCachedImage extends StatelessWidget {
                   width: 32,
                   height: 32,
                   fit: BoxFit.contain,
-                  colorFilter: ColorFilter.mode(
+                  colorFilter: const ColorFilter.mode(
                     AppColors.primary,
                     BlendMode.srcIn,
                   ),
