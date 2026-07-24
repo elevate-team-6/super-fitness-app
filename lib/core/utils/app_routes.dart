@@ -14,6 +14,7 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -73,7 +74,12 @@ abstract class AppRoutes {
           );
 
         case mainLayout:
-          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (context) => getIt<WorkoutsCubit>(),
+              child: const MainLayoutScreen(),
+            ),
+          );
 
         default:
           return _unDefinedRoute(settings.name);
