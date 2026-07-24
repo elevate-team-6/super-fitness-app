@@ -1,6 +1,5 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
@@ -37,7 +36,9 @@ class HomeRepoImpl implements HomeRepoContract {
     }
 
     if (buckets.isEmpty) {
-      return ErrorBaseResponse(firstError ?? AppStrings.noMealsFound);
+      return firstError != null
+          ? ErrorBaseResponse(firstError)
+          : const SuccessBaseResponse(<MealEntity>[]);
     }
 
     return SuccessBaseResponse(_interleave(buckets));

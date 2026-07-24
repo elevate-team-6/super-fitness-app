@@ -81,7 +81,7 @@ abstract class AppRoutes {
           return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
 
         case food:
-          final args = settings.arguments as FoodArgs;
+          final args = settings.arguments as FoodScreenArgs;
 
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
@@ -135,11 +135,11 @@ class ForgotPasswordArgs {
   ForgotPasswordArgs({required this.cubit, required this.email});
 }
 
-class FoodArgs {
+class FoodScreenArgs {
   /// Meal time the food screen opens on, set by whichever Home card was tapped.
   final MealTime mealTime;
 
-  FoodArgs(this.mealTime);
+  FoodScreenArgs(this.mealTime);
 }
 
 class CompleteRegisterArgs {

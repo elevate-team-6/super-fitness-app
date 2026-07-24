@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
@@ -104,18 +103,18 @@ void main() {
       );
     });
 
-    test('fails when the API returns a null meals list', () async {
-      when(dataSource.getMealsByCategory('Breakfast')).thenAnswer(
-        (_) async => const SuccessBaseResponse(MealsResponseModel()),
-      );
+    test(
+      'returns an empty success when the API returns a null meals list',
+      () async {
+        when(dataSource.getMealsByCategory('Breakfast')).thenAnswer(
+          (_) async => const SuccessBaseResponse(MealsResponseModel()),
+        );
 
-      final result = await repo.getMealsByMealTime(MealTime.breakfast);
+        final result = await repo.getMealsByMealTime(MealTime.breakfast);
 
-      expect(result, isA<ErrorBaseResponse>());
-      expect(
-        (result as ErrorBaseResponse<List<MealEntity>>).errorMessage,
-        AppStrings.noMealsFound,
-      );
-    });
+        expect(result, isA<SuccessBaseResponse>());
+        expect((result as SuccessBaseResponse<List<MealEntity>>).data, isEmpty);
+      },
+    );
   });
 }

@@ -28,6 +28,18 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tint = Container(
+      color: overlayColor ?? Colors.black.withValues(alpha: 0.2),
+    );
+    // Skipping the BackdropFilter entirely spares its GPU cost on screens
+    // that only want the tint.
+    final overlay = blurSigma <= 0
+        ? tint
+        : BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
+            child: tint,
+          );
+
     return Scaffold(
       appBar: appBar,
       bottomNavigationBar: bottomNavigationBar,
@@ -44,23 +56,10 @@ class AppScaffold extends StatelessWidget {
               alignment: Alignment.center,
             ),
           ),
-          Positioned.fill(child: _buildOverlay()),
+          Positioned.fill(child: overlay),
           body,
         ],
       ),
-    );
-  }
-
-  Widget _buildOverlay() {
-    final tint = Container(
-      color: overlayColor ?? Colors.black.withValues(alpha: 0.2),
-    );
-    // Skipping the BackdropFilter entirely spares its GPU cost on screens
-    // that only want the tint.
-    if (blurSigma <= 0) return tint;
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-      child: tint,
     );
   }
 }
