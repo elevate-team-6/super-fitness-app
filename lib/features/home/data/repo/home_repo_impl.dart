@@ -41,7 +41,9 @@ class HomeRepoImpl implements HomeRepoContract {
     // Only fail when nothing came back at all — one dead category shouldn't
     // blank out a meal time that has other categories behind it.
     if (buckets.isEmpty) {
-      return ErrorBaseResponse(firstError ?? AppStrings.noMealsFound);
+      return firstError != null
+          ? ErrorBaseResponse(firstError)
+          : const SuccessBaseResponse(<MealEntity>[]);
     }
 
     return SuccessBaseResponse(_interleave(buckets));

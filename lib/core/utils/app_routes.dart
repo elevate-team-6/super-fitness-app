@@ -21,6 +21,7 @@ import '../../features/home/presentation/view_model/details_food_view_model/deta
 import '../../features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -82,10 +83,15 @@ abstract class AppRoutes {
           );
 
         case mainLayout:
-          return MaterialPageRoute(builder: (_) => const MainLayoutScreen());
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (context) => getIt<WorkoutsCubit>(),
+              child: const MainLayoutScreen(),
+            ),
+          );
 
         case food:
-          final args = settings.arguments as FoodArgs;
+          final args = settings.arguments as FoodScreenArgs;
 
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
@@ -151,11 +157,11 @@ class ForgotPasswordArgs {
   ForgotPasswordArgs({required this.cubit, required this.email});
 }
 
-class FoodArgs {
+class FoodScreenArgs {
   /// Meal time the food screen opens on, set by whichever Home card was tapped.
   final MealTime mealTime;
 
-  FoodArgs(this.mealTime);
+  FoodScreenArgs(this.mealTime);
 }
 
 class DetailsFoodArgs {

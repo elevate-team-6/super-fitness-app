@@ -107,19 +107,19 @@ void main() {
       );
     });
 
-    test('fails when the API returns a null meals list', () async {
-      when(dataSource.getMealsByCategory('Breakfast')).thenAnswer(
-        (_) async => const SuccessBaseResponse(MealsResponseModel()),
-      );
+    test(
+      'returns an empty success when the API returns a null meals list',
+      () async {
+        when(dataSource.getMealsByCategory('Breakfast')).thenAnswer(
+          (_) async => const SuccessBaseResponse(MealsResponseModel()),
+        );
 
-      final result = await repo.getMealsByMealTime(MealTime.breakfast);
+        final result = await repo.getMealsByMealTime(MealTime.breakfast);
 
-      expect(result, isA<ErrorBaseResponse>());
-      expect(
-        (result as ErrorBaseResponse<List<MealEntity>>).errorMessage,
-        AppStrings.noMealsFound,
-      );
-    });
+        expect(result, isA<SuccessBaseResponse>());
+        expect((result as SuccessBaseResponse<List<MealEntity>>).data, isEmpty);
+      },
+    );
   });
 
   group('HomeRepoImpl.getDetailsFood', () {

@@ -13,7 +13,6 @@ import 'package:super_fitness/core/widgets/custom_card.dart';
 import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
 import 'package:super_fitness/core/widgets/custom_grid_view.dart';
 import 'package:super_fitness/core/widgets/custom_tab_bar.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_event.dart';
@@ -59,26 +58,49 @@ class FoodScreen extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   child: BlocBuilder<FoodCubit, FoodState>(
-                    builder: (context, state) => switch (state.status) {
-                      FoodStatus.initial || FoodStatus.loading => _buildGrid(
-                        skeletonMeals,
-                        isLoading: true,
-                      ),
-                      FoodStatus.error => SingleChildScrollView(
-                        child: CustomErrorStateView(
-                          message: state.errorMessage,
-                          onRetry: () => context.read<FoodCubit>().doIntent(
-                            const LoadMealsEvent(),
+                    builder: (context, state) {
+                      final isLoading =
+                          state.status == FoodStatus.initial ||
+                          state.status == FoodStatus.loading;
+                      final meals = isLoading ? skeletonMeals : state.meals;
+
+                      return switch (state.status) {
+                        FoodStatus.error => SingleChildScrollView(
+                          child: CustomErrorStateView(
+                            message: state.errorMessage,
+                            onRetry: () => context.read<FoodCubit>().doIntent(
+                              const LoadMealsEvent(),
+                            ),
                           ),
                         ),
-                      ),
-                      FoodStatus.success when state.meals.isEmpty => Center(
-                        child: Text(
-                          AppStrings.noMealsFound.tr(),
-                          style: AppTextStyles.white2016500,
+                        FoodStatus.success when state.meals.isEmpty => Center(
+                          child: Text(
+                            AppStrings.noMealsFound.tr(),
+                            style: AppTextStyles.white2016500,
+                          ),
                         ),
-                      ),
-                      FoodStatus.success => _buildGrid(state.meals),
+                        _ => Skeletonizer(
+                          enabled: isLoading,
+                          child: CustomGridView(
+                            itemCount: meals.length,
+                            padding: EdgeInsets.zero,
+                            crossAxisSpacing: 12.w,
+                            mainAxisSpacing: 12.h,
+                            itemBuilder: (context, index) => CustomCard(
+                              title: meals[index].name,
+                              image: meals[index].thumbnail,
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.detailsFood,
+                                arguments: DetailsFoodArgs(
+                                  mealId: meals[index].id,
+                                  mealName: meals[index].name,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      };
                     },
                   ),
                 ),
@@ -87,31 +109,6 @@ class FoodScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildGrid(List<MealEntity> meals, {bool isLoading = false}) {
-    return Skeletonizer(
-      enabled: isLoading,
-      child: CustomGridView(
-        itemCount: meals.length,
-        padding: EdgeInsets.zero,
-        crossAxisSpacing: 12.w,
-        mainAxisSpacing: 12.h,
-        itemBuilder: (context, index) => CustomCard(
-          title: meals[index].name,
-          image: meals[index].thumbnail,
-          onTap: () => _openDetails(context, meals[index]),
-        ),
-      ),
-    );
-  }
-
-  void _openDetails(BuildContext context, MealEntity meal) {
-    Navigator.pushNamed(
-      context,
-      AppRoutes.detailsFood,
-      arguments: DetailsFoodArgs(mealId: meal.id, mealName: meal.name),
     );
   }
 }

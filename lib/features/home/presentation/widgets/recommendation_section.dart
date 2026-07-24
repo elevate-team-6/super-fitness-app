@@ -57,6 +57,10 @@ class RecommendationSection extends StatelessWidget {
   }
 
   void _openFood(BuildContext context, MealTime mealTime) {
-    Navigator.pushNamed(context, AppRoutes.food, arguments: FoodArgs(mealTime));
+    Navigator.pushNamed(
+      context,
+      AppRoutes.food,
+      arguments: FoodScreenArgs(mealTime),
+    );
   }
 }

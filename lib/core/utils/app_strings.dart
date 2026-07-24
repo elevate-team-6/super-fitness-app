@@ -117,6 +117,8 @@ abstract class AppStrings {
   static const String workouts = 'workouts';
   static const String chat = 'chat';
   static const String profile = 'profile';
+  static const String selectMuscleGroup = 'selectMuscleGroup';
+  static const String noMusclesFound = 'noMusclesFound';
   static const String exitConfirmation = 'exit_confirmation';
 
   // Signup
