@@ -11,8 +11,8 @@ import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/custom_snack_bar.dart';
 import '../../../main_layout/presentation/cubit/main_layout_cubit.dart';
 
-class HomeCategoryIcons extends StatelessWidget {
-  const HomeCategoryIcons({super.key});
+class HomeCategorySection extends StatelessWidget {
+  const HomeCategorySection({super.key});
 
   @override
   Widget build(BuildContext context) {

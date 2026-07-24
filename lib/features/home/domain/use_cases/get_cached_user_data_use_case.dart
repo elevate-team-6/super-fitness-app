@@ -10,6 +10,6 @@ class GetCachedUserDataUseCase {
   GetCachedUserDataUseCase(this._repository);
 
   Future<BaseResponse<HomeUserEntity>> call() async {
-    return await _repository.getCachedUserData();
+    return _repository.getCachedUserData();
   }
 }

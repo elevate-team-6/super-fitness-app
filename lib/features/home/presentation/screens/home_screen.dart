@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with UiEventHandler {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const HomeCategoryIcons(),
+                    const HomeCategorySection(),
                     SizedBox(height: 24.h),
                     const RecommendationTodaySection(),
                     SizedBox(height: 16.h),
