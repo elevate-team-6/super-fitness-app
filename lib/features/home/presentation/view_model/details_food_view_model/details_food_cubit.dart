@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_cubit/base_cubit.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/core/utils/youtube_url.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
@@ -11,10 +12,6 @@ import 'package:super_fitness/features/home/presentation/view_model/details_food
 @injectable
 class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
   final GetDetailsFoodUseCase _getDetailsFoodUseCase;
-
-  /// Set by the route before the first load — the screen only ever shows the
-  /// one meal it was opened with.
-  String _mealId = '';
 
   DetailsFoodCubit(this._getDetailsFoodUseCase)
     : super(const DetailsFoodState());
@@ -29,17 +26,17 @@ class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
   }
 
   void _openVideo() {
-    final url = YoutubeUrl.watchUrlOf(state.details?.youtubeUrl);
+    final url = YoutubeUrl.watchUrlOf(state.detailsState.data?.youtubeUrl);
     if (url != null) emitUiEvent(OpenUrlEvent(url));
   }
 
   /// Called by the route right after construction, before the first intent.
-  void setMealId(String id) => _mealId = id;
+  void setMealId(String id) => emit(state.copyWith(mealId: id));
 
   Future<void> _loadDetails() async {
-    emit(state.copyWith(status: DetailsFoodStatus.loading));
+    emit(state.copyWith(detailsState: const BaseState(isLoading: true)));
 
-    final result = await _getDetailsFoodUseCase(_mealId);
+    final result = await _getDetailsFoodUseCase(state.mealId);
 
     if (isClosed) return;
 
@@ -47,20 +44,19 @@ class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
       case SuccessBaseResponse<DetailsFoodEntity>():
         final details = result.data;
 
+        // A success with no payload can't be rendered, so downgrade it to an
+        // error; the empty message lets the screen fall back to its default.
         if (details == null) {
-          emit(state.copyWith(status: DetailsFoodStatus.error));
+          emit(state.copyWith(detailsState: const BaseState(errorMessage: '')));
           return;
         }
 
-        emit(
-          state.copyWith(status: DetailsFoodStatus.success, details: details),
-        );
+        emit(state.copyWith(detailsState: BaseState(data: details)));
 
       case ErrorBaseResponse<DetailsFoodEntity>():
         emit(
           state.copyWith(
-            status: DetailsFoodStatus.error,
-            errorMessage: result.errorMessage,
+            detailsState: BaseState(errorMessage: result.errorMessage),
           ),
         );
     }

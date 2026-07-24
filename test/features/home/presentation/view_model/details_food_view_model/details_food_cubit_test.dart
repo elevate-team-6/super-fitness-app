@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
 import 'package:super_fitness/features/home/domain/use_cases/get_details_food_use_case.dart';
@@ -43,10 +44,13 @@ void main() {
       },
       act: (cubit) => cubit.doIntent(const LoadDetailsFoodEvent()),
       expect: () => [
-        const DetailsFoodState(status: DetailsFoodStatus.loading),
         const DetailsFoodState(
-          status: DetailsFoodStatus.success,
-          details: details,
+          mealId: '52959',
+          detailsState: BaseState(isLoading: true),
+        ),
+        const DetailsFoodState(
+          mealId: '52959',
+          detailsState: BaseState(data: details),
         ),
       ],
     );
@@ -73,15 +77,18 @@ void main() {
       },
       act: (cubit) => cubit.doIntent(const LoadDetailsFoodEvent()),
       expect: () => [
-        const DetailsFoodState(status: DetailsFoodStatus.loading),
         const DetailsFoodState(
-          status: DetailsFoodStatus.error,
-          errorMessage: 'offline',
+          mealId: '52959',
+          detailsState: BaseState(isLoading: true),
+        ),
+        const DetailsFoodState(
+          mealId: '52959',
+          detailsState: BaseState(errorMessage: 'offline'),
         ),
       ],
     );
 
-    // Guards the `state.details!` the screen does on success — without this
+    // Guards the `detailsState.data!` the screen does on success — without this
     // downgrade a null payload would render as a success with nothing in it.
     blocTest<DetailsFoodCubit, DetailsFoodState>(
       'downgrades a success with no payload to an error',
@@ -93,8 +100,14 @@ void main() {
       },
       act: (cubit) => cubit.doIntent(const LoadDetailsFoodEvent()),
       expect: () => [
-        const DetailsFoodState(status: DetailsFoodStatus.loading),
-        const DetailsFoodState(status: DetailsFoodStatus.error),
+        const DetailsFoodState(
+          mealId: '52959',
+          detailsState: BaseState(isLoading: true),
+        ),
+        const DetailsFoodState(
+          mealId: '52959',
+          detailsState: BaseState(errorMessage: ''),
+        ),
       ],
     );
 

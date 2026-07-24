@@ -1,31 +1,27 @@
 import 'package:equatable/equatable.dart';
+import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 
-enum DetailsFoodStatus { initial, loading, success, error }
-
-/// Mirrors [FoodState]: loading and error live in state rather than on the UI
-/// event stream, because this screen renders them inline.
 final class DetailsFoodState extends Equatable {
-  final DetailsFoodStatus status;
-  final DetailsFoodEntity? details;
-  final String errorMessage;
+  /// The async details fetch — loading, the loaded meal, or a failure.
+  final BaseState<DetailsFoodEntity> detailsState;
+
+  /// The meal this screen was opened with; the load reads it from here.
+  final String mealId;
 
   const DetailsFoodState({
-    this.status = DetailsFoodStatus.initial,
-    this.details,
-    this.errorMessage = '',
+    this.detailsState = const BaseState(),
+    this.mealId = '',
   });
 
   DetailsFoodState copyWith({
-    DetailsFoodStatus? status,
-    DetailsFoodEntity? details,
-    String? errorMessage,
+    BaseState<DetailsFoodEntity>? detailsState,
+    String? mealId,
   }) => DetailsFoodState(
-    status: status ?? this.status,
-    details: details ?? this.details,
-    errorMessage: errorMessage ?? this.errorMessage,
+    detailsState: detailsState ?? this.detailsState,
+    mealId: mealId ?? this.mealId,
   );
 
   @override
-  List<Object?> get props => [status, details, errorMessage];
+  List<Object?> get props => [detailsState, mealId];
 }
