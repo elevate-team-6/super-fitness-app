@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/widgets/custom_loading.dart';
 import '../../core/widgets/custom_snack_bar.dart';
@@ -43,6 +44,17 @@ mixin UiEventHandler<T extends StatefulWidget> on State<T> {
         onFillTextField(event.text);
       case ShowConfirmationDialogEvent():
         onShowConfirmationDialog();
+      case OpenUrlEvent():
+        _openUrl(event.url);
+    }
+  }
+
+  /// Opens an external link, preferring the dedicated app (YouTube, etc.) and
+  /// falling back to the platform default when nothing claims it.
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      await launchUrl(uri);
     }
   }
 

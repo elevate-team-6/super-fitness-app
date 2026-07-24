@@ -131,5 +131,17 @@
   "moderatelyActive": "نشاط متوسط",
   "veryActive": "نشط جداً",
   "extraActive": "نشاط فائق",
-  "or": "أو"
+  "or": "أو",
+  "recommendationForYou": "مقترح لك",
+  "breakfast": "الفطار",
+  "lunch": "الغداء",
+  "dinner": "العشاء",
+  "noMealsFound": "لا توجد وجبات",
+  "seeAll": "عرض الكل",
+  "foodRecommendation": "وجبات مقترحة",
+  "detailsFood": "تفاصيل الوجبة",
+  "detailsFoodNotFound": "لم نتمكن من العثور على هذه الوجبة",
+  "ingredients": "المكونات",
+  "description": "الوصف",
+  "watchVideo": "مشاهدة الفيديو"
 }

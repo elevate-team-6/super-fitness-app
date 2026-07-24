@@ -38,7 +38,27 @@ class CustomCachedImage extends StatelessWidget {
       height: height,
       fit: fit,
       placeholder: (context, url) => placeholder ?? _buildPlaceholder(),
-      errorWidget: (context, url, error) => errorWidget ?? _buildPlaceholder(),
+
+      // No Expanded here: CachedNetworkImage hands this widget to a SizedBox,
+      // not a Flex, so an Expanded throws a ParentDataWidget assertion on every
+      // failed load. The ColoredBox fills whatever the caller constrained us to.
+      errorWidget: (context, url, error) =>
+          errorWidget ??
+          ColoredBox(
+            color: AppColors.orange30,
+            child: Center(
+              child: SvgPicture.asset(
+                AppIcons.workOut,
+                width: 32,
+                height: 32,
+                fit: BoxFit.contain,
+                colorFilter: ColorFilter.mode(
+                  AppColors.primary,
+                  BlendMode.srcIn,
+                ),
+              ),
+            ),
+          ),
     );
 
     if (borderRadius != null) {
