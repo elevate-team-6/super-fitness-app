@@ -1,34 +1,27 @@
 import 'package:equatable/equatable.dart';
+import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
-enum FoodStatus { initial, loading, success, error }
-
 final class FoodState extends Equatable {
   final MealTime selectedMealTime;
-  final FoodStatus status;
-  final List<MealEntity> meals;
-  final String errorMessage;
+
+  /// The async meals fetch for [selectedMealTime].
+  final BaseState<List<MealEntity>> mealsState;
 
   const FoodState({
     this.selectedMealTime = MealTime.breakfast,
-    this.status = FoodStatus.initial,
-    this.meals = const [],
-    this.errorMessage = '',
+    this.mealsState = const BaseState(),
   });
 
   FoodState copyWith({
     MealTime? selectedMealTime,
-    FoodStatus? status,
-    List<MealEntity>? meals,
-    String? errorMessage,
+    BaseState<List<MealEntity>>? mealsState,
   }) => FoodState(
     selectedMealTime: selectedMealTime ?? this.selectedMealTime,
-    status: status ?? this.status,
-    meals: meals ?? this.meals,
-    errorMessage: errorMessage ?? this.errorMessage,
+    mealsState: mealsState ?? this.mealsState,
   );
 
   @override
-  List<Object?> get props => [selectedMealTime, status, meals, errorMessage];
+  List<Object?> get props => [selectedMealTime, mealsState];
 }

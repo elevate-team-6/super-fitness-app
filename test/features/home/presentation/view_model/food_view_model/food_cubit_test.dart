@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 import 'package:super_fitness/features/home/domain/use_cases/get_meals_by_meal_time_use_case.dart';
@@ -36,8 +37,8 @@ void main() {
       },
       act: (cubit) => cubit.doIntent(const LoadMealsEvent()),
       expect: () => [
-        const FoodState(status: FoodStatus.loading),
-        const FoodState(status: FoodStatus.success, meals: meals),
+        const FoodState(mealsState: BaseState(isLoading: true)),
+        const FoodState(mealsState: BaseState(data: meals)),
       ],
     );
 
@@ -51,8 +52,8 @@ void main() {
       },
       act: (cubit) => cubit.doIntent(const LoadMealsEvent()),
       expect: () => [
-        const FoodState(status: FoodStatus.loading),
-        const FoodState(status: FoodStatus.error, errorMessage: 'boom'),
+        const FoodState(mealsState: BaseState(isLoading: true)),
+        const FoodState(mealsState: BaseState(errorMessage: 'boom')),
       ],
     );
 
@@ -84,12 +85,11 @@ void main() {
         const FoodState(selectedMealTime: MealTime.dinner),
         const FoodState(
           selectedMealTime: MealTime.dinner,
-          status: FoodStatus.loading,
+          mealsState: BaseState(isLoading: true),
         ),
         const FoodState(
           selectedMealTime: MealTime.dinner,
-          status: FoodStatus.success,
-          meals: meals,
+          mealsState: BaseState(data: meals),
         ),
       ],
     );
