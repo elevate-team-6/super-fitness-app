@@ -18,6 +18,9 @@ abstract class AppEndPoints {
   static const String mealCategories = "$mealDbBaseUrl/categories.php";
   static const String mealsByCategory = "$mealDbBaseUrl/filter.php";
   static const String mealDetails = "$mealDbBaseUrl/lookup.php";
+  // Workouts
+  static const String muscles = "$baseUrl/muscles";
+  static const String musclesGroup = "$baseUrl/musclesGroup";
 
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
