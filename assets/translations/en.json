@@ -137,5 +137,10 @@
   "dinner": "Dinner",
   "noMealsFound": "No meals found",
   "seeAll": "See All",
-  "foodRecommendation": "Food Recommendation"
+  "foodRecommendation": "Food Recommendation",
+  "detailsFood": "Meal Details",
+  "detailsFoodNotFound": "We couldn't find this meal",
+  "ingredients": "Ingredients",
+  "description": "Description",
+  "watchVideo": "Watch Video"
 }

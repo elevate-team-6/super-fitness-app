@@ -25,6 +25,14 @@ class DisplaySuccessEvent extends BaseUiEvent {
 
 class ShowConfirmationDialogEvent extends BaseUiEvent {}
 
+/// Asks the screen to open [url] in an external app (browser / YouTube / …)
+/// rather than an in-app route — the actual launch lives in the UI layer so
+/// the cubit stays free of platform plugins.
+class OpenUrlEvent extends BaseUiEvent {
+  final String url;
+  OpenUrlEvent(this.url);
+}
+
 class NavigateEvent extends BaseUiEvent {
   final String routeName;
   final NavigationType navigationType;

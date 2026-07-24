@@ -2,10 +2,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
+import 'package:super_fitness/features/home/data/models/response/details_food_model.dart';
+import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 import 'package:super_fitness/features/home/data/repo/home_repo_impl.dart';
+import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
@@ -116,5 +120,79 @@ void main() {
         expect((result as SuccessBaseResponse<List<MealEntity>>).data, isEmpty);
       },
     );
+  });
+
+  group('HomeRepoImpl.getDetailsFood', () {
+    setUp(() {
+      provideDummy<BaseResponse<DetailsFoodResponseModel>>(
+        const ErrorBaseResponse('dummy'),
+      );
+    });
+
+    test('maps the first record onto the entity', () async {
+      when(dataSource.getDetailsFood('52959')).thenAnswer(
+        (_) async => SuccessBaseResponse(
+          DetailsFoodResponseModel(
+            meals: [
+              DetailsFoodModel.fromJson(const {
+                'idMeal': '52959',
+                'strMeal': 'Baked salmon',
+                'strIngredient1': 'Salmon',
+                'strMeasure1': '350g',
+              }),
+            ],
+          ),
+        ),
+      );
+
+      final result = await repo.getDetailsFood('52959');
+
+      expect(result, isA<SuccessBaseResponse>());
+      final details = (result as SuccessBaseResponse<DetailsFoodEntity>).data!;
+      expect(details.id, '52959');
+      expect(details.name, 'Baked salmon');
+      expect(details.ingredients.single.name, 'Salmon');
+    });
+
+    // `lookup.php` answers an unknown id with a 200 and `{"meals": null}`
+    // rather than a 404, so the repo has to turn that into a failure itself.
+    test('fails when the API returns a null meals list', () async {
+      when(dataSource.getDetailsFood(any)).thenAnswer(
+        (_) async => const SuccessBaseResponse(DetailsFoodResponseModel()),
+      );
+
+      final result = await repo.getDetailsFood('nope');
+
+      expect(result, isA<ErrorBaseResponse>());
+      expect(
+        (result as ErrorBaseResponse<DetailsFoodEntity>).errorMessage,
+        AppStrings.detailsFoodNotFound,
+      );
+    });
+
+    test('fails when the API returns an empty meals list', () async {
+      when(dataSource.getDetailsFood(any)).thenAnswer(
+        (_) async =>
+            const SuccessBaseResponse(DetailsFoodResponseModel(meals: [])),
+      );
+
+      final result = await repo.getDetailsFood('nope');
+
+      expect(result, isA<ErrorBaseResponse>());
+    });
+
+    test('passes a data source failure through', () async {
+      when(
+        dataSource.getDetailsFood(any),
+      ).thenAnswer((_) async => const ErrorBaseResponse('offline'));
+
+      final result = await repo.getDetailsFood('52959');
+
+      expect(result, isA<ErrorBaseResponse>());
+      expect(
+        (result as ErrorBaseResponse<DetailsFoodEntity>).errorMessage,
+        'offline',
+      );
+    });
   });
 }

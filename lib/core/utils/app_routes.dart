@@ -14,8 +14,11 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/home/domain/entities/meal_time.dart';
 import '../../features/home/presentation/screens/food_screen.dart';
+import '../../features/home/presentation/screens/details_food_screen.dart';
 import '../../features/home/presentation/view_model/food_view_model/food_cubit.dart';
 import '../../features/home/presentation/view_model/food_view_model/food_event.dart';
+import '../../features/home/presentation/view_model/details_food_view_model/details_food_cubit.dart';
+import '../../features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
@@ -31,6 +34,7 @@ abstract class AppRoutes {
   static const String forgetPassword = '/forgotPassword';
   static const String mainLayout = 'mainLayout';
   static const String food = 'food';
+  static const String detailsFood = 'detailsFood';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -98,6 +102,18 @@ abstract class AppRoutes {
             ),
           );
 
+        case detailsFood:
+          final args = settings.arguments as DetailsFoodArgs;
+
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<DetailsFoodCubit>()
+                ..setMealId(args.mealId)
+                ..doIntent(const LoadDetailsFoodEvent()),
+              child: DetailsFoodScreen(mealName: args.mealName),
+            ),
+          );
+
         default:
           return _unDefinedRoute(settings.name);
       }
@@ -146,6 +162,16 @@ class FoodScreenArgs {
   final MealTime mealTime;
 
   FoodScreenArgs(this.mealTime);
+}
+
+class DetailsFoodArgs {
+  final String mealId;
+
+  /// Already known from the grid card that was tapped, so the app bar has a
+  /// title to show while the full record is still loading.
+  final String mealName;
+
+  DetailsFoodArgs({required this.mealId, required this.mealName});
 }
 
 class CompleteRegisterArgs {

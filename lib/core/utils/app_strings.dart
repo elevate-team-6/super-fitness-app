@@ -170,4 +170,11 @@ abstract class AppStrings {
   static const String noMealsFound = 'noMealsFound';
   static const String seeAll = 'seeAll';
   static const String foodRecommendation = 'foodRecommendation';
+
+  // Meal details
+  static const String detailsFood = 'detailsFood';
+  static const String detailsFoodNotFound = 'detailsFoodNotFound';
+  static const String ingredients = 'ingredients';
+  static const String description = 'description';
+  static const String watchVideo = 'watchVideo';
 }

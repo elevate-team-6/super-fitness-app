@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
@@ -88,6 +89,14 @@ class FoodScreen extends StatelessWidget {
                             itemBuilder: (context, index) => CustomCard(
                               title: meals[index].name,
                               image: meals[index].thumbnail,
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.detailsFood,
+                                arguments: DetailsFoodArgs(
+                                  mealId: meals[index].id,
+                                  mealName: meals[index].name,
+                                ),
+                              ),
                             ),
                           ),
                         ),

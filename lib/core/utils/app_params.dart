@@ -27,6 +27,21 @@ abstract class ApiParameters {
   static const String strArea = 'strArea';
   static const String strCountry = 'strCountry';
 
+  // Meal details (lookup.php)
+  static const String strCategory = 'strCategory';
+  static const String strInstructions = 'strInstructions';
+  static const String strTags = 'strTags';
+  static const String strYoutube = 'strYoutube';
+  static const String strSource = 'strSource';
+
+  /// TheMealDB spreads ingredients across `strIngredient1..20` / `strMeasure1..20`
+  /// instead of nesting them in a list, so these are prefixes joined with an
+  /// index rather than whole keys.
+  static const String strIngredientPrefix = 'strIngredient';
+  static const String strMeasurePrefix = 'strMeasure';
+  static const int mealIngredientSlots = 20;
+
   // Meals query params
   static const String category = 'c';
+  static const String mealId = 'i';
 }
