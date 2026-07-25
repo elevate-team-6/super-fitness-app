@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
+
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/exercise_entity.dart';
 import '../view_models/home_view_model/home_cubit.dart';
@@ -49,10 +51,16 @@ class PopularTrainingSection extends StatelessWidget {
                         status.data?[index] ?? ExerciseEntity.empty;
                     return PopularTrainingCard(
                       title: exercise.name,
-                      image: '',
+                      image: exercise.image,
                       tasks: '24',
                       difficulty: exercise.difficulty,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.exerciseScreen,
+                          arguments: exercise.id,
+                        );
+                      },
                     );
                   },
                 ),

@@ -7,9 +7,9 @@ import '../../../domain/entities/muscle_entity.dart';
 
 class HomeState extends Equatable {
   final BaseState<HomeUserEntity> homeUserStatus;
-  final BaseState<List<ExerciseEntity>> recommendationTodayStatus;
+  final BaseState<List<MuscleEntity>> recommendationTodayStatus;
   final BaseState<List<MuscleEntity>> upcomingWorkoutsTabsStatus;
-  final BaseState<List<ExerciseEntity>> upcomingWorkoutsStatus;
+  final BaseState<List<MuscleEntity>> upcomingWorkoutsStatus;
   final BaseState<List<MealCategoryEntity>> recommendationForYouTabsStatus;
   final BaseState<List<ExerciseEntity>> popularTrainingStatus;
 
@@ -27,9 +27,9 @@ class HomeState extends Equatable {
 
   HomeState copyWith({
     BaseState<HomeUserEntity>? homeUserStatus,
-    BaseState<List<ExerciseEntity>>? recommendationTodayStatus,
+    BaseState<List<MuscleEntity>>? recommendationTodayStatus,
     BaseState<List<MuscleEntity>>? upcomingWorkoutsTabsStatus,
-    BaseState<List<ExerciseEntity>>? upcomingWorkoutsStatus,
+    BaseState<List<MuscleEntity>>? upcomingWorkoutsStatus,
     BaseState<List<MealCategoryEntity>>? recommendationForYouTabsStatus,
     BaseState<List<ExerciseEntity>>? popularTrainingStatus,
     String? activeMuscleId,

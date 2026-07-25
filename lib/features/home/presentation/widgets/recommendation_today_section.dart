@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/app_strings.dart';
-import '../../domain/entities/exercise_entity.dart';
+import '../../domain/entities/muscle_entity.dart';
 import '../view_models/home_view_model/home_cubit.dart';
 import '../view_models/home_view_model/home_event.dart';
 import '../view_models/home_view_model/home_state.dart';
@@ -47,16 +47,17 @@ class RecommendationTodaySection extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemCount: status.data?.length ?? 0,
                   itemBuilder: (context, index) {
-                    final exercise =
-                        status.data?[index] ?? ExerciseEntity.empty;
+                    final muscle = status.data?[index] ?? MuscleEntity.empty;
                     return HomeCard(
-                      title: exercise.name,
-                      image: exercise.videoUrl,
+                      title: muscle.name,
+                      image: muscle.image ?? '',
                       onTap: () {
+                        // For muscles, we might want to navigate to a screen
+                        // showing exercises for this muscle
                         Navigator.pushNamed(
                           context,
                           AppRoutes.exerciseScreen,
-                          arguments: exercise.id,
+                          arguments: muscle.id,
                         );
                       },
                     );

@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+
 import '../../../../../config/base_cubit/base_cubit.dart';
 import '../../../../../config/base_response/base_response.dart';
 import '../../../../../config/base_state/base_state.dart';
@@ -7,27 +8,30 @@ import '../../../domain/entities/exercise_entity.dart';
 import '../../../domain/entities/home_user_entity.dart';
 import '../../../domain/entities/meal_category_entity.dart';
 import '../../../domain/entities/muscle_entity.dart';
-import '../../../domain/use_cases/get_all_exercises_use_case.dart';
 import '../../../domain/use_cases/get_cached_user_data_use_case.dart';
 import '../../../domain/use_cases/get_meals_categories_use_case.dart';
 import '../../../domain/use_cases/get_muscle_groups_use_case.dart';
-import '../../../domain/use_cases/get_random_exercises_use_case.dart';
+import '../../../domain/use_cases/get_muscles_by_group_id_use_case.dart';
+import '../../../domain/use_cases/get_popular_training_exercises_use_case.dart';
+import '../../../domain/use_cases/get_random_muscles_use_case.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
 @injectable
 class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
-  final GetRandomExercisesUseCase _getRandomExercisesUseCase;
+  final GetRandomMusclesUseCase _getRandomMusclesUseCase;
   final GetMuscleGroupsUseCase _getMuscleGroupsUseCase;
+  final GetMusclesByGroupIdUseCase _getMusclesByGroupIdUseCase;
   final GetMealsCategoriesUseCase _getMealsCategoriesUseCase;
-  final GetAllExercisesUseCase _getAllExercisesUseCase;
+  final GetPopularTrainingExercisesUseCase _getPopularTrainingExercisesUseCase;
   final GetCachedUserDataUseCase _getCachedUserDataUseCase;
 
   HomeCubit(
-    this._getRandomExercisesUseCase,
+    this._getRandomMusclesUseCase,
     this._getMuscleGroupsUseCase,
+    this._getMusclesByGroupIdUseCase,
     this._getMealsCategoriesUseCase,
-    this._getAllExercisesUseCase,
+    this._getPopularTrainingExercisesUseCase,
     this._getCachedUserDataUseCase,
   ) : super(const HomeState());
 
@@ -38,7 +42,7 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
       case FetchHomeUserEvent():
         _fetchHomeUser();
       case FetchRandomExercisesEvent():
-        _fetchRandomExercises();
+        _fetchRandomMuscles();
       case FetchMuscleGroupsEvent():
         _fetchMuscleGroups();
       case FetchMealCategoriesEvent():
@@ -52,7 +56,7 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
 
   void _fetchAllHomeData() {
     _fetchHomeUser();
-    _fetchRandomExercises();
+    _fetchRandomMuscles();
     _fetchMuscleGroups();
     _fetchMealCategories();
     _fetchPopularExercises();
@@ -74,26 +78,22 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
     }
   }
 
-  Future<void> _fetchRandomExercises() async {
+  Future<void> _fetchRandomMuscles() async {
     emit(
       state.copyWith(
         recommendationTodayStatus: const BaseState(isLoading: true),
       ),
     );
-    final result = await _getRandomExercisesUseCase(
-      limit: 5,
-      targetMuscleGroupId: '69d982ed85f6bfa972bf2218', // Default: Abdominals
-      difficultyLevelId: '69d982ed85f6bfa972bf2216', // Default: Beginner
-    );
+    final result = await _getRandomMusclesUseCase();
 
     switch (result) {
-      case SuccessBaseResponse<List<ExerciseEntity>>():
+      case SuccessBaseResponse<List<MuscleEntity>>():
         emit(
           state.copyWith(
             recommendationTodayStatus: BaseState(data: result.data),
           ),
         );
-      case ErrorBaseResponse<List<ExerciseEntity>>():
+      case ErrorBaseResponse<List<MuscleEntity>>():
         emit(
           state.copyWith(
             recommendationTodayStatus: BaseState(
@@ -123,7 +123,7 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
           ),
         );
         if (state.activeMuscleId.isNotEmpty) {
-          await _fetchExercisesByMuscle(state.activeMuscleId);
+          await _fetchMusclesByGroupId(state.activeMuscleId);
         }
       case ErrorBaseResponse<List<MuscleEntity>>():
         emit(
@@ -137,20 +137,18 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
     }
   }
 
-  Future<void> _fetchExercisesByMuscle(String muscleId) async {
+  Future<void> _fetchMusclesByGroupId(String groupId) async {
     emit(
       state.copyWith(upcomingWorkoutsStatus: const BaseState(isLoading: true)),
     );
-    // Note: In a real scenario, you'd use a usecase that filters by muscleId.
-    // For now, using getAllExercises as a placeholder or assuming the usecase supports filtering.
-    final result = await _getAllExercisesUseCase(limit: 10);
+    final result = await _getMusclesByGroupIdUseCase(groupId);
 
     switch (result) {
-      case SuccessBaseResponse<List<ExerciseEntity>>():
+      case SuccessBaseResponse<List<MuscleEntity>>():
         emit(
           state.copyWith(upcomingWorkoutsStatus: BaseState(data: result.data)),
         );
-      case ErrorBaseResponse<List<ExerciseEntity>>():
+      case ErrorBaseResponse<List<MuscleEntity>>():
         emit(
           state.copyWith(
             upcomingWorkoutsStatus: BaseState(
@@ -192,7 +190,7 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
     emit(
       state.copyWith(popularTrainingStatus: const BaseState(isLoading: true)),
     );
-    final result = await _getAllExercisesUseCase(limit: 10);
+    final result = await _getPopularTrainingExercisesUseCase();
 
     switch (result) {
       case SuccessBaseResponse<List<ExerciseEntity>>():
@@ -212,6 +210,6 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
   void _changeMuscleTab(String muscleId) {
     if (state.activeMuscleId == muscleId) return;
     emit(state.copyWith(activeMuscleId: muscleId));
-    _fetchExercisesByMuscle(muscleId);
+    _fetchMusclesByGroupId(muscleId);
   }
 }

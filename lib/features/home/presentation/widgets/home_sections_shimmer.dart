@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/widgets/app_shimmer.dart';
 
-class HomeSectionsShimmer extends StatelessWidget {
-  const HomeSectionsShimmer._();
-
+abstract class HomeSectionsShimmer {
   static Widget userInfoShimmer() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,10 +113,5 @@ class HomeSectionsShimmer extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.shrink();
   }
 }

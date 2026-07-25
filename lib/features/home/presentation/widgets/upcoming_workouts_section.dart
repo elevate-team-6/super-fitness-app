@@ -6,7 +6,7 @@ import 'package:super_fitness/core/utils/app_routes.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/widgets/custom_tab_bar.dart';
 import '../../../main_layout/presentation/cubit/main_layout_cubit.dart';
-import '../../domain/entities/exercise_entity.dart';
+import '../../domain/entities/muscle_entity.dart';
 import '../view_models/home_view_model/home_cubit.dart';
 import '../view_models/home_view_model/home_event.dart';
 import '../view_models/home_view_model/home_state.dart';
@@ -85,16 +85,16 @@ class UpcomingWorkoutsSection extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: workoutsStatus.data?.length ?? 0,
                     itemBuilder: (context, index) {
-                      final exercise =
-                          workoutsStatus.data?[index] ?? ExerciseEntity.empty;
+                      final muscle =
+                          workoutsStatus.data?[index] ?? MuscleEntity.empty;
                       return HomeCard(
-                        title: exercise.name,
-                        image: '',
+                        title: muscle.name,
+                        image: muscle.image ?? '',
                         onTap: () {
                           Navigator.pushNamed(
                             context,
                             AppRoutes.exerciseScreen,
-                            arguments: exercise.id,
+                            arguments: muscle.id,
                           );
                         },
                         height: 80.h,
