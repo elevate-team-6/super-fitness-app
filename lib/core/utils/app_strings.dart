@@ -179,4 +179,9 @@ abstract class AppStrings {
   static const String beginner = 'beginner';
   static const String intermediate = 'intermediate';
   static const String advanced = 'advanced';
+
+  // Error/Fallback
+  static const String failedToFetchLevelsOrMuscles =
+      'failedToFetchLevelsOrMuscles';
+  static const String athlete = 'athlete';
 }

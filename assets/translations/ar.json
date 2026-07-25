@@ -149,5 +149,7 @@
   "tasks_count": "{} مهام",
   "beginner": "مبتدئ",
   "intermediate": "متوسط",
-  "advanced": "متقدم"
+  "advanced": "متقدم",
+  "failedToFetchLevelsOrMuscles": "عذراً! واجهنا مشكلة في تحميل بعض التمارين. يرجى المحاولة مرة أخرى.",
+  "athlete": "رياضي"
 }

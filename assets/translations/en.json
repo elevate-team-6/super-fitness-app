@@ -148,5 +148,7 @@
   "tasks_count": "{} Tasks",
   "beginner": "Beginner",
   "intermediate": "Intermediate",
-  "advanced": "Advanced"
+  "advanced": "Advanced",
+  "failedToFetchLevelsOrMuscles": "Oops! We couldn't load some workouts. Please try again.",
+  "athlete": "Athlete"
 }
