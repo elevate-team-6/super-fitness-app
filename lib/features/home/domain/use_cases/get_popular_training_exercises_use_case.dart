@@ -1,9 +1,13 @@
 import 'dart:math';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../config/base_response/base_response.dart';
+import '../../../../core/utils/app_strings.dart';
 import '../entities/exercise_entity.dart';
+import '../entities/level_entity.dart';
+import '../entities/muscle_entity.dart';
 import '../repo/home_repo_contract.dart';
 
 @injectable
@@ -16,40 +20,48 @@ class GetPopularTrainingExercisesUseCase {
     final levelsResult = await _repo.getLevels();
     final musclesResult = await _repo.getRandomMuscles();
 
-    if (levelsResult is SuccessBaseResponse &&
-        musclesResult is SuccessBaseResponse) {
-      final levels = (levelsResult as SuccessBaseResponse).data ?? [];
-      final muscles = (musclesResult as SuccessBaseResponse).data ?? [];
+    if (levelsResult is SuccessBaseResponse<List<LevelEntity>> &&
+        musclesResult is SuccessBaseResponse<List<MuscleEntity>>) {
+      final levels = levelsResult.data ?? [];
+      final muscles = musclesResult.data ?? [];
 
       if (levels.isEmpty || muscles.isEmpty) {
-        return const SuccessBaseResponse([]);
+        return const SuccessBaseResponse<List<ExerciseEntity>>([]);
       }
 
-      final List<ExerciseEntity> allExercises = [];
+      final Map<String, ExerciseEntity> uniqueExercises = {};
       final random = Random();
 
-      // Repeat 3 times as requested
-      for (int i = 0; i < 3; i++) {
+      int attempts = 0;
+      // We need to collect 3 unique items.
+      // If the API returns the same one, we keep trying with different random filters.
+      while (uniqueExercises.length < 3 && attempts < 12) {
+        attempts++;
         final randomLevelId = levels[random.nextInt(levels.length)].id;
         final randomMuscleId = muscles[random.nextInt(muscles.length)].id;
 
-        final exercisesResult = await _repo.getRandomExercises(
+        // Try filtering by 'targetMuscleGroupId' which is a known valid key in this API
+        final exercisesResult = await _repo.getAllExercises(
           difficultyLevelId: randomLevelId,
-          targetMuscleGroupId: randomMuscleId,
-          limit: 2,
+          muscleId: randomMuscleId,
+          limit: 5, // Request more to increase chance of variety
         );
 
-        if (exercisesResult is SuccessBaseResponse) {
-          allExercises.addAll((exercisesResult as SuccessBaseResponse).data ?? []);
+        if (exercisesResult is SuccessBaseResponse<List<ExerciseEntity>>) {
+          final fetched = exercisesResult.data ?? [];
+          for (final exercise in fetched) {
+            if (uniqueExercises.length < 3) {
+              uniqueExercises[exercise.id] = exercise;
+            }
+          }
         }
       }
 
-      // Remove duplicates if any
-      final uniqueExercises = {for (var e in allExercises) e.id: e}.values.toList();
-
-      return SuccessBaseResponse(uniqueExercises);
+      return SuccessBaseResponse<List<ExerciseEntity>>(
+        uniqueExercises.values.toList(),
+      );
     }
 
-    return const ErrorBaseResponse("Failed to fetch levels or muscles");
+    return ErrorBaseResponse(AppStrings.failedToFetchLevelsOrMuscles.tr());
   }
 }
