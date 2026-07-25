@@ -138,6 +138,5 @@ void main() {
         expect(cubit.state.exercises, [tExercise2]);
       },
     );
-
   });
 }

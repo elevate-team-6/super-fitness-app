@@ -48,4 +48,3 @@ class ExerciseEntity extends Equatable {
     inDepthYoutubeExplanationLink,
   ];
 }
-

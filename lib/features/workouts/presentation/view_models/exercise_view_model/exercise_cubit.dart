@@ -110,12 +110,7 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
       case SuccessBaseResponse<List<ExerciseEntity>>():
         final data = response.data ?? [];
 
-        emit(
-          state.copyWith(
-            isLoadingExercises: false,
-            exercises: data,
-          ),
-        );
+        emit(state.copyWith(isLoadingExercises: false, exercises: data));
       case ErrorBaseResponse<List<ExerciseEntity>>():
         emit(
           state.copyWith(
