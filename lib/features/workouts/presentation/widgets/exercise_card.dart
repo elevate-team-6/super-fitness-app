@@ -49,8 +49,12 @@ class ExerciseCard extends StatelessWidget {
                 height: 76.w,
                 child: CustomCachedImage(
                   borderRadius: BorderRadius.circular(25),
-                  imageUrl: exercise.shortYoutubeDemonstrationLink,
-                  fit: BoxFit.cover,
+                  imageUrl:
+                      YoutubeUrl.thumbnailUrlOf(
+                        exercise.shortYoutubeDemonstrationLink,
+                      ) ??
+                      "http//fake.com",
+                  fit: BoxFit.fill,
                   errorWidget: Container(
                     color: AppColors.black70,
                     child: Icon(
