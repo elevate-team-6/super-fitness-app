@@ -28,8 +28,6 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
         _initialize(primeMoverMuscleId);
       case ChangeDifficulty(:final level):
         _changeDifficulty(level);
-      case RefreshExercises():
-        _refresh();
     }
   }
 
@@ -94,44 +92,6 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
 
     await _loadExercises();
   }
-
-  Future<void> _refresh() async {
-    final muscleId = state.activePrimeMoverMuscleId;
-    final difficulty = state.selectedDifficulty;
-
-    if (muscleId == null || difficulty == null || state.isRefreshing) {
-      return;
-    }
-
-    emit(state.copyWith(isRefreshing: true, exercisesError: () => null));
-
-    final response = await _getExercisesByMuscleDifficultyUseCase(
-      primeMoverMuscleId: muscleId,
-      difficultyLevelId: difficulty.id,
-    );
-
-    switch (response) {
-      case SuccessBaseResponse<List<ExerciseEntity>>():
-        final data = response.data ?? [];
-
-        emit(
-          state.copyWith(
-            isRefreshing: false,
-            exercises: data,
-          ),
-        );
-      case ErrorBaseResponse<List<ExerciseEntity>>():
-        emit(
-          state.copyWith(
-            isRefreshing: false,
-            exercisesError: () => response.errorMessage.tr(),
-          ),
-        );
-        emitUiEvent(DisplayErrorEvent(response.errorMessage.tr()));
-    }
-  }
-
-
 
   Future<void> _loadExercises() async {
     final muscleId = state.activePrimeMoverMuscleId;

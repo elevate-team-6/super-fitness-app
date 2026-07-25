@@ -5,7 +5,6 @@ import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.
 class ExerciseState extends Equatable {
   final bool isLoadingLevels;
   final bool isLoadingExercises;
-  final bool isRefreshing;
   final List<DifficultyLevelEntity> difficultyLevels;
   final DifficultyLevelEntity? selectedDifficulty;
   final List<ExerciseEntity> exercises;
@@ -16,7 +15,6 @@ class ExerciseState extends Equatable {
   const ExerciseState({
     this.isLoadingLevels = false,
     this.isLoadingExercises = false,
-    this.isRefreshing = false,
     this.difficultyLevels = const [],
     this.selectedDifficulty,
     this.exercises = const [],
@@ -28,7 +26,6 @@ class ExerciseState extends Equatable {
   ExerciseState copyWith({
     bool? isLoadingLevels,
     bool? isLoadingExercises,
-    bool? isRefreshing,
     List<DifficultyLevelEntity>? difficultyLevels,
     DifficultyLevelEntity? selectedDifficulty,
     List<ExerciseEntity>? exercises,
@@ -39,7 +36,6 @@ class ExerciseState extends Equatable {
     return ExerciseState(
       isLoadingLevels: isLoadingLevels ?? this.isLoadingLevels,
       isLoadingExercises: isLoadingExercises ?? this.isLoadingExercises,
-      isRefreshing: isRefreshing ?? this.isRefreshing,
       difficultyLevels: difficultyLevels ?? this.difficultyLevels,
       selectedDifficulty: selectedDifficulty ?? this.selectedDifficulty,
       exercises: exercises ?? this.exercises,
@@ -56,7 +52,6 @@ class ExerciseState extends Equatable {
   List<Object?> get props => [
     isLoadingLevels,
     isLoadingExercises,
-    isRefreshing,
     difficultyLevels,
     selectedDifficulty,
     exercises,

@@ -5,26 +5,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/widgets/custom_empty_state_view.dart';
+import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
-import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_event.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_state.dart';
 import 'package:super_fitness/features/workouts/presentation/widgets/exercise_card.dart';
 import 'package:super_fitness/features/workouts/presentation/widgets/exercise_skeleton.dart';
 
-class ExercisesSection extends StatefulWidget {
+class ExercisesSection extends StatelessWidget {
   const ExercisesSection({super.key});
 
   @override
-  State<ExercisesSection> createState() => _ExercisesSectionState();
-}
-
-class _ExercisesSectionState extends State<ExercisesSection> {
   Widget build(BuildContext context) {
     return BlocBuilder<ExerciseCubit, ExerciseState>(
       buildWhen: (previous, current) =>
           previous.isLoadingLevels != current.isLoadingLevels ||
           previous.isLoadingExercises != current.isLoadingExercises ||
-          previous.isRefreshing != current.isRefreshing ||
           previous.exercises != current.exercises,
       builder: (context, state) {
         final isLoading = state.isLoadingLevels || state.isLoadingExercises;
@@ -40,23 +35,31 @@ class _ExercisesSectionState extends State<ExercisesSection> {
             ),
           );
         }
-        return RefreshIndicator(
-          color: AppColors.primary,
-          backgroundColor: AppColors.black80,
-          onRefresh: () async {
-            context.read<ExerciseCubit>().doIntent(const RefreshExercises());
 
-            // Wait until refreshing completes.
-            await context.read<ExerciseCubit>().stream.firstWhere(
-              (s) => !s.isRefreshing,
-            );
-          },
-          child: ListView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            itemCount: state.exercises.length,
-            itemBuilder: (context, index) {
-              return ExerciseCard(exercise: state.exercises[index]);
-            },
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: CustomGlassContainer(
+            padding: EdgeInsets.zero,
+            margin: EdgeInsets.zero,
+            opacity: .1,
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(color: AppColors.white.withValues(alpha: .08)),
+            child: ListView.separated(
+              padding: EdgeInsets.zero,
+              itemCount: state.exercises.length,
+              separatorBuilder: (_, __) => Divider(
+                height: 1,
+                thickness: 1,
+                color: AppColors.white.withValues(alpha: .08),
+              ),
+              itemBuilder: (context, index) {
+                return ExerciseCard(
+                  exercise: state.exercises[index],
+                  isFirst: index == 0,
+                  isLast: index == state.exercises.length - 1,
+                );
+              },
+            ),
           ),
         );
       },
@@ -68,8 +71,8 @@ class _ExercisesSectionState extends State<ExercisesSection> {
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       itemCount: 5,
-      separatorBuilder: (context, i) => SizedBox(height: 4.h),
-      itemBuilder: (context, i) => const ExerciseSkeleton(),
+      separatorBuilder: (_, __) => SizedBox(height: 4.h),
+      itemBuilder: (_, __) => const ExerciseSkeleton(),
     );
   }
 }

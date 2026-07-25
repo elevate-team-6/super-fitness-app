@@ -25,9 +25,3 @@ class ChangeDifficulty extends ExerciseEvents {
   @override
   List<Object?> get props => [level];
 }
-
-class RefreshExercises extends ExerciseEvents {
-  const RefreshExercises();
-}
-
-

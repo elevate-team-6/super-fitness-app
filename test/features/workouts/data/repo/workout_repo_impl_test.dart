@@ -102,7 +102,7 @@ void main() {
 
   group('getExercisesByMuscleDifficulty', () {
     test(
-      'returns SuccessBaseResponse with ExercisesEntity when data source succeeds',
+      'returns SuccessBaseResponse with List<ExerciseEntity> when data source succeeds',
       () async {
         when(
           mockRemoteDataSource.getExercisesByMuscleDifficulty(
@@ -118,11 +118,10 @@ void main() {
           tDifficultyId,
         );
 
-        expect(result, isA<SuccessBaseResponse<ExercisesEntity>>());
-        final data = (result as SuccessBaseResponse<ExercisesEntity>).data;
-        expect(data?.totalExercises, 10);
-        expect(data?.exercises.length, 1);
-        expect(data?.exercises.first.exercise, 'Bench Press');
+        expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
+        final data = (result as SuccessBaseResponse<List<ExerciseEntity>>).data;
+        expect(data?.length, 1);
+        expect(data?.first.exercise, 'Bench Press');
         verify(
           mockRemoteDataSource.getExercisesByMuscleDifficulty(
             tMuscleId,
@@ -145,8 +144,8 @@ void main() {
         tDifficultyId,
       );
 
-      expect(result, isA<ErrorBaseResponse<ExercisesEntity>>());
-      final error = result as ErrorBaseResponse<ExercisesEntity>;
+      expect(result, isA<ErrorBaseResponse<List<ExerciseEntity>>>());
+      final error = result as ErrorBaseResponse<List<ExerciseEntity>>;
       expect(error.errorMessage, 'Network Error');
       verify(
         mockRemoteDataSource.getExercisesByMuscleDifficulty(

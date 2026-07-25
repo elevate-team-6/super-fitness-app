@@ -25,7 +25,7 @@ void main() {
     provideDummy<BaseResponse<List<DifficultyLevelEntity>>>(
       const ErrorBaseResponse('dummy'),
     );
-    provideDummy<BaseResponse<ExercisesEntity>>(
+    provideDummy<BaseResponse<List<ExerciseEntity>>>(
       const ErrorBaseResponse('dummy'),
     );
 
@@ -78,21 +78,8 @@ void main() {
       inDepthYoutubeExplanationLink: 'http://indepth.demo2',
     );
 
-    const tExercisesPage1 = ExercisesEntity(
-      message: 'success',
-      totalExercises: 20,
-      totalPages: 2,
-      currentPage: 1,
-      exercises: [tExercise1],
-    );
-
-    const tExercisesPage2 = ExercisesEntity(
-      message: 'success',
-      totalExercises: 20,
-      totalPages: 2,
-      currentPage: 2,
-      exercises: [tExercise2],
-    );
+    const tExercisesPage1 = [tExercise1];
+    const tExercisesPage2 = [tExercise2];
 
     test(
       'InitializeExerciseScreen loads levels, auto-selects level 1, and loads page 1 exercises',
@@ -116,7 +103,6 @@ void main() {
         expect(cubit.state.selectedDifficulty, tLevels.first);
         expect(cubit.state.isLoadingExercises, false);
         expect(cubit.state.exercises, [tExercise1]);
-        expect(cubit.state.hasReachedMax, false);
         expect(cubit.state.activePrimeMoverMuscleId, tMuscleId);
       },
     );
@@ -153,56 +139,5 @@ void main() {
       },
     );
 
-    test('LoadMoreExercises appends exercises to current list', () async {
-      when(
-        mockGetDifficultyLevelsUseCase(primeMoverMuscleId: tMuscleId),
-      ).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
-
-      when(
-        mockGetExercisesUseCase(
-          primeMoverMuscleId: tMuscleId,
-          difficultyLevelId: '1',
-        ),
-      ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
-
-      cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
-      await Future.delayed(Duration.zero);
-
-      when(
-        mockGetExercisesUseCase(
-          primeMoverMuscleId: tMuscleId,
-          difficultyLevelId: '1',
-        ),
-      ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage2));
-
-      cubit.doIntent(const LoadMoreExercises());
-      await Future.delayed(Duration.zero);
-
-      expect(cubit.state.exercises, [tExercise1, tExercise2]);
-      expect(cubit.state.currentPage, 2);
-      expect(cubit.state.hasReachedMax, true);
-    });
-
-    test('RefreshExercises replaces exercise list from page 1', () async {
-      when(
-        mockGetDifficultyLevelsUseCase(primeMoverMuscleId: tMuscleId),
-      ).thenAnswer((_) async => const SuccessBaseResponse(tLevels));
-
-      when(
-        mockGetExercisesUseCase(
-          primeMoverMuscleId: tMuscleId,
-          difficultyLevelId: '1',
-        ),
-      ).thenAnswer((_) async => const SuccessBaseResponse(tExercisesPage1));
-
-      cubit.doIntent(const InitializeExerciseScreen(tMuscleId));
-      await Future.delayed(Duration.zero);
-
-      cubit.doIntent(const RefreshExercises());
-      await Future.delayed(Duration.zero);
-
-      expect(cubit.state.isRefreshing, false);
-      expect(cubit.state.exercises, [tExercise1]);
-    });
   });
 }

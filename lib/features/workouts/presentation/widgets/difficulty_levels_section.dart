@@ -20,7 +20,7 @@ class DifficultyLevelsSection extends StatelessWidget {
           previous.difficultyLevels != current.difficultyLevels,
       builder: (context, state) {
         if (state.isLoadingLevels) {
-          return _buildSkeleton();
+          return const _DifficultyLevelsSkeleton();
         }
 
         if (state.difficultyLevels.isEmpty) {
@@ -39,9 +39,8 @@ class DifficultyLevelsSection extends StatelessWidget {
             controller: tabController,
             onTap: (index) {
               if (index >= 0 && index < state.difficultyLevels.length) {
-                final selectedLevel = state.difficultyLevels[index];
                 context.read<ExerciseCubit>().doIntent(
-                  ChangeDifficulty(selectedLevel),
+                  ChangeDifficulty(state.difficultyLevels[index]),
                 );
               }
             },
@@ -50,16 +49,21 @@ class DifficultyLevelsSection extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildSkeleton() {
+class _DifficultyLevelsSkeleton extends StatelessWidget {
+  const _DifficultyLevelsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       height: 44.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 16.w),
         itemCount: 4,
-        separatorBuilder: (context, i) => SizedBox(width: 16.w),
-        itemBuilder: (context, i) => const _SkeletonChip(),
+        separatorBuilder: (_, _) => SizedBox(width: 16.w),
+        itemBuilder: (_, _) => const _SkeletonChip(),
       ),
     );
   }

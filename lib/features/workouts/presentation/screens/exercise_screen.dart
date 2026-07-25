@@ -20,8 +20,13 @@ import 'package:super_fitness/features/workouts/presentation/widgets/exercises_s
 
 class ExerciseScreen extends StatefulWidget {
   final String primeMoverMuscleId;
+  final String primeMoverMuscleName;
 
-  const ExerciseScreen({super.key, required this.primeMoverMuscleId});
+  const ExerciseScreen({
+    super.key,
+    required this.primeMoverMuscleId,
+    required this.primeMoverMuscleName,
+  });
 
   @override
   State<ExerciseScreen> createState() => _ExerciseScreenState();
@@ -61,13 +66,9 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         centerTitle: true,
         height: 260.h,
         backgroundImage: AppImages.homeBackground,
-        title: BlocSelector<ExerciseCubit, ExerciseState, String>(
-          selector: (state) => state.exercises.isNotEmpty
-              ? state.exercises.first.primeMoverMuscle
-              : '',
-          builder: (context, primeMoverMuscle) {
-            return Text(primeMoverMuscle, style: AppTextStyles.white24700);
-          },
+        title: Text(
+          widget.primeMoverMuscleName,
+          style: AppTextStyles.white24700,
         ),
         subtitle: AppStrings.findBestExercisesForYou.tr(),
         onBackPressed: () => Navigator.pop(context),
@@ -118,7 +119,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
                   return DifficultyLevelsSection(tabController: _tabController);
                 },
               ),
-              SizedBox(height: 16.h),
+              SizedBox(height: 8.h),
               const Expanded(child: ExercisesSection()),
             ],
           ),
@@ -150,7 +151,7 @@ class _InfoBadge extends StatelessWidget {
       child: Text(
         label,
         style: isPrimary
-            ? AppTextStyles.white13500.copyWith(fontWeight: FontWeight.w700)
+            ? AppTextStyles.primary13500.copyWith(fontWeight: FontWeight.w700)
             : AppTextStyles.white13500,
       ),
     );

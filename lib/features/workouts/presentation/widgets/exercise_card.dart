@@ -4,15 +4,22 @@ import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/utils/youtube_url.dart';
 import 'package:super_fitness/core/widgets/custom_cached_image.dart';
-import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ExerciseCard extends StatelessWidget {
   final ExerciseEntity exercise;
   final VoidCallback? onTap;
+  final bool isFirst;
+  final bool isLast;
 
-  const ExerciseCard({super.key, required this.exercise, this.onTap});
+  const ExerciseCard({
+    super.key,
+    required this.exercise,
+    this.onTap,
+    this.isFirst = false,
+    this.isLast = false,
+  });
 
   Future<void> _playVideo() async {
     final url =
@@ -21,9 +28,7 @@ class ExerciseCard extends StatelessWidget {
 
     if (url == null) return;
 
-    final uri = Uri.parse(url);
-
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -34,12 +39,16 @@ class ExerciseCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap ?? (hasVideo ? _playVideo : null),
-      child: CustomGlassContainer(
-        borderRadius: BorderRadius.circular(20.r),
+      child: Container(
         padding: EdgeInsets.all(10.w),
-        margin: EdgeInsets.zero,
-        opacity: 0.06,
-        border: Border.all(color: AppColors.white.withValues(alpha: .08)),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(isFirst ? 20.r : 0),
+            topRight: Radius.circular(isFirst ? 20.r : 0),
+            bottomLeft: Radius.circular(isLast ? 20.r : 0),
+            bottomRight: Radius.circular(isLast ? 20.r : 0),
+          ),
+        ),
         child: Row(
           children: [
             ClipRRect(
@@ -48,13 +57,13 @@ class ExerciseCard extends StatelessWidget {
                 width: 76.w,
                 height: 76.w,
                 child: CustomCachedImage(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(14.r),
                   imageUrl:
                       YoutubeUrl.thumbnailUrlOf(
                         exercise.shortYoutubeDemonstrationLink,
                       ) ??
-                      "http//fake.com",
-                  fit: BoxFit.fill,
+                      "http://fake.com",
+                  fit: BoxFit.cover,
                   errorWidget: Container(
                     color: AppColors.black70,
                     child: Icon(
@@ -66,9 +75,7 @@ class ExerciseCard extends StatelessWidget {
                 ),
               ),
             ),
-
             SizedBox(width: 14.w),
-
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -80,18 +87,14 @@ class ExerciseCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.white16700,
                   ),
-
                   SizedBox(height: 6.h),
-
                   Text(
                     '${exercise.mechanics} • ${exercise.laterality}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.white13400,
                   ),
-
                   SizedBox(height: 4.h),
-
                   Text(
                     exercise.primeMoverMuscle,
                     maxLines: 2,
@@ -101,13 +104,12 @@ class ExerciseCard extends StatelessWidget {
                 ],
               ),
             ),
-
             if (hasVideo) ...[
               SizedBox(width: 8.w),
               Container(
                 width: 34.r,
                 height: 34.r,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.primary,
                 ),

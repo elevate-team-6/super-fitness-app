@@ -85,6 +85,7 @@ abstract class AppRoutes {
               create: (_) => getIt<ExerciseCubit>(),
               child: ExerciseScreen(
                 primeMoverMuscleId: args.primeMoverMuscleId,
+                primeMoverMuscleName: args.primeMoverMuscleName,
               ),
             ),
           );
@@ -141,6 +142,10 @@ class CompleteRegisterArgs {
 
 class ExerciseArgs {
   final String primeMoverMuscleId;
+  final String primeMoverMuscleName;
 
-  const ExerciseArgs({required this.primeMoverMuscleId});
+  const ExerciseArgs({
+    required this.primeMoverMuscleId,
+    required this.primeMoverMuscleName,
+  });
 }
