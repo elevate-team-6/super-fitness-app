@@ -44,14 +44,6 @@ class _ExerciseScreenState extends State<ExerciseScreen>
     );
   }
 
-  void _updateTabController(List<DifficultyLevelEntity> levels) {
-    if (levels.isEmpty) return;
-    if (_tabController == null || _tabController!.length != levels.length) {
-      _tabController?.dispose();
-      _tabController = TabController(length: levels.length, vsync: this);
-    }
-  }
-
   @override
   void dispose() {
     _uiEventSubscription?.cancel();
@@ -100,25 +92,36 @@ class _ExerciseScreenState extends State<ExerciseScreen>
           },
         ),
       ),
-      body: SafeArea(
-        top: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BlocSelector<
-              ExerciseCubit,
-              ExerciseState,
-              List<DifficultyLevelEntity>
-            >(
-              selector: (state) => state.difficultyLevels,
-              builder: (context, levels) {
-                _updateTabController(levels);
-                return DifficultyLevelsSection(tabController: _tabController);
-              },
-            ),
-            SizedBox(height: 16.h),
-            const Expanded(child: ExercisesSection()),
-          ],
+      body: BlocListener<ExerciseCubit, ExerciseState>(
+        listenWhen: (previous, current) =>
+            previous.difficultyLevels.isEmpty &&
+            current.difficultyLevels.isNotEmpty,
+        listener: (context, state) {
+          _tabController = TabController(
+            length: state.difficultyLevels.length,
+            vsync: this,
+          );
+          setState(() {});
+        },
+        child: SafeArea(
+          top: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BlocSelector<
+                ExerciseCubit,
+                ExerciseState,
+                List<DifficultyLevelEntity>
+              >(
+                selector: (state) => state.difficultyLevels,
+                builder: (context, levels) {
+                  return DifficultyLevelsSection(tabController: _tabController);
+                },
+              ),
+              SizedBox(height: 16.h),
+              const Expanded(child: ExercisesSection()),
+            ],
+          ),
         ),
       ),
     );
