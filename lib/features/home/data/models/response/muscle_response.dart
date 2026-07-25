@@ -8,9 +8,16 @@ part 'muscle_response.g.dart';
 @JsonSerializable()
 class MuscleResponse extends Equatable {
   final String? message;
+  final int? totalMuscles;
+  final List<MuscleModel>? muscles;
   final List<MuscleModel>? musclesGroup;
 
-  const MuscleResponse({this.message, this.musclesGroup});
+  const MuscleResponse({
+    this.message,
+    this.totalMuscles,
+    this.muscles,
+    this.musclesGroup,
+  });
 
   factory MuscleResponse.fromJson(Map<String, dynamic> json) =>
       _$MuscleResponseFromJson(json);
@@ -18,7 +25,7 @@ class MuscleResponse extends Equatable {
   Map<String, dynamic> toJson() => _$MuscleResponseToJson(this);
 
   @override
-  List<Object?> get props => [message, musclesGroup];
+  List<Object?> get props => [message, totalMuscles, muscles, musclesGroup];
 }
 
 @JsonSerializable()
@@ -26,16 +33,18 @@ class MuscleModel extends Equatable {
   @JsonKey(name: '_id')
   final String? id;
   final String? name;
+  final String? image;
 
-  const MuscleModel({this.id, this.name});
+  const MuscleModel({this.id, this.name, this.image});
 
   factory MuscleModel.fromJson(Map<String, dynamic> json) =>
       _$MuscleModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$MuscleModelToJson(this);
 
-  MuscleEntity toEntity() => MuscleEntity(id: id ?? '', name: name ?? '');
+  MuscleEntity toEntity() =>
+      MuscleEntity(id: id ?? '', name: name ?? '', image: image);
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [id, name, image];
 }

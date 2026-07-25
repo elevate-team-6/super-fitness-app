@@ -17,6 +17,11 @@ abstract class AppEndPoints {
 
   // Muscles
   static const String muscles = "$baseUrl/muscles";
+  static const String randomMuscles = "$baseUrl/muscles/random";
+  static const String musclesGroup = "$baseUrl/musclesGroup";
+
+  // Levels
+  static const String levels = "$baseUrl/levels";
 
   // Meals
   static const String mealCategories =

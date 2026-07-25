@@ -22,6 +22,7 @@ abstract class ApiParameters {
   // Home & Exercises
   static const String acceptLanguage = 'Accept-Language';
   static const String targetMuscleGroupId = 'targetMuscleGroupId';
+  static const String muscleId = 'muscleId';
   static const String difficultyLevelId = 'difficultyLevelId';
   static const String limit = 'limit';
   static const String page = 'page';

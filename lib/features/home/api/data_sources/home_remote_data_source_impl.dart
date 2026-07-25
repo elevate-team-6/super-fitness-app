@@ -4,15 +4,17 @@ import '../../../../config/base_response/base_response.dart';
 import '../../../../config/error_handler/error_handler.dart';
 import '../../data/data_sources/home_remote_data_source_contract.dart';
 import '../../data/models/response/exercise_response.dart';
+import '../../data/models/response/level_response.dart';
 import '../../data/models/response/meal_category_response.dart';
 import '../../data/models/response/muscle_response.dart';
+import '../../data/models/response/muscles_by_group_response.dart';
 import '../api_client/home_api_client.dart';
 
-@Injectable(as: HomeRemoteDataSourceContract)
+@LazySingleton(as: HomeRemoteDataSourceContract)
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSourceContract {
   final HomeApiClient _apiClient;
 
-  const HomeRemoteDataSourceImpl(this._apiClient);
+  HomeRemoteDataSourceImpl(this._apiClient);
 
   @override
   Future<BaseResponse<ExerciseResponse>> getRandomExercises({
@@ -41,6 +43,32 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSourceContract {
   }
 
   @override
+  Future<BaseResponse<MuscleResponse>> getRandomMuscles({
+    required String language,
+  }) {
+    return ErrorHandler.handleApiCall(
+      () => _apiClient.getRandomMuscles(language: language),
+    );
+  }
+
+  @override
+  Future<BaseResponse<MusclesByGroupResponse>> getMusclesByGroupId({
+    required String language,
+    required String id,
+  }) {
+    return ErrorHandler.handleApiCall(
+      () => _apiClient.getMusclesByGroupId(language: language, id: id),
+    );
+  }
+
+  @override
+  Future<BaseResponse<LevelResponse>> getLevels({required String language}) {
+    return ErrorHandler.handleApiCall(
+      () => _apiClient.getLevels(language: language),
+    );
+  }
+
+  @override
   Future<BaseResponse<MealCategoryResponse>> getMealsCategories() {
     return ErrorHandler.handleApiCall(() => _apiClient.getMealsCategories());
   }
@@ -48,12 +76,18 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSourceContract {
   @override
   Future<BaseResponse<ExerciseResponse>> getAllExercises({
     required String language,
+    String? targetMuscleGroupId,
+    String? muscleId,
+    String? difficultyLevelId,
     int? page,
     int? limit,
   }) {
     return ErrorHandler.handleApiCall(
       () => _apiClient.getAllExercises(
         language: language,
+        targetMuscleGroupId: targetMuscleGroupId,
+        muscleId: muscleId,
+        difficultyLevelId: difficultyLevelId,
         page: page,
         limit: limit,
       ),
