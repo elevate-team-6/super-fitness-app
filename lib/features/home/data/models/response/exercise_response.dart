@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../../../core/utils/youtube_url.dart';
 import '../../../domain/entities/exercise_entity.dart';
 
 part 'exercise_response.g.dart';
@@ -151,6 +152,11 @@ class ExerciseModel extends Equatable {
     targetMuscle: targetMuscleGroup ?? '',
     videoUrl:
         shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink ?? '',
+    image:
+        YoutubeUrl.thumbnailUrlOf(
+          shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink,
+        ) ??
+        '',
   );
 
   @override

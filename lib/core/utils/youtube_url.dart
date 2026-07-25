@@ -45,6 +45,12 @@ abstract class YoutubeUrl {
     return 'https://www.youtube.com/watch?v=$id';
   }
 
+  static String? thumbnailUrlOf(String? url) {
+    final id = videoIdOf(url);
+    if (id == null) return null;
+    return 'https://img.youtube.com/vi/$id/hqdefault.jpg';
+  }
+
   static String? _nonEmpty(String? value) =>
       (value != null && value.isNotEmpty) ? value : null;
 }
