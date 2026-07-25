@@ -15,6 +15,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double? height;
   final String? backgroundImage;
   final Widget? bottomContent;
+  final bool hasBottomBorderRadius;
 
   const CustomAppBar({
     super.key,
@@ -26,6 +27,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.height,
     this.backgroundImage,
     this.bottomContent,
+    this.hasBottomBorderRadius = true,
   });
 
   @override
@@ -69,7 +71,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       height: preferredSize.height,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
+        borderRadius: hasBottomBorderRadius
+            ? BorderRadius.vertical(bottom: Radius.circular(20.r))
+            : BorderRadius.zero,
         image: DecorationImage(
           image: AssetImage(backgroundImage!),
           fit: BoxFit.cover,
@@ -79,10 +83,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20.r),
-                bottomRight: Radius.circular(20.r),
-              ),
+              borderRadius: hasBottomBorderRadius
+                  ? BorderRadius.only(
+                      bottomLeft: Radius.circular(20.r),
+                      bottomRight: Radius.circular(20.r),
+                    )
+                  : BorderRadius.zero,
               gradient: LinearGradient(
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,

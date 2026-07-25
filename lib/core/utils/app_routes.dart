@@ -12,11 +12,13 @@ import 'package:super_fitness/features/auth/presentation/screens/login_screen.da
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
+import '../../features/home/domain/entities/meal_time.dart';
 import '../../features/home/presentation/view_models/home_view_model/home_cubit.dart';
 import '../../features/home/presentation/view_models/home_view_model/home_event.dart';
 import '../../features/main_layout/presentation/cubit/main_layout_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -88,6 +90,7 @@ abstract class AppRoutes {
                       getIt<HomeCubit>()
                         ..doEvent(const FetchAllHomeDataEvent()),
                 ),
+                BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
               ],
               child: const MainLayoutScreen(),
             ),
@@ -136,9 +139,36 @@ class ForgotPasswordArgs {
   ForgotPasswordArgs({required this.cubit, required this.email});
 }
 
+class FoodScreenArgs {
+  /// Meal time the food screen opens on, set by whichever Home card was tapped.
+  final MealTime mealTime;
+
+  FoodScreenArgs(this.mealTime);
+}
+
+class DetailsFoodArgs {
+  final String mealId;
+
+  /// Already known from the grid card that was tapped, so the app bar has a
+  /// title to show while the full record is still loading.
+  final String mealName;
+
+  DetailsFoodArgs({required this.mealId, required this.mealName});
+}
+
 class CompleteRegisterArgs {
   final RegisterCubit? cubit;
   final SocialSignupEntity? socialData;
 
   CompleteRegisterArgs({this.cubit, this.socialData});
+}
+
+class ExerciseArgs {
+  final String primeMoverMuscleId;
+  final String primeMoverMuscleName;
+
+  const ExerciseArgs({
+    required this.primeMoverMuscleId,
+    required this.primeMoverMuscleName,
+  });
 }

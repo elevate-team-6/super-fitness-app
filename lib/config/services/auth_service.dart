@@ -23,4 +23,9 @@ class AuthService {
       value: 'true',
     );
   }
+
+  static Future<void> logout() async {
+    final secureCacheHelper = getIt<SecureCacheHelper>();
+    await secureCacheHelper.deleteData(key: AppKeys.tokenKey);
+  }
 }

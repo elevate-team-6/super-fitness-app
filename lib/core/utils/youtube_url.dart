@@ -37,6 +37,13 @@ abstract class YoutubeUrl {
     return null;
   }
 
+  static String? thumbnailUrlOf(String? url) {
+    final id = videoIdOf(url);
+    if (id == null) return null;
+
+    return 'https://img.youtube.com/vi/$id/hqdefault.jpg';
+  }
+
   /// A normalized `watch?v=` URL for [url], or null when there's no video —
   /// what the details screen hands to `url_launcher` to open YouTube.
   static String? watchUrlOf(String? url) {

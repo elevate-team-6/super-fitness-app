@@ -3,9 +3,11 @@ import 'package:injectable/injectable.dart';
 import '../../../../config/base_response/base_response.dart';
 import '../../../../config/error_handler/error_handler.dart';
 import '../../data/data_sources/home_remote_data_source_contract.dart';
+import '../../data/models/response/details_food_response_model.dart';
 import '../../data/models/response/exercise_response.dart';
 import '../../data/models/response/level_response.dart';
 import '../../data/models/response/meal_category_response.dart';
+import '../../data/models/response/meals_response_model.dart';
 import '../../data/models/response/muscle_response.dart';
 import '../../data/models/response/muscles_by_group_response.dart';
 import '../api_client/home_api_client.dart';
@@ -92,5 +94,17 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSourceContract {
         limit: limit,
       ),
     );
+  }
+
+  @override
+  Future<BaseResponse<MealsResponseModel>> getMealsByCategory(String category) {
+    return ErrorHandler.handleApiCall(
+          () => _apiClient.getMealsByCategory(category),
+    );
+  }
+
+  @override
+  Future<BaseResponse<DetailsFoodResponseModel>> getDetailsFood(String id) {
+    return ErrorHandler.handleApiCall(() => _apiClient.getDetailsFood(id));
   }
 }

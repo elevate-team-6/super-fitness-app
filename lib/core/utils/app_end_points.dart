@@ -10,6 +10,23 @@ abstract class AppEndPoints {
   static const String forgetPassword = "$baseUrl/auth/forgotPassword";
   static const String resetPassword = "$baseUrl/auth/resetPassword";
   static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
+  // Workouts
+  static const String getDifficultyLevelsByPrimeMover =
+      "$baseUrl/levels/difficulty-levels/by-prime-mover";
+  static const String getExercisesByMuscleDifficulty =
+      "$baseUrl/exercises/by-muscle-difficulty";
+
+  // Meals (TheMealDB)
+  // Third-party API, so these are NOT prefixed with `baseUrl`. They are served
+  // through the @Named('external') Dio, which carries no auth token.
+  static const String mealDbBaseUrl = "https://www.themealdb.com/api/json/v1/1";
+  static const String mealCategories = "$mealDbBaseUrl/categories.php";
+  static const String mealsByCategory = "$mealDbBaseUrl/filter.php";
+  static const String detailsFood = "$mealDbBaseUrl/lookup.php";
+
+  // Workouts
+  static const String muscles = "$baseUrl/muscles";
+  static const String musclesGroup = "$baseUrl/musclesGroup";
 
   // Exercises
   static const String exercises = "$baseUrl/exercises";

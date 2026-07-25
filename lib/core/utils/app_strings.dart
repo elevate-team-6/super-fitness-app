@@ -117,6 +117,8 @@ abstract class AppStrings {
   static const String workouts = 'workouts';
   static const String chat = 'chat';
   static const String profile = 'profile';
+  static const String selectMuscleGroup = 'selectMuscleGroup';
+  static const String noMusclesFound = 'noMusclesFound';
   static const String exitConfirmation = 'exit_confirmation';
 
   // Signup
@@ -160,6 +162,29 @@ abstract class AppStrings {
   static const String extraActive = 'extraActive';
   static const String or = 'or';
 
+  // Food
+  static const String recommendationForYou = 'recommendationForYou';
+  static const String breakfast = 'breakfast';
+  static const String lunch = 'lunch';
+  static const String dinner = 'dinner';
+  static const String noMealsFound = 'noMealsFound';
+  static const String seeAll = 'seeAll';
+  static const String foodRecommendation = 'foodRecommendation';
+
+  // Meal details
+  static const String detailsFood = 'detailsFood';
+  static const String detailsFoodNotFound = 'detailsFoodNotFound';
+  static const String ingredients = 'ingredients';
+  static const String description = 'description';
+  static const String watchVideo = 'watchVideo';
+
+  // Workouts Feature
+  static const String findBestExercisesForYou = 'find_best_exercises_for_you';
+  static const String min30 = 'min_30';
+  static const String exerciseSingle = 'exercise_single';
+  static const String exercisePlural = 'exercise_plural';
+  static const String noExercisesFound = 'no_exercises_found';
+
   // Home
   static const String hi = 'hi';
   static const String letsStartYourDay = 'lets_start_your_day';
@@ -172,8 +197,6 @@ abstract class AppStrings {
   static const String upcomingFeature = 'upcoming_feature';
   static const String recommendationToday = 'recommendation_today';
   static const String upcomingWorkouts = 'upcoming_workouts';
-  static const String seeAll = 'see_all';
-  static const String recommendationForYou = 'recommendation_for_you';
   static const String popularTraining = 'popular_training';
   static const String tasksCount = 'tasks_count';
   static const String beginner = 'beginner';

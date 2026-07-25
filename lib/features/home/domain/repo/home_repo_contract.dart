@@ -1,8 +1,11 @@
 import '../../../../config/base_response/base_response.dart';
+import '../entities/details_food_entity.dart';
 import '../entities/exercise_entity.dart';
 import '../entities/home_user_entity.dart';
 import '../entities/level_entity.dart';
 import '../entities/meal_category_entity.dart';
+import '../entities/meal_entity.dart';
+import '../entities/meal_time.dart';
 import '../entities/muscle_entity.dart';
 
 abstract interface class HomeRepoContract {
@@ -31,4 +34,9 @@ abstract interface class HomeRepoContract {
     int? page,
     int? limit,
   });
+
+  Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(MealTime mealTime);
+
+  Future<BaseResponse<DetailsFoodEntity>> getDetailsFood(String id);
+
 }

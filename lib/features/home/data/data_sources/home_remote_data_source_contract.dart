@@ -1,7 +1,9 @@
 import '../../../../config/base_response/base_response.dart';
+import '../models/response/details_food_response_model.dart';
 import '../models/response/exercise_response.dart';
 import '../models/response/level_response.dart';
 import '../models/response/meal_category_response.dart';
+import '../models/response/meals_response_model.dart';
 import '../models/response/muscle_response.dart';
 import '../models/response/muscles_by_group_response.dart';
 
@@ -38,4 +40,9 @@ abstract interface class HomeRemoteDataSourceContract {
     int? page,
     int? limit,
   });
+
+  Future<BaseResponse<MealsResponseModel>> getMealsByCategory(String category);
+
+  Future<BaseResponse<DetailsFoodResponseModel>> getDetailsFood(String id);
+
 }

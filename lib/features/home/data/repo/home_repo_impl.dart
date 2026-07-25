@@ -6,25 +6,31 @@ import '../../../../config/base_response/base_response.dart';
 import '../../../../config/cache/secure_cache_helper.dart';
 import '../../../../core/utils/app_keys.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../domain/entities/details_food_entity.dart';
 import '../../domain/entities/exercise_entity.dart';
 import '../../domain/entities/home_user_entity.dart';
 import '../../domain/entities/level_entity.dart';
 import '../../domain/entities/meal_category_entity.dart';
+import '../../domain/entities/meal_entity.dart';
+import '../../domain/entities/meal_time.dart';
 import '../../domain/entities/muscle_entity.dart';
 import '../../domain/repo/home_repo_contract.dart';
 import '../data_sources/home_remote_data_source_contract.dart';
+import '../models/response/details_food_response_model.dart';
 import '../models/response/exercise_response.dart';
 import '../models/response/level_response.dart';
 import '../models/response/meal_category_response.dart';
+import '../models/response/meal_model.dart';
+import '../models/response/meals_response_model.dart';
 import '../models/response/muscle_response.dart';
 import '../models/response/muscles_by_group_response.dart';
 
 @LazySingleton(as: HomeRepoContract)
 class HomeRepoImpl implements HomeRepoContract {
-  final HomeRemoteDataSourceContract _homeRemoteDataSourceContract;
+  final HomeRemoteDataSourceContract _remoteDataSource;
   final SecureCacheHelper _secureCacheHelper;
 
-  HomeRepoImpl(this._homeRemoteDataSourceContract, this._secureCacheHelper);
+  HomeRepoImpl(this._remoteDataSource, this._secureCacheHelper);
 
   String get _currentLanguage => Intl.defaultLocale ?? AppConstants.englishCode;
 
@@ -50,7 +56,7 @@ class HomeRepoImpl implements HomeRepoContract {
     String? difficultyLevelId,
     int? limit,
   }) async {
-    final result = await _homeRemoteDataSourceContract.getRandomExercises(
+    final result = await _remoteDataSource.getRandomExercises(
       language: _currentLanguage,
       targetMuscleGroupId: targetMuscleGroupId,
       difficultyLevelId: difficultyLevelId,
@@ -69,7 +75,7 @@ class HomeRepoImpl implements HomeRepoContract {
 
   @override
   Future<BaseResponse<List<MuscleEntity>>> getMuscleGroups() async {
-    final result = await _homeRemoteDataSourceContract.getMuscleGroups(
+    final result = await _remoteDataSource.getMuscleGroups(
       language: _currentLanguage,
     );
 
@@ -85,7 +91,7 @@ class HomeRepoImpl implements HomeRepoContract {
 
   @override
   Future<BaseResponse<List<MuscleEntity>>> getRandomMuscles() async {
-    final result = await _homeRemoteDataSourceContract.getRandomMuscles(
+    final result = await _remoteDataSource.getRandomMuscles(
       language: _currentLanguage,
     );
 
@@ -103,7 +109,7 @@ class HomeRepoImpl implements HomeRepoContract {
   Future<BaseResponse<List<MuscleEntity>>> getMusclesByGroupId(
     String id,
   ) async {
-    final result = await _homeRemoteDataSourceContract.getMusclesByGroupId(
+    final result = await _remoteDataSource.getMusclesByGroupId(
       language: _currentLanguage,
       id: id,
     );
@@ -120,7 +126,7 @@ class HomeRepoImpl implements HomeRepoContract {
 
   @override
   Future<BaseResponse<List<LevelEntity>>> getLevels() async {
-    final result = await _homeRemoteDataSourceContract.getLevels(
+    final result = await _remoteDataSource.getLevels(
       language: _currentLanguage,
     );
 
@@ -136,7 +142,7 @@ class HomeRepoImpl implements HomeRepoContract {
 
   @override
   Future<BaseResponse<List<MealCategoryEntity>>> getMealsCategories() async {
-    final result = await _homeRemoteDataSourceContract.getMealsCategories();
+    final result = await _remoteDataSource.getMealsCategories();
 
     switch (result) {
       case SuccessBaseResponse<MealCategoryResponse>():
@@ -156,7 +162,7 @@ class HomeRepoImpl implements HomeRepoContract {
     int? page,
     int? limit,
   }) async {
-    final result = await _homeRemoteDataSourceContract.getAllExercises(
+    final result = await _remoteDataSource.getAllExercises(
       language: _currentLanguage,
       targetMuscleGroupId: targetMuscleGroupId,
       muscleId: muscleId,
@@ -173,5 +179,84 @@ class HomeRepoImpl implements HomeRepoContract {
       case ErrorBaseResponse<ExerciseResponse>():
         return ErrorBaseResponse(result.errorMessage);
     }
+  }
+
+  @override
+  Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(
+      MealTime mealTime,
+      ) async {
+    final responses = await Future.wait(
+      mealTime.categories.map(_remoteDataSource.getMealsByCategory),
+    );
+
+    final buckets = <List<MealModel>>[];
+    String? firstError;
+
+    for (final response in responses) {
+      switch (response) {
+        case SuccessBaseResponse<MealsResponseModel>():
+          final meals = response.data?.meals;
+          if (meals != null && meals.isNotEmpty) buckets.add(meals);
+
+        case ErrorBaseResponse<MealsResponseModel>():
+          firstError ??= response.errorMessage;
+      }
+    }
+
+    // Only fail when nothing came back at all — one dead category shouldn't
+    // blank out a meal time that has other categories behind it.
+    if (buckets.isEmpty) {
+      return firstError != null
+          ? ErrorBaseResponse(firstError)
+          : const SuccessBaseResponse(<MealEntity>[]);
+    }
+
+    return SuccessBaseResponse(_interleave(buckets));
+  }
+
+  @override
+  Future<BaseResponse<DetailsFoodEntity>> getDetailsFood(String id) async {
+    final response = await _remoteDataSource.getDetailsFood(id);
+
+    switch (response) {
+      case SuccessBaseResponse<DetailsFoodResponseModel>():
+        final meals = response.data?.meals;
+
+        // An unknown id comes back as `{"meals": null}` with a 200, so the
+        // empty case has to be turned into an error here rather than upstream.
+        if (meals == null || meals.isEmpty) {
+          return const ErrorBaseResponse(AppStrings.detailsFoodNotFound);
+        }
+
+        return SuccessBaseResponse(meals.first.toEntity());
+
+      case ErrorBaseResponse<DetailsFoodResponseModel>():
+        return ErrorBaseResponse(response.errorMessage);
+    }
+  }
+
+  /// Round-robins the categories so a multi-category meal time doesn't render
+  /// as "all the chicken, then all the pasta". Duplicate ids are dropped.
+  List<MealEntity> _interleave(List<List<MealModel>> buckets) {
+    final longest = buckets.fold<int>(
+      0,
+          (max, bucket) => bucket.length > max ? bucket.length : max,
+    );
+
+    final seenIds = <String>{};
+    final meals = <MealEntity>[];
+
+    for (var index = 0; index < longest; index++) {
+      for (final bucket in buckets) {
+        if (index >= bucket.length) continue;
+
+        final meal = bucket[index].toEntity();
+        if (meal.id.isEmpty || !seenIds.add(meal.id)) continue;
+
+        meals.add(meal);
+      }
+    }
+
+    return meals;
   }
 }
