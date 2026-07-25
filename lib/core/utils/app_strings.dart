@@ -177,4 +177,11 @@ abstract class AppStrings {
   static const String ingredients = 'ingredients';
   static const String description = 'description';
   static const String watchVideo = 'watchVideo';
+
+  // Workouts Feature
+  static const String findBestExercisesForYou = 'find_best_exercises_for_you';
+  static const String min30 = 'min_30';
+  static const String exerciseSingle = 'exercise_single';
+  static const String exercisePlural = 'exercise_plural';
+  static const String noExercisesFound = 'no_exercises_found';
 }

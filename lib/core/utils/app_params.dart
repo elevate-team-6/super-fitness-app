@@ -44,4 +44,8 @@ abstract class ApiParameters {
   // Meals query params
   static const String category = 'c';
   static const String mealId = 'i';
+
+  // Workouts
+  static const String primeMoverMuscleId = 'primeMoverMuscleId';
+  static const String difficultyLevelId = 'difficultyLevelId';
 }

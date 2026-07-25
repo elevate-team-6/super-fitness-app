@@ -1,8 +1,16 @@
 import 'package:super_fitness/config/base_response/base_response.dart';
-import '../models/response/muscle_groups_response.dart';
-import '../models/response/muscles_response.dart';
+import 'package:super_fitness/features/workouts/data/models/response/difficulty_levels_response.dart';
+import 'package:super_fitness/features/workouts/data/models/response/exercises_by_muscle_difficulty_response.dart';
 
-abstract class WorkoutRemoteDataSource {
+abstract interface class WorkoutRemoteDataSourceContract {
+  Future<BaseResponse<DifficultyLevelsResponse>>
+  getDifficultyLevelsByPrimeMover(String primeMoverMuscleId);
+
+  Future<BaseResponse<ExercisesByMuscleDifficultyResponse>>
+  getExercisesByMuscleDifficulty(
+    String primeMoverMuscleId,
+    String difficultyLevelId,
+  );
   Future<BaseResponse<MuscleGroupsResponse>> getMuscleGroups();
   Future<BaseResponse<MusclesResponse>> getMusclesByGroupId(String id);
 }
