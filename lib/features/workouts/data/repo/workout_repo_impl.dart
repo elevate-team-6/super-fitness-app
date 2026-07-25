@@ -3,8 +3,12 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/features/workouts/data/data_sources/workout_remote_data_source_contract.dart';
 import 'package:super_fitness/features/workouts/data/models/response/difficulty_levels_response.dart';
 import 'package:super_fitness/features/workouts/data/models/response/exercises_by_muscle_difficulty_response.dart';
+import 'package:super_fitness/features/workouts/data/models/response/muscle_groups_response.dart';
+import 'package:super_fitness/features/workouts/data/models/response/muscles_response.dart';
 import 'package:super_fitness/features/workouts/domain/entities/difficulty_level_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/muscle_group_entity.dart';
 import 'package:super_fitness/features/workouts/domain/repo/workout_repo_contract.dart';
 
 @Injectable(as: WorkoutRepoContract)
