@@ -30,8 +30,6 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
         _changeDifficulty(level);
       case RefreshExercises():
         _refresh();
-      case LoadMoreExercises():
-        _loadMore();
     }
   }
 
@@ -90,8 +88,6 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
         selectedDifficulty: level,
         exercises: [],
         isLoadingExercises: true,
-        hasReachedMax: false,
-        currentPage: 1,
         exercisesError: () => null,
       ),
     );
@@ -115,22 +111,16 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
     );
 
     switch (response) {
-      case SuccessBaseResponse<ExercisesEntity>():
-        final data = response.data;
-        final totalPages = data?.totalPages ?? 0;
-        final currentPage = data?.currentPage ?? 1;
+      case SuccessBaseResponse<List<ExerciseEntity>>():
+        final data = response.data ?? [];
 
         emit(
           state.copyWith(
             isRefreshing: false,
-            exercises: data?.exercises ?? [],
-            totalExercises: data?.totalExercises ?? 0,
-            totalPages: totalPages,
-            currentPage: currentPage,
-            hasReachedMax: currentPage >= totalPages,
+            exercises: data,
           ),
         );
-      case ErrorBaseResponse<ExercisesEntity>():
+      case ErrorBaseResponse<List<ExerciseEntity>>():
         emit(
           state.copyWith(
             isRefreshing: false,
@@ -141,53 +131,7 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
     }
   }
 
-  Future<void> _loadMore() async {
-    final muscleId = state.activePrimeMoverMuscleId;
-    final difficulty = state.selectedDifficulty;
 
-    if (muscleId == null ||
-        difficulty == null ||
-        state.isLoadingMore ||
-        state.isLoadingExercises ||
-        state.isRefreshing ||
-        state.hasReachedMax) {
-      return;
-    }
-
-    emit(state.copyWith(isLoadingMore: true, exercisesError: () => null));
-
-    final response = await _getExercisesByMuscleDifficultyUseCase(
-      primeMoverMuscleId: muscleId,
-      difficultyLevelId: difficulty.id,
-    );
-
-    switch (response) {
-      case SuccessBaseResponse<ExercisesEntity>():
-        final data = response.data;
-        final newExercises = data?.exercises ?? [];
-        final totalPages = data?.totalPages ?? state.totalPages;
-        final currentPage = data?.currentPage ?? (state.currentPage + 1);
-
-        emit(
-          state.copyWith(
-            isLoadingMore: false,
-            exercises: [...state.exercises, ...newExercises],
-            totalExercises: data?.totalExercises ?? state.totalExercises,
-            totalPages: totalPages,
-            currentPage: currentPage,
-            hasReachedMax: currentPage >= totalPages,
-          ),
-        );
-      case ErrorBaseResponse<ExercisesEntity>():
-        emit(
-          state.copyWith(
-            isLoadingMore: false,
-            exercisesError: () => response.errorMessage.tr(),
-          ),
-        );
-        emitUiEvent(DisplayErrorEvent(response.errorMessage.tr()));
-    }
-  }
 
   Future<void> _loadExercises() async {
     final muscleId = state.activePrimeMoverMuscleId;
@@ -203,22 +147,16 @@ class ExerciseCubit extends BaseCubit<ExerciseState, BaseUiEvent> {
     );
 
     switch (response) {
-      case SuccessBaseResponse<ExercisesEntity>():
-        final data = response.data;
-        final totalPages = data?.totalPages ?? 0;
-        final currentPage = data?.currentPage ?? 1;
+      case SuccessBaseResponse<List<ExerciseEntity>>():
+        final data = response.data ?? [];
 
         emit(
           state.copyWith(
             isLoadingExercises: false,
-            exercises: data?.exercises ?? [],
-            totalExercises: data?.totalExercises ?? 0,
-            totalPages: totalPages,
-            currentPage: currentPage,
-            hasReachedMax: currentPage >= totalPages,
+            exercises: data,
           ),
         );
-      case ErrorBaseResponse<ExercisesEntity>():
+      case ErrorBaseResponse<List<ExerciseEntity>>():
         emit(
           state.copyWith(
             isLoadingExercises: false,

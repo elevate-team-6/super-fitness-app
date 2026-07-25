@@ -6,7 +6,7 @@ abstract interface class WorkoutRepoContract {
   Future<BaseResponse<List<DifficultyLevelEntity>>>
   getDifficultyLevelsByPrimeMover(String primeMoverMuscleId);
 
-  Future<BaseResponse<ExercisesEntity>> getExercisesByMuscleDifficulty(
+  Future<BaseResponse<List<ExerciseEntity>>> getExercisesByMuscleDifficulty(
     String primeMoverMuscleId,
     String difficultyLevelId,
   );

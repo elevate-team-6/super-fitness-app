@@ -9,7 +9,7 @@ class GetExercisesByMuscleDifficultyUseCase {
 
   GetExercisesByMuscleDifficultyUseCase(this._repository);
 
-  Future<BaseResponse<ExercisesEntity>> call({
+  Future<BaseResponse<List<ExerciseEntity>>> call({
     required String primeMoverMuscleId,
     required String difficultyLevelId,
   }) {

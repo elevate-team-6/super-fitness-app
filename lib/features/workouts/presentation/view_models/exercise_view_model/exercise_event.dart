@@ -30,6 +30,4 @@ class RefreshExercises extends ExerciseEvents {
   const RefreshExercises();
 }
 
-class LoadMoreExercises extends ExerciseEvents {
-  const LoadMoreExercises();
-}
+

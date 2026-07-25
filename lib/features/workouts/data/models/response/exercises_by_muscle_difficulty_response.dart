@@ -25,13 +25,8 @@ class ExercisesByMuscleDifficultyResponse extends Equatable {
     Map<String, dynamic> json,
   ) => _$ExercisesByMuscleDifficultyResponseFromJson(json);
 
-  ExercisesEntity toEntity() => ExercisesEntity(
-    message: message ?? '',
-    totalExercises: totalExercises ?? 0,
-    totalPages: totalPages ?? 0,
-    currentPage: currentPage ?? 1,
-    exercises: exercises?.map((e) => e.toEntity()).toList() ?? [],
-  );
+  List<ExerciseEntity> toEntity() =>
+      exercises?.map((e) => e.toEntity()).toList() ?? [];
 
   @override
   List<Object?> get props => [

@@ -10,7 +10,6 @@ import 'package:super_fitness/features/workouts/presentation/view_models/exercis
 import 'package:super_fitness/features/workouts/presentation/view_models/exercise_view_model/exercise_state.dart';
 import 'package:super_fitness/features/workouts/presentation/widgets/exercise_card.dart';
 import 'package:super_fitness/features/workouts/presentation/widgets/exercise_skeleton.dart';
-import 'package:super_fitness/features/workouts/presentation/widgets/pagination_loader.dart';
 
 class ExercisesSection extends StatefulWidget {
   const ExercisesSection({super.key});
@@ -20,50 +19,13 @@ class ExercisesSection extends StatefulWidget {
 }
 
 class _ExercisesSectionState extends State<ExercisesSection> {
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController
-      ..removeListener(_onScroll)
-      ..dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.offset;
-    const threshold = 200.0;
-
-    if (currentScroll >= maxScroll - threshold) {
-      final state = context.read<ExerciseCubit>().state;
-
-      if (!state.isLoadingMore &&
-          !state.isLoadingExercises &&
-          !state.isRefreshing &&
-          !state.hasReachedMax) {
-        context.read<ExerciseCubit>().doIntent(const LoadMoreExercises());
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExerciseCubit, ExerciseState>(
       buildWhen: (previous, current) =>
           previous.isLoadingLevels != current.isLoadingLevels ||
           previous.isLoadingExercises != current.isLoadingExercises ||
           previous.isRefreshing != current.isRefreshing ||
-          previous.exercises != current.exercises ||
-          previous.isLoadingMore != current.isLoadingMore,
+          previous.exercises != current.exercises,
       builder: (context, state) {
         final isLoading = state.isLoadingLevels || state.isLoadingExercises;
 
@@ -90,15 +52,9 @@ class _ExercisesSectionState extends State<ExercisesSection> {
             );
           },
           child: ListView.builder(
-            controller: _scrollController,
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            itemCount: state.exercises.length + (state.isLoadingMore ? 1 : 0),
-
+            itemCount: state.exercises.length,
             itemBuilder: (context, index) {
-              if (index == state.exercises.length) {
-                return const PaginationLoader();
-              }
-
               return ExerciseCard(exercise: state.exercises[index]);
             },
           ),

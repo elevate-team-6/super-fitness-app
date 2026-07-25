@@ -80,7 +80,7 @@ class _ExerciseScreenState extends State<ExerciseScreen>
         subtitle: AppStrings.findBestExercisesForYou.tr(),
         onBackPressed: () => Navigator.pop(context),
         bottomContent: BlocSelector<ExerciseCubit, ExerciseState, int>(
-          selector: (state) => state.totalExercises,
+          selector: (state) => state.exercises.length,
           builder: (context, total) {
             return Column(
               children: [

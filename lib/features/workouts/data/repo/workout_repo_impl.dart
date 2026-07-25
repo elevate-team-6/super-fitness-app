@@ -29,7 +29,7 @@ class WorkoutRepoImpl implements WorkoutRepoContract {
   }
 
   @override
-  Future<BaseResponse<ExercisesEntity>> getExercisesByMuscleDifficulty(
+  Future<BaseResponse<List<ExerciseEntity>>> getExercisesByMuscleDifficulty(
     String primeMoverMuscleId,
     String difficultyLevelId,
   ) async {
@@ -38,7 +38,7 @@ class WorkoutRepoImpl implements WorkoutRepoContract {
 
     switch (response) {
       case SuccessBaseResponse<ExercisesByMuscleDifficultyResponse>():
-        final entity = response.data?.toEntity();
+        final entity = response.data?.toEntity() ?? [];
         return SuccessBaseResponse(entity);
       case ErrorBaseResponse<ExercisesByMuscleDifficultyResponse>():
         return ErrorBaseResponse(response.errorMessage);
