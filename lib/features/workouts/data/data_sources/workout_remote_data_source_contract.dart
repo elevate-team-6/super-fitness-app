@@ -11,4 +11,6 @@ abstract interface class WorkoutRemoteDataSourceContract {
     String primeMoverMuscleId,
     String difficultyLevelId,
   );
+  Future<BaseResponse<MuscleGroupsResponse>> getMuscleGroups();
+  Future<BaseResponse<MusclesResponse>> getMusclesByGroupId(String id);
 }

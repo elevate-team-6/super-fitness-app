@@ -94,7 +94,7 @@
   "passwordResetSuccessfully": "تم إعادة تعيين كلمة السر بنجاح",
   "otpCodeInvalid": "كود التحقق غير صحيح",
   "registerFailed ": "فشل التسجيل",
-  "registerSuccess" : "تم التسجيل بنجاح",
+  "registerSuccess": "تم التسجيل بنجاح",
   "loginWelcome": "مرحباً بك،\nأهلاً بك مجدداً",
   "login": "تسجيل الدخول",
   "email": "البريد الإلكتروني",
@@ -136,5 +136,17 @@
   "min_30": "٣٠ دقيقة",
   "exercise_single": "تمرين",
   "exercise_plural": "تمارين",
-  "no_exercises_found": "لم يتم العثور على تمارين"
+  "no_exercises_found": "لم يتم العثور على تمارين",
+  "recommendationForYou": "مقترح لك",
+  "breakfast": "الفطار",
+  "lunch": "الغداء",
+  "dinner": "العشاء",
+  "noMealsFound": "لا توجد وجبات",
+  "seeAll": "عرض الكل",
+  "foodRecommendation": "وجبات مقترحة",
+  "detailsFood": "تفاصيل الوجبة",
+  "detailsFoodNotFound": "لم نتمكن من العثور على هذه الوجبة",
+  "ingredients": "المكونات",
+  "description": "الوصف",
+  "watchVideo": "مشاهدة الفيديو"
 }

@@ -10,4 +10,6 @@ abstract interface class WorkoutRepoContract {
     String primeMoverMuscleId,
     String difficultyLevelId,
   );
+  Future<BaseResponse<List<MuscleGroupEntity>>> getMuscleGroups();
+  Future<BaseResponse<List<MuscleEntity>>> getMusclesByGroupId(String id);
 }

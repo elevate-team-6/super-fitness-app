@@ -33,4 +33,14 @@ class WorkoutRemoteDataSourceImpl implements WorkoutRemoteDataSourceContract {
       ),
     );
   }
+
+  @override
+  Future<BaseResponse<MuscleGroupsResponse>> getMuscleGroups() {
+    return ErrorHandler.handleApiCall(() => _apiClient.getMuscleGroups());
+  }
+
+  @override
+  Future<BaseResponse<MusclesResponse>> getMusclesByGroupId(String id) {
+    return ErrorHandler.handleApiCall(() => _apiClient.getMusclesByGroupId(id));
+  }
 }

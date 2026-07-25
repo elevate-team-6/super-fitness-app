@@ -1,9 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:super_fitness/features/home/presentation/widgets/recommendation_section.dart';
 
 import '../../../../core/utils/app_assets.dart';
-import '../../../../core/utils/app_strings.dart';
-import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/app_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,8 +12,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       backgroundImage: AppImages.homeBackground,
-      body: Center(
-        child: Text(AppStrings.explore.tr(), style: AppTextStyles.white20500),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [RecommendationSection()],
+        ),
       ),
     );
   }
