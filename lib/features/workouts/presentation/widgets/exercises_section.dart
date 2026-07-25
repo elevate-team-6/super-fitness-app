@@ -47,7 +47,7 @@ class ExercisesSection extends StatelessWidget {
             child: ListView.separated(
               padding: EdgeInsets.zero,
               itemCount: state.exercises.length,
-              separatorBuilder: (_, __) => Divider(
+              separatorBuilder: (_, _) => Divider(
                 height: 1,
                 thickness: 1,
                 color: AppColors.white.withValues(alpha: .08),
@@ -71,8 +71,8 @@ class ExercisesSection extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       itemCount: 5,
-      separatorBuilder: (_, __) => SizedBox(height: 4.h),
-      itemBuilder: (_, __) => const ExerciseSkeleton(),
+      separatorBuilder: (_, _) => SizedBox(height: 4.h),
+      itemBuilder: (_, _) => const ExerciseSkeleton(),
     );
   }
 }
