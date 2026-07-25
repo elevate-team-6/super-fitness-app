@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/base_ui_handler/ui_event_handler_mixin.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
@@ -145,7 +146,19 @@ class _MusclesGrid extends StatelessWidget {
         return CustomGridView(
           itemCount: muscles.length,
           itemBuilder: (context, index) {
-            return MuscleGridItem(muscle: muscles[index], onTap: () {});
+            final muscle = muscles[index];
+            return MuscleGridItem(
+              muscle: muscle,
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                  AppRoutes.exerciseScreen,
+                  arguments: ExerciseArgs(
+                    primeMoverMuscleId: muscle.id,
+                    primeMoverMuscleName: muscle.name,
+                  ),
+                );
+              },
+            );
           },
         );
       },
