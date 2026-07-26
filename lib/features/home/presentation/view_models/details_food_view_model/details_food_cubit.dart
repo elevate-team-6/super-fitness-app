@@ -3,11 +3,12 @@ import 'package:super_fitness/config/base_cubit/base_cubit.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/youtube_url.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/use_cases/get_details_food_use_case.dart';
-import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
-import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_state.dart';
+import 'package:super_fitness/features/home/presentation/view_models/details_food_view_model/details_food_event.dart';
+import 'package:super_fitness/features/home/presentation/view_models/details_food_view_model/details_food_state.dart';
 
 @injectable
 class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
@@ -19,7 +20,7 @@ class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
   void doIntent(DetailsFoodEvents event) {
     switch (event) {
       case LoadDetailsFoodEvent():
-        _loadDetails();
+        _loadDetails(event.mealId);
       case OpenMealVideoEvent():
         _openVideo();
     }
@@ -30,13 +31,15 @@ class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
     if (url != null) emitUiEvent(OpenUrlEvent(url));
   }
 
-  /// Called by the route right after construction, before the first intent.
-  void setMealId(String id) => emit(state.copyWith(mealId: id));
+  Future<void> _loadDetails(String mealId) async {
+    emit(
+      state.copyWith(
+        mealId: mealId,
+        detailsState: const BaseState(isLoading: true),
+      ),
+    );
 
-  Future<void> _loadDetails() async {
-    emit(state.copyWith(detailsState: const BaseState(isLoading: true)));
-
-    final result = await _getDetailsFoodUseCase(state.mealId);
+    final result = await _getDetailsFoodUseCase(mealId);
 
     if (isClosed) return;
 
@@ -44,10 +47,14 @@ class DetailsFoodCubit extends BaseCubit<DetailsFoodState, BaseUiEvent> {
       case SuccessBaseResponse<DetailsFoodEntity>():
         final details = result.data;
 
-        // A success with no payload can't be rendered, so downgrade it to an
-        // error; the empty message lets the screen fall back to its default.
         if (details == null) {
-          emit(state.copyWith(detailsState: const BaseState(errorMessage: '')));
+          emit(
+            state.copyWith(
+              detailsState: const BaseState(
+                errorMessage: AppStrings.detailsFoodNotFound,
+              ),
+            ),
+          );
           return;
         }
 

@@ -8,9 +8,9 @@ import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.da
 import 'package:super_fitness/features/workouts/domain/entities/muscle_group_entity.dart';
 import 'package:super_fitness/features/workouts/domain/use_cases/get_muscle_groups_use_case.dart';
 import 'package:super_fitness/features/workouts/domain/use_cases/get_muscles_by_group_id_use_case.dart';
-import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
-import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_events.dart';
-import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_state.dart';
+import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
+import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_events.dart';
+import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_state.dart';
 
 import 'workouts_cubit_test.mocks.dart';
 

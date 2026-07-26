@@ -7,10 +7,14 @@ sealed class DetailsFoodEvents extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Fetches the meal the screen was opened with — also what the retry button
-/// fires, so it carries no id of its own.
+/// Fetches the meal the screen was opened with.
 class LoadDetailsFoodEvent extends DetailsFoodEvents {
-  const LoadDetailsFoodEvent();
+  final String mealId;
+
+  const LoadDetailsFoodEvent(this.mealId);
+
+  @override
+  List<Object?> get props => [mealId];
 }
 
 /// Fired when the user taps the play button — the cubit resolves the loaded
