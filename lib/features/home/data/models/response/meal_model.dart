@@ -28,7 +28,5 @@ class MealModel {
     id: idMeal ?? '',
     name: strMeal ?? '',
     thumbnail: strMealThumb ?? '',
-    area: strArea,
-    country: strCountry,
   );
 }

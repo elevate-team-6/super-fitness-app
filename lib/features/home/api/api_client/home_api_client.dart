@@ -1,16 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
-
 import 'package:super_fitness/core/utils/app_end_points.dart';
-import '../../../../core/utils/app_params.dart';
 import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/exercise_response.dart';
 import 'package:super_fitness/features/home/data/models/response/level_response.dart';
-import '../../data/models/response/meal_category_response.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/muscle_response.dart';
 import 'package:super_fitness/features/home/data/models/response/muscles_by_group_response.dart';
+
+import '../../../../core/utils/app_params.dart';
+import '../../data/models/response/meal_category_response.dart';
 
 part 'home_api_client.g.dart';
 
@@ -24,10 +24,10 @@ abstract class HomeApiClient {
   // Internal Backend Endpoints
   // ===========================================================================
 
-  @GET(AppEndPoints.randomExercises)
+  @GET(AppEndPoints.exercisesByMuscleDifficulty)
   Future<ExerciseResponse> getRandomExercises({
     @Header(ApiParameters.acceptLanguage) required String language,
-    @Query(ApiParameters.targetMuscleGroupId) String? targetMuscleGroupId,
+    @Query(ApiParameters.primeMoverMuscleId) String? primeMoverMuscleId,
     @Query(ApiParameters.difficultyLevelId) String? difficultyLevelId,
     @Query(ApiParameters.limit) int? limit,
   });
@@ -56,30 +56,13 @@ abstract class HomeApiClient {
   @GET(AppEndPoints.mealCategories)
   Future<MealCategoryResponse> getMealsCategories();
 
-  @GET(AppEndPoints.exercises)
-  Future<ExerciseResponse> getAllExercises({
-    @Header(ApiParameters.acceptLanguage) required String language,
-    @Query(ApiParameters.targetMuscleGroupId) String? targetMuscleGroupId,
-    @Query(ApiParameters.muscleId) String? muscleId,
-    @Query(ApiParameters.difficultyLevelId) String? difficultyLevelId,
-    @Query(ApiParameters.page) int? page,
-    @Query(ApiParameters.limit) int? limit,
-  });
-
-  // ===========================================================================
-  // External (TheMealDB) Endpoints
-  // يتم وضع Full URL ليقوم Retrofit بتجاوز الـ baseUrl الأساسي للكلاس تلقائيًا
-  // ===========================================================================
-
-  @GET("${AppEndPoints.mealDbBaseUrl}${AppEndPoints.mealsByCategory}")
+  @GET(AppEndPoints.mealsByCategory)
   Future<MealsResponseModel> getMealsByCategory(
-      @Query(ApiParameters.category) String category,
-      );
+    @Query(ApiParameters.category) String category,
+  );
 
-  /// Full record for a single meal — instructions, video and ingredients,
-  /// none of which the category listing returns.
-  @GET("${AppEndPoints.mealDbBaseUrl}${AppEndPoints.detailsFood}")
+  @GET(AppEndPoints.detailsFood)
   Future<DetailsFoodResponseModel> getDetailsFood(
-      @Query(ApiParameters.mealId) String id,
-      );
+    @Query(ApiParameters.mealId) String id,
+  );
 }

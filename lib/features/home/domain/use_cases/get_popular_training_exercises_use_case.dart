@@ -40,18 +40,20 @@ class GetPopularTrainingExercisesUseCase {
         final randomLevelId = levels[random.nextInt(levels.length)].id;
         final randomMuscleId = muscles[random.nextInt(muscles.length)].id;
 
-        // Try filtering by 'targetMuscleGroupId' which is a known valid key in this API
-        final exercisesResult = await _repo.getAllExercises(
+        // Try filtering by 'primeMoverMuscleId' which is a known valid key in this API
+        final exercisesResult = await _repo.getRandomExercises(
+          primeMoverMuscleId: randomMuscleId,
           difficultyLevelId: randomLevelId,
-          muscleId: randomMuscleId,
           limit: 5, // Request more to increase chance of variety
         );
 
         if (exercisesResult is SuccessBaseResponse<List<ExerciseEntity>>) {
           final fetched = exercisesResult.data ?? [];
           for (final exercise in fetched) {
-            if (uniqueExercises.length < 3) {
+            // Check if we already have this exercise, and only add ONE per level selection
+            if (!uniqueExercises.containsKey(exercise.id)) {
               uniqueExercises[exercise.id] = exercise;
+              break; // Found one for this random level, move to the next random level selection
             }
           }
         }

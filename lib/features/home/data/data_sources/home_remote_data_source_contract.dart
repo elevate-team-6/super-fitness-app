@@ -10,7 +10,7 @@ import '../models/response/muscles_by_group_response.dart';
 abstract interface class HomeRemoteDataSourceContract {
   Future<BaseResponse<ExerciseResponse>> getRandomExercises({
     required String language,
-    String? targetMuscleGroupId,
+    String? primeMoverMuscleId,
     String? difficultyLevelId,
     int? limit,
   });
@@ -32,17 +32,7 @@ abstract interface class HomeRemoteDataSourceContract {
 
   Future<BaseResponse<MealCategoryResponse>> getMealsCategories();
 
-  Future<BaseResponse<ExerciseResponse>> getAllExercises({
-    required String language,
-    String? targetMuscleGroupId,
-    String? muscleId,
-    String? difficultyLevelId,
-    int? page,
-    int? limit,
-  });
-
   Future<BaseResponse<MealsResponseModel>> getMealsByCategory(String category);
 
   Future<BaseResponse<DetailsFoodResponseModel>> getDetailsFood(String id);
-
 }

@@ -21,14 +21,14 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSourceContract {
   @override
   Future<BaseResponse<ExerciseResponse>> getRandomExercises({
     required String language,
-    String? targetMuscleGroupId,
+    String? primeMoverMuscleId,
     String? difficultyLevelId,
     int? limit,
   }) {
     return ErrorHandler.handleApiCall(
       () => _apiClient.getRandomExercises(
         language: language,
-        targetMuscleGroupId: targetMuscleGroupId,
+        primeMoverMuscleId: primeMoverMuscleId,
         difficultyLevelId: difficultyLevelId,
         limit: limit,
       ),
@@ -76,30 +76,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSourceContract {
   }
 
   @override
-  Future<BaseResponse<ExerciseResponse>> getAllExercises({
-    required String language,
-    String? targetMuscleGroupId,
-    String? muscleId,
-    String? difficultyLevelId,
-    int? page,
-    int? limit,
-  }) {
-    return ErrorHandler.handleApiCall(
-      () => _apiClient.getAllExercises(
-        language: language,
-        targetMuscleGroupId: targetMuscleGroupId,
-        muscleId: muscleId,
-        difficultyLevelId: difficultyLevelId,
-        page: page,
-        limit: limit,
-      ),
-    );
-  }
-
-  @override
   Future<BaseResponse<MealsResponseModel>> getMealsByCategory(String category) {
     return ErrorHandler.handleApiCall(
-          () => _apiClient.getMealsByCategory(category),
+      () => _apiClient.getMealsByCategory(category),
     );
   }
 

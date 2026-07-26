@@ -12,7 +12,6 @@ import '../../domain/entities/home_user_entity.dart';
 import '../../domain/entities/level_entity.dart';
 import '../../domain/entities/meal_category_entity.dart';
 import '../../domain/entities/meal_entity.dart';
-import '../../domain/entities/meal_time.dart';
 import '../../domain/entities/muscle_entity.dart';
 import '../../domain/repo/home_repo_contract.dart';
 import '../data_sources/home_remote_data_source_contract.dart';
@@ -20,7 +19,6 @@ import '../models/response/details_food_response_model.dart';
 import '../models/response/exercise_response.dart';
 import '../models/response/level_response.dart';
 import '../models/response/meal_category_response.dart';
-import '../models/response/meal_model.dart';
 import '../models/response/meals_response_model.dart';
 import '../models/response/muscle_response.dart';
 import '../models/response/muscles_by_group_response.dart';
@@ -52,13 +50,13 @@ class HomeRepoImpl implements HomeRepoContract {
 
   @override
   Future<BaseResponse<List<ExerciseEntity>>> getRandomExercises({
-    String? targetMuscleGroupId,
+    String? primeMoverMuscleId,
     String? difficultyLevelId,
     int? limit,
   }) async {
     final result = await _remoteDataSource.getRandomExercises(
       language: _currentLanguage,
-      targetMuscleGroupId: targetMuscleGroupId,
+      primeMoverMuscleId: primeMoverMuscleId,
       difficultyLevelId: difficultyLevelId,
       limit: limit,
     );
@@ -155,63 +153,19 @@ class HomeRepoImpl implements HomeRepoContract {
   }
 
   @override
-  Future<BaseResponse<List<ExerciseEntity>>> getAllExercises({
-    String? targetMuscleGroupId,
-    String? muscleId,
-    String? difficultyLevelId,
-    int? page,
-    int? limit,
-  }) async {
-    final result = await _remoteDataSource.getAllExercises(
-      language: _currentLanguage,
-      targetMuscleGroupId: targetMuscleGroupId,
-      muscleId: muscleId,
-      difficultyLevelId: difficultyLevelId,
-      page: page,
-      limit: limit,
-    );
+  Future<BaseResponse<List<MealEntity>>> getMealsByCategory(
+    String category,
+  ) async {
+    final result = await _remoteDataSource.getMealsByCategory(category);
 
     switch (result) {
-      case SuccessBaseResponse<ExerciseResponse>():
+      case SuccessBaseResponse<MealsResponseModel>():
         return SuccessBaseResponse(
-          result.data?.exercises?.map((e) => e.toEntity()).toList() ?? [],
+          result.data?.meals?.map((e) => e.toEntity()).toList() ?? [],
         );
-      case ErrorBaseResponse<ExerciseResponse>():
+      case ErrorBaseResponse<MealsResponseModel>():
         return ErrorBaseResponse(result.errorMessage);
     }
-  }
-
-  @override
-  Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(
-      MealTime mealTime,
-      ) async {
-    final responses = await Future.wait(
-      mealTime.categories.map(_remoteDataSource.getMealsByCategory),
-    );
-
-    final buckets = <List<MealModel>>[];
-    String? firstError;
-
-    for (final response in responses) {
-      switch (response) {
-        case SuccessBaseResponse<MealsResponseModel>():
-          final meals = response.data?.meals;
-          if (meals != null && meals.isNotEmpty) buckets.add(meals);
-
-        case ErrorBaseResponse<MealsResponseModel>():
-          firstError ??= response.errorMessage;
-      }
-    }
-
-    // Only fail when nothing came back at all — one dead category shouldn't
-    // blank out a meal time that has other categories behind it.
-    if (buckets.isEmpty) {
-      return firstError != null
-          ? ErrorBaseResponse(firstError)
-          : const SuccessBaseResponse(<MealEntity>[]);
-    }
-
-    return SuccessBaseResponse(_interleave(buckets));
   }
 
   @override
@@ -233,30 +187,5 @@ class HomeRepoImpl implements HomeRepoContract {
       case ErrorBaseResponse<DetailsFoodResponseModel>():
         return ErrorBaseResponse(response.errorMessage);
     }
-  }
-
-  /// Round-robins the categories so a multi-category meal time doesn't render
-  /// as "all the chicken, then all the pasta". Duplicate ids are dropped.
-  List<MealEntity> _interleave(List<List<MealModel>> buckets) {
-    final longest = buckets.fold<int>(
-      0,
-          (max, bucket) => bucket.length > max ? bucket.length : max,
-    );
-
-    final seenIds = <String>{};
-    final meals = <MealEntity>[];
-
-    for (var index = 0; index < longest; index++) {
-      for (final bucket in buckets) {
-        if (index >= bucket.length) continue;
-
-        final meal = bucket[index].toEntity();
-        if (meal.id.isEmpty || !seenIds.add(meal.id)) continue;
-
-        meals.add(meal);
-      }
-    }
-
-    return meals;
   }
 }

@@ -5,14 +5,13 @@ import '../entities/home_user_entity.dart';
 import '../entities/level_entity.dart';
 import '../entities/meal_category_entity.dart';
 import '../entities/meal_entity.dart';
-import '../entities/meal_time.dart';
 import '../entities/muscle_entity.dart';
 
 abstract interface class HomeRepoContract {
   Future<BaseResponse<HomeUserEntity>> getCachedUserData();
 
   Future<BaseResponse<List<ExerciseEntity>>> getRandomExercises({
-    String? targetMuscleGroupId,
+    String? primeMoverMuscleId,
     String? difficultyLevelId,
     int? limit,
   });
@@ -27,16 +26,7 @@ abstract interface class HomeRepoContract {
 
   Future<BaseResponse<List<MealCategoryEntity>>> getMealsCategories();
 
-  Future<BaseResponse<List<ExerciseEntity>>> getAllExercises({
-    String? targetMuscleGroupId,
-    String? muscleId,
-    String? difficultyLevelId,
-    int? page,
-    int? limit,
-  });
-
-  Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(MealTime mealTime);
+  Future<BaseResponse<List<MealEntity>>> getMealsByCategory(String category);
 
   Future<BaseResponse<DetailsFoodEntity>> getDetailsFood(String id);
-
 }
