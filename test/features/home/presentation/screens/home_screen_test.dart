@@ -56,6 +56,9 @@ void main() {
 
   group('HomeScreen Senior Level Tests', () {
     void setupOverflowHandler() {
+      final originalOnError = FlutterError.onError;
+      addTearDown(() => FlutterError.onError = originalOnError);
+
       FlutterError.onError = (details) {
         if (details.exception.toString().contains('overflowed')) return;
         FlutterError.presentError(details);

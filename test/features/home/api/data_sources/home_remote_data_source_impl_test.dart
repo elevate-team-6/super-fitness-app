@@ -47,7 +47,7 @@ void main() {
         when(
           mockApiClient.getRandomExercises(
             language: anyNamed('language'),
-            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            primeMoverMuscleId: anyNamed('primeMoverMuscleId'),
             difficultyLevelId: anyNamed('difficultyLevelId'),
             limit: anyNamed('limit'),
           ),
@@ -70,7 +70,7 @@ void main() {
         when(
           mockApiClient.getRandomExercises(
             language: anyNamed('language'),
-            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            primeMoverMuscleId: anyNamed('primeMoverMuscleId'),
             difficultyLevelId: anyNamed('difficultyLevelId'),
             limit: anyNamed('limit'),
           ),
@@ -123,31 +123,6 @@ void main() {
         // assert
         expect(result, isA<SuccessBaseResponse<MealCategoryResponse>>());
         verify(mockApiClient.getMealsCategories());
-      },
-    );
-  });
-
-  group('getAllExercises', () {
-    const tExerciseResponse = ExerciseResponse(exercises: []);
-
-    test(
-      'should return SuccessBaseResponse when API call is successful',
-      () async {
-        // arrange
-        when(
-          mockApiClient.getAllExercises(
-            language: anyNamed('language'),
-            page: anyNamed('page'),
-            limit: anyNamed('limit'),
-          ),
-        ).thenAnswer((_) async => tExerciseResponse);
-
-        // act
-        final result = await dataSource.getAllExercises(language: tLanguage);
-
-        // assert
-        expect(result, isA<SuccessBaseResponse<ExerciseResponse>>());
-        verify(mockApiClient.getAllExercises(language: tLanguage));
       },
     );
   });

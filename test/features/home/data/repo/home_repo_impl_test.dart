@@ -11,7 +11,6 @@ import 'package:super_fitness/features/home/data/models/response/details_food_re
 import 'package:super_fitness/features/home/data/models/response/exercise_response.dart';
 import 'package:super_fitness/features/home/data/models/response/level_response.dart';
 import 'package:super_fitness/features/home/data/models/response/meal_category_response.dart';
-import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
 import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
 import 'package:super_fitness/features/home/data/models/response/muscle_response.dart';
 import 'package:super_fitness/features/home/data/models/response/muscles_by_group_response.dart';
@@ -22,7 +21,6 @@ import 'package:super_fitness/features/home/domain/entities/home_user_entity.dar
 import 'package:super_fitness/features/home/domain/entities/level_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_category_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 import 'package:super_fitness/features/home/domain/entities/muscle_entity.dart';
 
 import 'home_repo_impl_test.mocks.dart';
@@ -61,12 +59,6 @@ void main() {
     repo = HomeRepoImpl(mockRemoteDataSource, mockCacheHelper);
   });
 
-  MealsResponseModel mealsOf(List<String> ids) => MealsResponseModel(
-        meals: ids
-            .map((id) => MealModel(idMeal: id, strMeal: 'Meal $id'))
-            .toList(),
-      );
-
   group('getCachedUserData', () {
     test(
       'should return SuccessBaseResponse with UserEntity when cache has data',
@@ -101,7 +93,7 @@ void main() {
         when(
           mockRemoteDataSource.getRandomExercises(
             language: anyNamed('language'),
-            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+            primeMoverMuscleId: anyNamed('primeMoverMuscleId'),
             difficultyLevelId: anyNamed('difficultyLevelId'),
             limit: anyNamed('limit'),
           ),
@@ -112,12 +104,14 @@ void main() {
 
         // assert
         expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
-        verify(mockRemoteDataSource.getRandomExercises(
-          language: anyNamed('language'),
-          targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-          difficultyLevelId: anyNamed('difficultyLevelId'),
-          limit: anyNamed('limit'),
-        )).called(1);
+        verify(
+          mockRemoteDataSource.getRandomExercises(
+            language: anyNamed('language'),
+            primeMoverMuscleId: anyNamed('primeMoverMuscleId'),
+            difficultyLevelId: anyNamed('difficultyLevelId'),
+            limit: anyNamed('limit'),
+          ),
+        ).called(1);
       },
     );
 
@@ -126,7 +120,7 @@ void main() {
       when(
         mockRemoteDataSource.getRandomExercises(
           language: anyNamed('language'),
-          targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
+          primeMoverMuscleId: anyNamed('primeMoverMuscleId'),
           difficultyLevelId: anyNamed('difficultyLevelId'),
           limit: anyNamed('limit'),
         ),
@@ -156,8 +150,9 @@ void main() {
 
         // assert
         expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
-        verify(mockRemoteDataSource.getMuscleGroups(language: anyNamed('language')))
-            .called(1);
+        verify(
+          mockRemoteDataSource.getMuscleGroups(language: anyNamed('language')),
+        ).called(1);
       },
     );
   });
@@ -199,17 +194,20 @@ void main() {
             id: anyNamed('id'),
           ),
         ).thenAnswer(
-            (_) async => const SuccessBaseResponse(tMusclesByGroupResponse));
+          (_) async => const SuccessBaseResponse(tMusclesByGroupResponse),
+        );
 
         // act
         final result = await repo.getMusclesByGroupId('1');
 
         // assert
         expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
-        verify(mockRemoteDataSource.getMusclesByGroupId(
-          language: anyNamed('language'),
-          id: '1',
-        )).called(1);
+        verify(
+          mockRemoteDataSource.getMusclesByGroupId(
+            language: anyNamed('language'),
+            id: '1',
+          ),
+        ).called(1);
       },
     );
   });
@@ -230,8 +228,9 @@ void main() {
 
         // assert
         expect(result, isA<SuccessBaseResponse<List<LevelEntity>>>());
-        verify(mockRemoteDataSource.getLevels(language: anyNamed('language')))
-            .called(1);
+        verify(
+          mockRemoteDataSource.getLevels(language: anyNamed('language')),
+        ).called(1);
       },
     );
   });
@@ -243,10 +242,9 @@ void main() {
       'should return SuccessBaseResponse with List<MealCategoryEntity> when remote call is successful',
       () async {
         // arrange
-        when(
-          mockRemoteDataSource.getMealsCategories(),
-        ).thenAnswer(
-            (_) async => const SuccessBaseResponse(tMealCategoryResponse));
+        when(mockRemoteDataSource.getMealsCategories()).thenAnswer(
+          (_) async => const SuccessBaseResponse(tMealCategoryResponse),
+        );
 
         // act
         final result = await repo.getMealsCategories();
@@ -258,129 +256,38 @@ void main() {
     );
   });
 
-  group('getAllExercises', () {
-    const tExerciseResponse = ExerciseResponse(exercises: []);
+  group('getMealsByCategory', () {
+    const tMealsResponse = MealsResponseModel(meals: []);
 
     test(
-      'should return SuccessBaseResponse with List<ExerciseEntity> when remote call is successful',
+      'should return SuccessBaseResponse with List<MealEntity> when remote call is successful',
       () async {
         // arrange
         when(
-          mockRemoteDataSource.getAllExercises(
-            language: anyNamed('language'),
-            targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-            muscleId: anyNamed('muscleId'),
-            difficultyLevelId: anyNamed('difficultyLevelId'),
-            page: anyNamed('page'),
-            limit: anyNamed('limit'),
-          ),
-        ).thenAnswer((_) async => const SuccessBaseResponse(tExerciseResponse));
+          mockRemoteDataSource.getMealsByCategory(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(tMealsResponse));
 
         // act
-        final result = await repo.getAllExercises();
+        final result = await repo.getMealsByCategory('Beef');
 
         // assert
-        expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
-        verify(mockRemoteDataSource.getAllExercises(
-          language: anyNamed('language'),
-          targetMuscleGroupId: anyNamed('targetMuscleGroupId'),
-          muscleId: anyNamed('muscleId'),
-          difficultyLevelId: anyNamed('difficultyLevelId'),
-          page: anyNamed('page'),
-          limit: anyNamed('limit'),
-        )).called(1);
+        expect(result, isA<SuccessBaseResponse<List<MealEntity>>>());
+        verify(mockRemoteDataSource.getMealsByCategory('Beef')).called(1);
       },
     );
-  });
 
-  group('HomeRepoImpl.getMealsByMealTime', () {
-    test('interleaves the categories of a multi-category meal time', () async {
-      // MealTime.lunch is Chicken + Pasta + Seafood.
-      when(
-        mockRemoteDataSource.getMealsByCategory('Chicken'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['c1', 'c2'])));
-      when(
-        mockRemoteDataSource.getMealsByCategory('Pasta'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['p1'])));
-      when(
-        mockRemoteDataSource.getMealsByCategory('Seafood'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['s1', 's2'])));
-
-      final result = await repo.getMealsByMealTime(MealTime.lunch);
-
-      expect(result, isA<SuccessBaseResponse>());
-      final ids = (result as SuccessBaseResponse<List<MealEntity>>).data!.map(
-        (m) => m.id,
-      );
-      expect(ids, ['c1', 'p1', 's1', 'c2', 's2']);
-    });
-
-    test('drops duplicate meals that appear in two categories', () async {
-      when(
-        mockRemoteDataSource.getMealsByCategory('Chicken'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['shared'])));
-      when(
-        mockRemoteDataSource.getMealsByCategory('Pasta'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['shared'])));
-      when(
-        mockRemoteDataSource.getMealsByCategory('Seafood'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['s1'])));
-
-      final result = await repo.getMealsByMealTime(MealTime.lunch);
-
-      final ids = (result as SuccessBaseResponse<List<MealEntity>>).data!.map(
-        (m) => m.id,
-      );
-      expect(ids, ['shared', 's1']);
-    });
-
-    test('still succeeds when only some categories fail', () async {
-      when(
-        mockRemoteDataSource.getMealsByCategory('Chicken'),
-      ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
-      when(
-        mockRemoteDataSource.getMealsByCategory('Pasta'),
-      ).thenAnswer((_) async => SuccessBaseResponse(mealsOf(['p1'])));
-      when(
-        mockRemoteDataSource.getMealsByCategory('Seafood'),
-      ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
-
-      final result = await repo.getMealsByMealTime(MealTime.lunch);
-
-      expect(result, isA<SuccessBaseResponse>());
-      expect(
-        (result as SuccessBaseResponse<List<MealEntity>>).data!.single.id,
-        'p1',
-      );
-    });
-
-    test('fails with the first error when every category fails', () async {
+    test('should return ErrorBaseResponse when remote call fails', () async {
+      // arrange
       when(
         mockRemoteDataSource.getMealsByCategory(any),
-      ).thenAnswer((_) async => const ErrorBaseResponse('boom'));
+      ).thenAnswer((_) async => const ErrorBaseResponse('error'));
 
-      final result = await repo.getMealsByMealTime(MealTime.lunch);
+      // act
+      final result = await repo.getMealsByCategory('Beef');
 
-      expect(result, isA<ErrorBaseResponse>());
-      expect(
-        (result as ErrorBaseResponse<List<MealEntity>>).errorMessage,
-        'boom',
-      );
+      // assert
+      expect(result, isA<ErrorBaseResponse<List<MealEntity>>>());
     });
-
-    test(
-      'returns an empty success when the API returns a null meals list',
-      () async {
-        when(mockRemoteDataSource.getMealsByCategory('Breakfast')).thenAnswer(
-          (_) async => const SuccessBaseResponse(MealsResponseModel()),
-        );
-
-        final result = await repo.getMealsByMealTime(MealTime.breakfast);
-
-        expect(result, isA<SuccessBaseResponse>());
-        expect((result as SuccessBaseResponse<List<MealEntity>>).data, isEmpty);
-      },
-    );
   });
 
   group('HomeRepoImpl.getDetailsFood', () {

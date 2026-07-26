@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,14 +10,14 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/core/widgets/custom_loading.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_group_entity.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
-import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
-import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_events.dart';
-import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_state.dart';
+import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
+import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_events.dart';
+import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_state.dart';
 import 'package:super_fitness/features/workouts/presentation/widgets/muscle_grid_item.dart';
-import 'package:super_fitness/core/widgets/custom_loading.dart';
 
 import 'workouts_screen_test.mocks.dart';
 
