@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/app_text_styles.dart';
 
@@ -14,7 +15,7 @@ class SectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: AppTextStyles.white18700),
+        Expanded(child: Text(title, style: AppTextStyles.white18700)),
         if (onSeeAll != null)
           TextButton(onPressed: onSeeAll, child: Text(AppStrings.seeAll.tr())),
       ],

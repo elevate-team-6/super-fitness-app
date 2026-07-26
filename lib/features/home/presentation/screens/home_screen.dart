@@ -14,7 +14,7 @@ import '../../domain/entities/home_user_entity.dart';
 import '../view_models/home_view_model/home_cubit.dart';
 import '../view_models/home_view_model/home_event.dart';
 import '../view_models/home_view_model/home_state.dart';
-import '../widgets/home_category_icons.dart';
+import '../widgets/home_category_section.dart';
 import '../widgets/home_profile_image.dart';
 import '../widgets/home_sections_shimmer.dart';
 import '../widgets/popular_training_section.dart';

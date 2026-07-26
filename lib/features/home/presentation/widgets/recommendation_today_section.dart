@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../core/utils/app_routes.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/muscle_entity.dart';
@@ -52,12 +53,13 @@ class RecommendationTodaySection extends StatelessWidget {
                       title: muscle.name,
                       image: muscle.image ?? '',
                       onTap: () {
-                        // For muscles, we might want to navigate to a screen
-                        // showing exercises for this muscle
                         Navigator.pushNamed(
                           context,
                           AppRoutes.exerciseScreen,
-                          arguments: muscle.id,
+                          arguments: ExerciseArgs(
+                            primeMoverMuscleId: muscle.id,
+                            primeMoverMuscleName: muscle.name,
+                          ),
                         );
                       },
                     );

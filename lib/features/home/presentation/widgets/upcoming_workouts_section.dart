@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
+
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/widgets/custom_tab_bar.dart';
 import '../../../main_layout/presentation/cubit/main_layout_cubit.dart';
@@ -94,7 +95,10 @@ class UpcomingWorkoutsSection extends StatelessWidget {
                           Navigator.pushNamed(
                             context,
                             AppRoutes.exerciseScreen,
-                            arguments: muscle.id,
+                            arguments: ExerciseArgs(
+                              primeMoverMuscleId: muscle.id,
+                              primeMoverMuscleName: muscle.name,
+                            ),
                           );
                         },
                         height: 80.h,

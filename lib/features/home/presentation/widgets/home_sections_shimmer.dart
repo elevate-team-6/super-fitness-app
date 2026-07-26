@@ -114,4 +114,39 @@ abstract class HomeSectionsShimmer {
       ),
     );
   }
+
+  static Widget mealCardShimmer() {
+    return AppShimmer(
+      width: 163.w,
+      height: 160.h,
+      borderRadius: BorderRadius.circular(20.r),
+    );
+  }
+
+  static Widget detailsFoodHeroShimmer() {
+    return AppShimmer(width: double.infinity, height: 340.h);
+  }
+
+  static Widget detailsFoodSectionShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppShimmer(width: 120.w, height: 24.h),
+        SizedBox(height: 12.h),
+        AppShimmer(width: double.infinity, height: 16.h),
+        SizedBox(height: 8.h),
+        AppShimmer(width: double.infinity, height: 16.h),
+        SizedBox(height: 8.h),
+        AppShimmer(width: 200.w, height: 16.h),
+      ],
+    );
+  }
+
+  static Widget detailsFoodIngredientsShimmer() {
+    return AppShimmer(
+      width: double.infinity,
+      height: 200.h,
+      borderRadius: BorderRadius.circular(20.r),
+    );
+  }
 }

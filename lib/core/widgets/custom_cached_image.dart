@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 
 import '../utils/app_assets.dart';
+import 'app_shimmer.dart';
 
 class CustomCachedImage extends StatelessWidget {
   final String imageUrl;
@@ -45,15 +46,15 @@ class CustomCachedImage extends StatelessWidget {
       errorWidget: (context, url, error) =>
           errorWidget ??
           ColoredBox(
-            color: AppColors.orange30,
+            color: AppColors.black80,
             child: Center(
               child: SvgPicture.asset(
-                AppIcons.workOut,
-                width: 32,
-                height: 32,
+                placeholderIcon ?? AppIcons.workOut,
+                width: 72.w,
+                height: 72.w,
                 fit: BoxFit.contain,
                 colorFilter: ColorFilter.mode(
-                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0.5),
                   BlendMode.srcIn,
                 ),
               ),
@@ -69,15 +70,15 @@ class CustomCachedImage extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-    return Container(
+    return AppShimmer(
       width: width,
       height: height,
-      color: AppColors.black80,
+      borderRadius: borderRadius,
       child: Center(
         child: SvgPicture.asset(
           placeholderIcon ?? AppIcons.workOut,
-          width: 72.w,
-          height: 72.w,
+          width: 40.w,
+          height: 40.w,
           fit: BoxFit.contain,
           colorFilter: ColorFilter.mode(
             AppColors.primary.withValues(alpha: 0.5),

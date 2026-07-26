@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/app_text_styles.dart';
@@ -55,6 +56,12 @@ class PopularTrainingCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Icon(
+                    Icons.play_circle_fill,
+                    color: AppColors.primary.withValues(alpha: 0.8),
+                    size: 40.r,
+                  ),
+                  SizedBox(height: 8.h),
                   Text(
                     title,
                     style: AppTextStyles.white14700,

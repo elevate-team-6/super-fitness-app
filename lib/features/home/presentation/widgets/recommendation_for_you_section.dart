@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
+
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/meal_category_entity.dart';
@@ -59,7 +60,13 @@ class RecommendationForYouSection extends StatelessWidget {
                       image: category.image,
                       placeholderIcon: AppIcons.meal,
                       onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.detailsFood);
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.food,
+                          arguments: FoodScreenArgs(
+                            categoryName: category.name,
+                          ),
+                        );
                       },
                       height: 104.h,
                       width: 104.w,

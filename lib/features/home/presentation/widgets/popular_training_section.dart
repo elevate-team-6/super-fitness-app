@@ -2,7 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:super_fitness/core/utils/app_routes.dart';
+import 'package:super_fitness/core/utils/youtube_url.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/exercise_entity.dart';
@@ -54,12 +55,14 @@ class PopularTrainingSection extends StatelessWidget {
                       image: exercise.image,
                       tasks: '24',
                       difficulty: exercise.difficulty,
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.exerciseScreen,
-                          arguments: exercise.id,
-                        );
+                      onTap: () async {
+                        final url = YoutubeUrl.watchUrlOf(exercise.videoUrl);
+                        if (url != null) {
+                          await launchUrl(
+                            Uri.parse(url),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        }
                       },
                     );
                   },

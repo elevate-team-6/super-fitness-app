@@ -28,17 +28,14 @@ class MainLayoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MainLayoutCubit(),
-      child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
-        builder: (context, state) {
-          return Scaffold(
-            body: IndexedStack(index: state.currentIndex, children: _screens),
-            extendBody: true,
-            bottomNavigationBar: _buildCustomBottomNavBar(context, state),
-          );
-        },
-      ),
+    return BlocBuilder<MainLayoutCubit, MainLayoutState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: IndexedStack(index: state.currentIndex, children: _screens),
+          extendBody: true,
+          bottomNavigationBar: _buildCustomBottomNavBar(context, state),
+        );
+      },
     );
   }
 

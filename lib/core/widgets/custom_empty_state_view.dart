@@ -2,14 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
-import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 
 class CustomEmptyStateView extends StatelessWidget {
   final String message;
   final String? subtitle;
-  final String lottiePath;
+  final String? lottiePath;
   final VoidCallback? onRetry;
   final String? retryText;
   final double? imageSize;
@@ -18,8 +17,7 @@ class CustomEmptyStateView extends StatelessWidget {
     super.key,
     required this.message,
     this.subtitle,
-    this.lottiePath =
-        AppLottie.loading, // temporary until we have other lottie files
+    this.lottiePath,
     this.onRetry,
     this.retryText,
     this.imageSize,
@@ -36,13 +34,15 @@ class CustomEmptyStateView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Lottie.asset(
-              lottiePath,
-              width: imageSize ?? 200.w,
-              height: imageSize ?? 200.h,
-              repeat: true,
-            ),
-            SizedBox(height: 16.h),
+            if (lottiePath != null) ...[
+              Lottie.asset(
+                lottiePath!,
+                width: imageSize ?? 200.w,
+                height: imageSize ?? 200.h,
+                repeat: true,
+              ),
+              SizedBox(height: 16.h),
+            ],
             Text(
               message,
               textAlign: TextAlign.center,
