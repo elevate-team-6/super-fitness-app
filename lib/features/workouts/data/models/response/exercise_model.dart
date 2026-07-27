@@ -59,7 +59,7 @@ class ExerciseModel extends Equatable {
     primeMoverMuscle: map[CatalogDbConstants.aliasPrimeMoverMuscle]?.toString(),
     primaryEquipment: map[CatalogDbConstants.aliasPrimaryEquipment]?.toString(),
     posture: map[CatalogDbConstants.columnPosture]?.toString(),
-    bodyRegion: map[CatalogDbConstants.columnBodyRegion]?.toString(),
+    bodyRegion: map[CatalogDbConstants.columnBodyRegionName]?.toString(),
     mechanics: map[CatalogDbConstants.columnMechanics]?.toString(),
     laterality: map[CatalogDbConstants.columnLaterality]?.toString(),
     primaryExerciseClassification: map[CatalogDbConstants.columnClassification]

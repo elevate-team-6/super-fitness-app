@@ -182,7 +182,7 @@ class ExerciseModel extends Equatable {
     planeOfMotion1: map[CatalogDbConstants.columnPlaneOfMotion1]?.toString(),
     planeOfMotion2: map[CatalogDbConstants.columnPlaneOfMotion2]?.toString(),
     planeOfMotion3: map[CatalogDbConstants.columnPlaneOfMotion3]?.toString(),
-    bodyRegion: map[CatalogDbConstants.columnBodyRegion]?.toString(),
+    bodyRegion: map[CatalogDbConstants.columnBodyRegionName]?.toString(),
     forceType: map[CatalogDbConstants.columnForceType]?.toString(),
     mechanics: map[CatalogDbConstants.columnMechanics]?.toString(),
     laterality: map[CatalogDbConstants.columnLaterality]?.toString(),

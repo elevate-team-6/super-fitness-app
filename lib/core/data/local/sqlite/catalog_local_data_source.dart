@@ -148,11 +148,11 @@ class CatalogLocalDataSource {
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
       sql:
-          'SELECT ${CatalogDbConstants.columnId} as ${CatalogDbConstants.aliasIdCategory}, $nameCol as ${CatalogDbConstants.columnStrCategory}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName} FROM ${CatalogDbConstants.tableMealCategory}',
+          'SELECT ${CatalogDbConstants.columnId} as ${CatalogDbConstants.aliasIdCategory}, $nameCol as ${CatalogDbConstants.keyStrCategory}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName} FROM ${CatalogDbConstants.tableMealCategory}',
     );
     return results.map((e) {
       final map = Map<String, dynamic>.from(e);
-      map[CatalogDbConstants.columnStrMealThumb] =
+      map[CatalogDbConstants.keyStrMealThumb] =
           'https://www.themealdb.com/images/category/${e[CatalogDbConstants.aliasEnglishName]}.png';
       return MealCategoryModel.fromSqlite(map);
     }).toList();
@@ -167,10 +167,10 @@ class CatalogLocalDataSource {
       sql:
           '''
         SELECT 
-          m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.columnIdMeal}, 
-          m.$nameCol as ${CatalogDbConstants.columnStrMeal}, 
-          m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.columnStrMealThumb},
-          a.$nameCol as ${CatalogDbConstants.columnStrArea}
+          m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
+          m.$nameCol as ${CatalogDbConstants.keyStrMeal}, 
+          m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.keyStrMealThumb},
+          a.$nameCol as ${CatalogDbConstants.keyStrArea}
         FROM ${CatalogDbConstants.tableMeal} m
         LEFT JOIN ${CatalogDbConstants.tableMealCategory} c ON m.${CatalogDbConstants.columnCategoryId} = c.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableMealArea} a ON m.${CatalogDbConstants.columnAreaId} = a.${CatalogDbConstants.columnId}
@@ -188,13 +188,13 @@ class CatalogLocalDataSource {
       sql:
           '''
         SELECT 
-          m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.columnIdMeal}, 
-          m.$nameCol as ${CatalogDbConstants.columnStrMeal}, 
-          m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.columnStrMealThumb},
-          c.$nameCol as ${CatalogDbConstants.columnStrCategory},
-          a.$nameCol as ${CatalogDbConstants.columnStrArea},
-          m.${CatalogDbConstants.columnStrInstructions} as ${CatalogDbConstants.columnStrInstructions},
-          m.${CatalogDbConstants.columnStrYoutube} as ${CatalogDbConstants.columnStrYoutube}
+          m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
+          m.$nameCol as ${CatalogDbConstants.keyStrMeal}, 
+          m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.keyStrMealThumb},
+          c.$nameCol as ${CatalogDbConstants.keyStrCategory},
+          a.$nameCol as ${CatalogDbConstants.keyStrArea},
+          m.${CatalogDbConstants.columnInstructions} as ${CatalogDbConstants.keyStrInstructions},
+          m.${CatalogDbConstants.columnYoutube} as ${CatalogDbConstants.keyStrYoutube}
         FROM ${CatalogDbConstants.tableMeal} m
         LEFT JOIN ${CatalogDbConstants.tableMealCategory} c ON m.${CatalogDbConstants.columnCategoryId} = c.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableMealArea} a ON m.${CatalogDbConstants.columnAreaId} = a.${CatalogDbConstants.columnId}
@@ -258,7 +258,7 @@ class CatalogLocalDataSource {
           mg.$nameCol as ${CatalogDbConstants.aliasTargetMuscleGroup},
           m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle},
           eq.$nameCol as ${CatalogDbConstants.aliasPrimaryEquipment},
-          br.${CatalogDbConstants.columnName} as ${CatalogDbConstants.columnBodyRegion},
+          br.${CatalogDbConstants.columnName} as ${CatalogDbConstants.columnBodyRegionName},
           e.${CatalogDbConstants.columnDemoUrl} as ${CatalogDbConstants.aliasShortYoutubeLink},
           e.${CatalogDbConstants.columnExplainUrl} as ${CatalogDbConstants.aliasInDepthYoutubeLink}
         FROM ${CatalogDbConstants.tableExercise} e

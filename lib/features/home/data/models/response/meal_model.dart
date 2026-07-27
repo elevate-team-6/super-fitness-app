@@ -1,7 +1,6 @@
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 import 'package:super_fitness/core/utils/app_params.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
-
-import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 
 class MealModel {
   final String? idMeal;
@@ -27,11 +26,11 @@ class MealModel {
   );
 
   factory MealModel.fromSqlite(Map<String, dynamic> map) => MealModel(
-    idMeal: map[CatalogDbConstants.columnIdMeal]?.toString(),
-    strMeal: map[CatalogDbConstants.columnStrMeal]?.toString(),
-    strMealThumb: map[CatalogDbConstants.columnStrMealThumb]?.toString(),
-    strArea: map[CatalogDbConstants.columnStrArea]?.toString(),
-    strCountry: map[CatalogDbConstants.columnStrCountry]?.toString(),
+    idMeal: map[CatalogDbConstants.keyIdMeal]?.toString(),
+    strMeal: map[CatalogDbConstants.keyStrMeal]?.toString(),
+    strMealThumb: map[CatalogDbConstants.keyStrMealThumb]?.toString(),
+    strArea: map[CatalogDbConstants.keyStrArea]?.toString(),
+    strCountry: map[CatalogDbConstants.keyStrCountry]?.toString(),
   );
 
   MealEntity toEntity() => MealEntity(

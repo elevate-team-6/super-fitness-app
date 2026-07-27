@@ -17,7 +17,7 @@ abstract class CatalogDbConstants {
   static const String tableMealIngredient = 'meal_ingredient';
   static const String tableMeta = 'meta';
 
-  // Columns - Shared / General
+  // --- Real Database Column Names ---
   static const String columnId = 'id';
   static const String columnName = 'name';
   static const String columnNameAr = 'name_ar';
@@ -25,8 +25,6 @@ abstract class CatalogDbConstants {
   static const String columnLegacyIds = 'legacy_ids';
   static const String columnRank = 'rank';
   static const String columnPosition = 'position';
-
-  // Columns - Exercise Table Specific
   static const String columnDifficultyId = 'difficulty_id';
   static const String columnMuscleGroupId = 'muscle_group_id';
   static const String columnPrimeMoverId = 'prime_mover_id';
@@ -59,30 +57,32 @@ abstract class CatalogDbConstants {
   static const String columnPlaneOfMotion1 = 'plane_of_motion_1';
   static const String columnPlaneOfMotion2 = 'plane_of_motion_2';
   static const String columnPlaneOfMotion3 = 'plane_of_motion_3';
-  static const String columnBodyRegion = 'body_region';
+  static const String columnBodyRegionName =
+      'body_region'; // Note: different from ID column
 
-  // Columns - Meal Table Specific
-  static const String columnIdMeal = 'idMeal';
-  static const String columnStrMeal = 'strMeal';
-  static const String columnStrMealThumb = 'strMealThumb';
-  static const String columnStrCategory = 'strCategory';
-  static const String columnStrArea = 'strArea';
-  static const String columnStrInstructions = 'strInstructions';
-  static const String columnStrTags = 'strTags';
-  static const String columnStrYoutube = 'strYoutube';
+  // Meals specific real columns
+  static const String columnThumb = 'thumb';
+  static const String columnInstructions = 'instructions';
+  static const String columnYoutube = 'youtube';
+  static const String columnTag = 'tag';
   static const String columnCategoryId = 'category_id';
   static const String columnAreaId = 'area_id';
-  static const String columnThumb = 'thumb';
   static const String columnQty = 'qty';
   static const String columnUnit = 'unit';
   static const String columnIngredientId = 'ingredient_id';
-  static const String columnStrCountry = 'strCountry';
 
-  // Locale codes
-  static const String localeAr = 'ar';
-  static const String localeEn = 'en';
+  // --- Model Keys / API Aliases (Used as map keys) ---
+  static const String keyIdMeal = 'idMeal';
+  static const String keyStrMeal = 'strMeal';
+  static const String keyStrMealThumb = 'strMealThumb';
+  static const String keyStrCategory = 'strCategory';
+  static const String keyStrArea = 'strArea';
+  static const String keyStrInstructions = 'strInstructions';
+  static const String keyStrTags = 'strTags';
+  static const String keyStrYoutube = 'strYoutube';
+  static const String keyStrCountry = 'strCountry';
 
-  // Aliases used in SQL and Models
+  // --- SQL Aliases ---
   static const String aliasExerciseName = 'exercise';
   static const String aliasDifficultyLevel = 'difficulty_level';
   static const String aliasTargetMuscleGroup = 'target_muscle_group';
@@ -95,4 +95,8 @@ abstract class CatalogDbConstants {
   static const String aliasEnglishName = 'englishName';
   static const String aliasIdCategory = 'idCategory';
   static const String aliasMeasure = 'measure';
+
+  // Locale codes
+  static const String localeAr = 'ar';
+  static const String localeEn = 'en';
 }

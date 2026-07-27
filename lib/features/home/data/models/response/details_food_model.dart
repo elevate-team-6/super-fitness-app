@@ -46,14 +46,14 @@ class DetailsFoodModel {
     Map<String, dynamic> map, {
     List<Map<String, dynamic>>? ingredients,
   }) => DetailsFoodModel(
-    idMeal: map[CatalogDbConstants.columnIdMeal]?.toString(),
-    strMeal: map[CatalogDbConstants.columnStrMeal]?.toString(),
-    strMealThumb: map[CatalogDbConstants.columnStrMealThumb]?.toString(),
-    strCategory: map[CatalogDbConstants.columnStrCategory]?.toString(),
-    strArea: map[CatalogDbConstants.columnStrArea]?.toString(),
-    strInstructions: map[CatalogDbConstants.columnStrInstructions]?.toString(),
-    strTags: map[CatalogDbConstants.columnStrTags]?.toString(),
-    strYoutube: map[CatalogDbConstants.columnStrYoutube]?.toString(),
+    idMeal: map[CatalogDbConstants.keyIdMeal]?.toString(),
+    strMeal: map[CatalogDbConstants.keyStrMeal]?.toString(),
+    strMealThumb: map[CatalogDbConstants.keyStrMealThumb]?.toString(),
+    strCategory: map[CatalogDbConstants.keyStrCategory]?.toString(),
+    strArea: map[CatalogDbConstants.keyStrArea]?.toString(),
+    strInstructions: map[CatalogDbConstants.keyStrInstructions]?.toString(),
+    strTags: map[CatalogDbConstants.keyStrTags]?.toString(),
+    strYoutube: map[CatalogDbConstants.keyStrYoutube]?.toString(),
     ingredients:
         ingredients
             ?.map(

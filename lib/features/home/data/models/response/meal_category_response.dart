@@ -41,10 +41,9 @@ class MealCategoryModel extends Equatable {
   factory MealCategoryModel.fromSqlite(Map<String, dynamic> map) =>
       MealCategoryModel(
         idCategory: map[CatalogDbConstants.aliasIdCategory]?.toString(),
-        strCategory: map[CatalogDbConstants.columnStrCategory]?.toString(),
-        strCategoryThumb: map[CatalogDbConstants.columnStrMealThumb]
-            ?.toString(),
-        strCategoryDescription: map[CatalogDbConstants.columnStrInstructions]
+        strCategory: map[CatalogDbConstants.keyStrCategory]?.toString(),
+        strCategoryThumb: map[CatalogDbConstants.keyStrMealThumb]?.toString(),
+        strCategoryDescription: map[CatalogDbConstants.keyStrInstructions]
             ?.toString(),
       );
 
