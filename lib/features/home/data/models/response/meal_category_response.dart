@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 import '../../../domain/entities/meal_category_entity.dart';
 
 part 'meal_category_response.g.dart';
@@ -36,6 +37,16 @@ class MealCategoryModel extends Equatable {
 
   factory MealCategoryModel.fromJson(Map<String, dynamic> json) =>
       _$MealCategoryModelFromJson(json);
+
+  factory MealCategoryModel.fromSqlite(Map<String, dynamic> map) =>
+      MealCategoryModel(
+        idCategory: map[CatalogDbConstants.aliasIdCategory]?.toString(),
+        strCategory: map[CatalogDbConstants.columnStrCategory]?.toString(),
+        strCategoryThumb: map[CatalogDbConstants.columnStrMealThumb]
+            ?.toString(),
+        strCategoryDescription: map[CatalogDbConstants.columnStrInstructions]
+            ?.toString(),
+      );
 
   Map<String, dynamic> toJson() => _$MealCategoryModelToJson(this);
 

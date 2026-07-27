@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
+
 part 'exercise_model.g.dart';
 
 @JsonSerializable(createToJson: false)
@@ -47,6 +49,30 @@ class ExerciseModel extends Equatable {
 
   factory ExerciseModel.fromJson(Map<String, dynamic> json) =>
       _$ExerciseModelFromJson(json);
+
+  factory ExerciseModel.fromSqlite(Map<String, dynamic> map) => ExerciseModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    exercise: map[CatalogDbConstants.aliasExerciseName]?.toString(),
+    difficultyLevel: map[CatalogDbConstants.aliasDifficultyLevel]?.toString(),
+    targetMuscleGroup: map[CatalogDbConstants.aliasTargetMuscleGroup]
+        ?.toString(),
+    primeMoverMuscle: map[CatalogDbConstants.aliasPrimeMoverMuscle]?.toString(),
+    primaryEquipment: map[CatalogDbConstants.aliasPrimaryEquipment]?.toString(),
+    posture: map[CatalogDbConstants.columnPosture]?.toString(),
+    bodyRegion: map[CatalogDbConstants.columnBodyRegion]?.toString(),
+    mechanics: map[CatalogDbConstants.columnMechanics]?.toString(),
+    laterality: map[CatalogDbConstants.columnLaterality]?.toString(),
+    primaryExerciseClassification: map[CatalogDbConstants.columnClassification]
+        ?.toString(),
+    shortYoutubeDemonstrationLink:
+        (map[CatalogDbConstants.aliasShortYoutubeLink] ??
+                map[CatalogDbConstants.columnDemoUrl])
+            ?.toString(),
+    inDepthYoutubeExplanationLink:
+        (map[CatalogDbConstants.aliasInDepthYoutubeLink] ??
+                map[CatalogDbConstants.columnExplainUrl])
+            ?.toString(),
+  );
 
   ExerciseEntity toEntity() => ExerciseEntity(
     id: id ?? '',
