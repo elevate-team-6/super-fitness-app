@@ -1,10 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/features/workouts/data/data_sources/workout_remote_data_source_contract.dart';
-import 'package:super_fitness/features/workouts/data/models/response/difficulty_levels_response.dart';
-import 'package:super_fitness/features/workouts/data/models/response/exercises_by_muscle_difficulty_response.dart';
-import 'package:super_fitness/features/workouts/data/models/response/muscle_groups_response.dart';
-import 'package:super_fitness/features/workouts/data/models/response/muscles_response.dart';
+import 'package:super_fitness/core/data/local/sqlite/catalog_local_data_source.dart';
 import 'package:super_fitness/features/workouts/domain/entities/difficulty_level_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
@@ -13,22 +9,26 @@ import 'package:super_fitness/features/workouts/domain/repo/workout_repo_contrac
 
 @Injectable(as: WorkoutRepoContract)
 class WorkoutRepoImpl implements WorkoutRepoContract {
-  final WorkoutRemoteDataSourceContract _workoutRemoteDataSourceContract;
+  final CatalogLocalDataSource _localDataSource;
 
-  WorkoutRepoImpl(this._workoutRemoteDataSourceContract);
+  WorkoutRepoImpl(this._localDataSource);
 
   @override
   Future<BaseResponse<List<DifficultyLevelEntity>>>
   getDifficultyLevelsByPrimeMover(String primeMoverMuscleId) async {
-    final response = await _workoutRemoteDataSourceContract
-        .getDifficultyLevelsByPrimeMover(primeMoverMuscleId);
-
-    switch (response) {
-      case SuccessBaseResponse<DifficultyLevelsResponse>():
-        final entityList = response.data?.toEntity() ?? [];
-        return SuccessBaseResponse(entityList);
-      case ErrorBaseResponse<DifficultyLevelsResponse>():
-        return ErrorBaseResponse(response.errorMessage);
+    try {
+      final levels = await _localDataSource.getDifficultyLevelsByPrimeMover(
+        primeMoverMuscleId,
+      );
+      return SuccessBaseResponse(
+        levels
+            .map(
+              (e) => DifficultyLevelEntity(id: e.id ?? '', name: e.name ?? ''),
+            )
+            .toList(),
+      );
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
   }
 
@@ -37,30 +37,31 @@ class WorkoutRepoImpl implements WorkoutRepoContract {
     String primeMoverMuscleId,
     String difficultyLevelId,
   ) async {
-    final response = await _workoutRemoteDataSourceContract
-        .getExercisesByMuscleDifficulty(primeMoverMuscleId, difficultyLevelId);
-
-    switch (response) {
-      case SuccessBaseResponse<ExercisesByMuscleDifficultyResponse>():
-        final entity = response.data?.toEntity() ?? [];
-        return SuccessBaseResponse(entity);
-      case ErrorBaseResponse<ExercisesByMuscleDifficultyResponse>():
-        return ErrorBaseResponse(response.errorMessage);
+    try {
+      final exercises = await _localDataSource.getExercisesByMuscleDifficulty(
+        primeMoverMuscleId,
+        difficultyLevelId,
+      );
+      // Ensure we map to the workouts version of ExerciseEntity
+      return SuccessBaseResponse<List<ExerciseEntity>>(
+        exercises.map((e) => e.toEntity()).toList(),
+      );
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
   }
 
   @override
   Future<BaseResponse<List<MuscleGroupEntity>>> getMuscleGroups() async {
-    final response = await _workoutRemoteDataSourceContract.getMuscleGroups();
-
-    switch (response) {
-      case SuccessBaseResponse<MuscleGroupsResponse>():
-        final entities =
-            response.data?.musclesGroup?.map((e) => e.toEntity()).toList() ??
-            [];
-        return SuccessBaseResponse(entities);
-      case ErrorBaseResponse<MuscleGroupsResponse>():
-        return ErrorBaseResponse(response.errorMessage);
+    try {
+      final groups = await _localDataSource.getMuscleGroups();
+      return SuccessBaseResponse(
+        groups
+            .map((e) => MuscleGroupEntity(id: e.id ?? '', name: e.name ?? ''))
+            .toList(),
+      );
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
   }
 
@@ -68,17 +69,21 @@ class WorkoutRepoImpl implements WorkoutRepoContract {
   Future<BaseResponse<List<MuscleEntity>>> getMusclesByGroupId(
     String id,
   ) async {
-    final response = await _workoutRemoteDataSourceContract.getMusclesByGroupId(
-      id,
-    );
-
-    switch (response) {
-      case SuccessBaseResponse<MusclesResponse>():
-        final entities =
-            response.data?.muscles?.map((e) => e.toEntity()).toList() ?? [];
-        return SuccessBaseResponse(entities);
-      case ErrorBaseResponse<MusclesResponse>():
-        return ErrorBaseResponse(response.errorMessage);
+    try {
+      final muscles = await _localDataSource.getMusclesByGroupId(id);
+      return SuccessBaseResponse(
+        muscles
+            .map(
+              (e) => MuscleEntity(
+                id: e.id ?? '',
+                name: e.name ?? '',
+                image: e.image ?? '',
+              ),
+            )
+            .toList(),
+      );
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
   }
 }
