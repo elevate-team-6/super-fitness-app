@@ -70,22 +70,27 @@ class CustomCachedImage extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-    return AppShimmer(
-      width: width,
-      height: height,
-      borderRadius: borderRadius,
-      child: Center(
-        child: SvgPicture.asset(
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        AppShimmer(
+          width: width ?? double.infinity,
+          height: height ?? double.infinity,
+          borderRadius: borderRadius ?? BorderRadius.circular(20.r),
+          baseColor: AppColors.white.withValues(alpha: 0.05),
+          highlightColor: AppColors.white.withValues(alpha: 0.12),
+        ),
+        SvgPicture.asset(
           placeholderIcon ?? AppIcons.workOut,
-          width: 40.w,
-          height: 40.w,
+          width: 60.w,
+          height: 60.w,
           fit: BoxFit.contain,
           colorFilter: ColorFilter.mode(
             AppColors.primary.withValues(alpha: 0.5),
             BlendMode.srcIn,
           ),
         ),
-      ),
+      ],
     );
   }
 }

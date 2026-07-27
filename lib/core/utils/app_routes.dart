@@ -29,7 +29,7 @@ import '../../features/workouts/presentation/view_models/exercise_view_model/exe
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
-  GlobalKey<NavigatorState>();
+      GlobalKey<NavigatorState>();
 
   static const String onboarding = 'onboarding';
   static const String login = 'login';
@@ -49,20 +49,18 @@ abstract class AppRoutes {
 
         case login:
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider(
-                  create: (_) => getIt<LoginCubit>(),
-                  child: const LoginScreen(),
-                ),
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<LoginCubit>(),
+              child: const LoginScreen(),
+            ),
           );
 
         case registerScreen:
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider(
-                  create: (_) => getIt<RegisterCubit>(),
-                  child: const RegisterScreen(),
-                ),
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<RegisterCubit>(),
+              child: const RegisterScreen(),
+            ),
           );
         case completeRegister:
           final args = settings.arguments as CompleteRegisterArgs;
@@ -76,78 +74,70 @@ abstract class AppRoutes {
           }
 
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider.value(
-                  value: cubit,
-                  child: const CompleteRegisterScreen(),
-                ),
+            builder: (_) => BlocProvider.value(
+              value: cubit,
+              child: const CompleteRegisterScreen(),
+            ),
           );
         case forgetPassword:
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider(
-                  create: (_) => getIt<ForgotPasswordCubit>(),
-                  child: const ForgotPasswordScreen(),
-                ),
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ForgotPasswordCubit>(),
+              child: const ForgotPasswordScreen(),
+            ),
           );
 
         case mainLayout:
           return MaterialPageRoute(
-            builder: (_) =>
-                MultiBlocProvider(
-                  providers: [
-                    BlocProvider(create: (_) => getIt<MainLayoutCubit>()),
-                    BlocProvider(
-                      create: (_) =>
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<MainLayoutCubit>()),
+                BlocProvider(
+                  create: (_) =>
                       getIt<HomeCubit>()
                         ..doEvent(const FetchAllHomeDataEvent()),
-                    ),
-                    BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
-                  ],
-                  child: const MainLayoutScreen(),
                 ),
+                BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
+              ],
+              child: const MainLayoutScreen(),
+            ),
           );
 
         case food:
           final args = settings.arguments as FoodScreenArgs?;
 
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider(
-                  create: (_) =>
-                  getIt<FoodCubit>()
-                    ..doIntent(
-                      GetMealsCategoriesEvent(
-                          initialCategory: args?.categoryName),
-                    ),
-                  child: const FoodScreen(),
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<FoodCubit>()
+                ..doIntent(
+                  GetMealsCategoriesEvent(initialCategory: args?.categoryName),
                 ),
+              child: const FoodScreen(),
+            ),
           );
 
         case detailsFood:
           final args = settings.arguments as DetailsFoodArgs;
 
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider(
-                  create: (_) =>
+            builder: (_) => BlocProvider(
+              create: (_) =>
                   getIt<DetailsFoodCubit>()
                     ..doIntent(LoadDetailsFoodEvent(args.mealId)),
-                  child: DetailsFoodScreen(mealName: args.mealName),
-                ),
+              child: DetailsFoodScreen(mealName: args.mealName),
+            ),
           );
 
         case exerciseScreen:
           final args = settings.arguments as ExerciseArgs;
           return MaterialPageRoute(
-            builder: (_) =>
-                BlocProvider(
-                  create: (_) => getIt<ExerciseCubit>(),
-                  child: ExerciseScreen(
-                    primeMoverMuscleId: args.primeMoverMuscleId,
-                    primeMoverMuscleName: args.primeMoverMuscleName,
-                  ),
-                ),
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ExerciseCubit>(),
+              child: ExerciseScreen(
+                primeMoverMuscleId: args.primeMoverMuscleId,
+                primeMoverMuscleName: args.primeMoverMuscleName,
+              ),
+            ),
           );
 
         default:
@@ -160,30 +150,28 @@ abstract class AppRoutes {
 
   static MaterialPageRoute<dynamic> _unDefinedRoute(String? name) {
     return MaterialPageRoute(
-      builder: (_) =>
-          Scaffold(
-            body: Center(
-              child: Text(
-                'No route defined for $name',
-                style: AppTextStyles.white16500,
-              ),
-            ),
+      builder: (_) => Scaffold(
+        body: Center(
+          child: Text(
+            'No route defined for $name',
+            style: AppTextStyles.white16500,
           ),
+        ),
+      ),
     );
   }
 
   static MaterialPageRoute<dynamic> _errorRoute(String message) {
     return MaterialPageRoute(
-      builder: (_) =>
-          Scaffold(
-            body: Center(
-              child: Text(
-                'Something went wrong\n$message',
-                style: AppTextStyles.white16500,
-                textAlign: TextAlign.center,
-              ),
-            ),
+      builder: (_) => Scaffold(
+        body: Center(
+          child: Text(
+            'Something went wrong\n$message',
+            style: AppTextStyles.white16500,
+            textAlign: TextAlign.center,
           ),
+        ),
+      ),
     );
   }
 }

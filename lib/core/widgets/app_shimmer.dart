@@ -6,6 +6,8 @@ class AppShimmer extends StatefulWidget {
   final double? width;
   final double? height;
   final BorderRadius? borderRadius;
+  final Color? baseColor;
+  final Color? highlightColor;
 
   const AppShimmer({
     super.key,
@@ -13,6 +15,8 @@ class AppShimmer extends StatefulWidget {
     this.width,
     this.height,
     this.borderRadius,
+    this.baseColor,
+    this.highlightColor,
   });
 
   @override
@@ -55,10 +59,10 @@ class _AppShimmerState extends State<AppShimmer>
               begin: const Alignment(-1.0, -0.3),
               end: const Alignment(1.0, 0.3),
               stops: const [0.4, 0.5, 0.6],
-              colors: const [
-                AppColors.black80,
-                AppColors.black70,
-                AppColors.black80,
+              colors: [
+                widget.baseColor ?? AppColors.black80,
+                widget.highlightColor ?? AppColors.black70,
+                widget.baseColor ?? AppColors.black80,
               ],
               transform: _SlidingGradientTransform(offset: _animation.value),
             ).createShader(bounds);
