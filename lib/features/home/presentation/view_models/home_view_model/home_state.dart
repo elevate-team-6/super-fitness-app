@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../../../config/base_state/base_state.dart';
-import '../../../domain/entities/exercise_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import '../../../domain/entities/home_user_entity.dart';
 import '../../../domain/entities/meal_category_entity.dart';
 import '../../../domain/entities/muscle_entity.dart';
