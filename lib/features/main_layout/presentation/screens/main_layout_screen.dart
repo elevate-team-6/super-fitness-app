@@ -19,21 +19,33 @@ import '../widgets/custom_svg_icon.dart';
 class MainLayoutScreen extends StatelessWidget {
   const MainLayoutScreen({super.key});
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ChatScreen(),
-    WorkoutsScreen(),
-    ProfileScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    // Subscribes this widget to locale changes. `.tr()` reads
+    // easy_localization's singleton and depends on nothing, so without this the
+    // nav labels — and the four tabs below — keep whatever language they first
+    // built in. Read through Flutter's own Localizations rather than
+    // `context.locale`, which throws wherever EasyLocalization isn't mounted.
+    Localizations.localeOf(context);
+
+    // Deliberately not const, individually or as a list: Dart canonicalises
+    // const constructors, and Flutter skips a subtree whose widget is the same
+    // instance as last build — which left every tab stuck in the old language.
+    // Fresh instances let the tabs re-translate; their State objects survive,
+    // since the types and (absent) keys still match.
+    final screens = [
+      HomeScreen(),
+      ChatScreen(),
+      WorkoutsScreen(),
+      ProfileScreen(),
+    ];
+
     return BlocProvider(
       create: (context) => MainLayoutCubit(),
       child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
         builder: (context, state) {
           return Scaffold(
-            body: IndexedStack(index: state.currentIndex, children: _screens),
+            body: IndexedStack(index: state.currentIndex, children: screens),
             extendBody: true,
             bottomNavigationBar: _buildCustomBottomNavBar(context, state),
           );

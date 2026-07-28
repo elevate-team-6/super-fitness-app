@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/config/di/di.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
+import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
+import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
@@ -24,12 +28,24 @@ class FakeWorkoutsCubit extends Cubit<WorkoutsState> implements WorkoutsCubit {
   void emitUiEvent(BaseUiEvent event) {}
 }
 
+/// The profile tab pulls its cubit straight from `getIt`, so the layout can't
+/// render that tab without one registered.
+class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
+  @override
+  Future<UserEntity?> call() async => null;
+}
+
 void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
 
   setUp(() {
     fakeWorkoutsCubit = FakeWorkoutsCubit();
+    getIt.registerFactory<ProfileCubit>(
+      () => ProfileCubit(FakeGetCachedUserUseCase()),
+    );
   });
+
+  tearDown(() => getIt.reset());
 
   Widget createWidgetUnderTest() {
     return ScreenUtilInit(

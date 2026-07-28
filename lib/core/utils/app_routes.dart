@@ -21,6 +21,7 @@ import '../../features/home/presentation/view_model/details_food_view_model/deta
 import '../../features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/profile/presentation/screens/web_view_screen.dart';
 import '../../features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
 import '../../features/workouts/presentation/screens/exercise_screen.dart';
 import '../../features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
@@ -38,6 +39,7 @@ abstract class AppRoutes {
   static const String exerciseScreen = 'exerciseScreen';
   static const String food = 'food';
   static const String detailsFood = 'detailsFood';
+  static const String webView = 'webView';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -117,6 +119,13 @@ abstract class AppRoutes {
             ),
           );
 
+        case webView:
+          final args = settings.arguments as WebViewArgs;
+
+          return MaterialPageRoute(
+            builder: (_) => WebViewScreen(title: args.title, url: args.url),
+          );
+
         case exerciseScreen:
           final args = settings.arguments as ExerciseArgs;
           return MaterialPageRoute(
@@ -194,6 +203,15 @@ class CompleteRegisterArgs {
   final SocialSignupEntity? socialData;
 
   CompleteRegisterArgs({this.cubit, this.socialData});
+}
+
+class WebViewArgs {
+  /// Shown in the app bar while the page loads, so the user isn't looking at a
+  /// blank header.
+  final String title;
+  final String url;
+
+  const WebViewArgs({required this.title, required this.url});
 }
 
 class ExerciseArgs {
