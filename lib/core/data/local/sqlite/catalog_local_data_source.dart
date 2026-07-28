@@ -40,11 +40,15 @@ class CatalogLocalDataSource {
         e.$nameCol as ${CatalogDbConstants.aliasExerciseName},
         l.$nameCol as ${CatalogDbConstants.aliasDifficultyLevel},
         mg.$nameCol as ${CatalogDbConstants.aliasTargetMuscleGroup},
-        m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle}
+        m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle},
+        eq.$nameCol as ${CatalogDbConstants.aliasPrimaryEquipment},
+        seq.$nameCol as ${CatalogDbConstants.columnSecondaryEquipment}
       FROM ${CatalogDbConstants.tableExercise} e
       LEFT JOIN ${CatalogDbConstants.tableDifficultyLevel} l ON e.${CatalogDbConstants.columnDifficultyId} = l.${CatalogDbConstants.columnId}
       LEFT JOIN ${CatalogDbConstants.tableMuscleGroup} mg ON e.${CatalogDbConstants.columnMuscleGroupId} = mg.${CatalogDbConstants.columnId}
       LEFT JOIN ${CatalogDbConstants.tableMuscle} m ON e.${CatalogDbConstants.columnPrimeMoverId} = m.${CatalogDbConstants.columnId}
+      LEFT JOIN ${CatalogDbConstants.tableEquipment} eq ON e.${CatalogDbConstants.columnPrimaryEquipmentId} = eq.${CatalogDbConstants.columnId}
+      LEFT JOIN ${CatalogDbConstants.tableEquipment} seq ON e.${CatalogDbConstants.columnSecondaryEquipmentId} = seq.${CatalogDbConstants.columnId}
     ''';
 
     List<dynamic> whereArgs = [];
@@ -258,6 +262,7 @@ class CatalogLocalDataSource {
           mg.$nameCol as ${CatalogDbConstants.aliasTargetMuscleGroup},
           m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle},
           eq.$nameCol as ${CatalogDbConstants.aliasPrimaryEquipment},
+          seq.$nameCol as ${CatalogDbConstants.columnSecondaryEquipment},
           br.${CatalogDbConstants.columnName} as ${CatalogDbConstants.columnBodyRegionName},
           e.${CatalogDbConstants.columnDemoUrl} as ${CatalogDbConstants.aliasShortYoutubeLink},
           e.${CatalogDbConstants.columnExplainUrl} as ${CatalogDbConstants.aliasInDepthYoutubeLink}
@@ -266,6 +271,7 @@ class CatalogLocalDataSource {
         LEFT JOIN ${CatalogDbConstants.tableMuscleGroup} mg ON e.${CatalogDbConstants.columnMuscleGroupId} = mg.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableMuscle} m ON e.${CatalogDbConstants.columnPrimeMoverId} = m.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableEquipment} eq ON e.${CatalogDbConstants.columnPrimaryEquipmentId} = eq.${CatalogDbConstants.columnId}
+        LEFT JOIN ${CatalogDbConstants.tableEquipment} seq ON e.${CatalogDbConstants.columnSecondaryEquipmentId} = seq.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableBodyRegion} br ON e.${CatalogDbConstants.columnBodyRegionId} = br.${CatalogDbConstants.columnId}
         WHERE e.${CatalogDbConstants.columnPrimeMoverId} = ? AND e.${CatalogDbConstants.columnDifficultyId} = ?
       ''',

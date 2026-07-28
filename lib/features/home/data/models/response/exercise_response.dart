@@ -1,9 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 
 import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
-import '../../../../../core/utils/youtube_url.dart';
-import '../../../domain/entities/exercise_entity.dart';
 
 part 'exercise_response.g.dart';
 
@@ -54,9 +53,9 @@ class ExerciseModel extends Equatable {
   @JsonKey(name: 'prime_mover_muscle')
   final String? primeMoverMuscle;
   @JsonKey(name: 'secondary_muscle')
-  final String? secondaryMuscle;
+  final String? secondaryMuscles;
   @JsonKey(name: 'tertiary_muscle')
-  final String? tertiaryMuscle;
+  final String? tertiaryMuscles;
   @JsonKey(name: 'primary_equipment')
   final String? primaryEquipment;
   @JsonKey(name: '_primary_items')
@@ -112,8 +111,8 @@ class ExerciseModel extends Equatable {
     this.difficultyLevel,
     this.targetMuscleGroup,
     this.primeMoverMuscle,
-    this.secondaryMuscle,
-    this.tertiaryMuscle,
+    this.secondaryMuscles,
+    this.tertiaryMuscles,
     this.primaryEquipment,
     this.primaryItems,
     this.secondaryEquipment,
@@ -151,10 +150,8 @@ class ExerciseModel extends Equatable {
     targetMuscleGroup: map[CatalogDbConstants.aliasTargetMuscleGroup]
         ?.toString(),
     primeMoverMuscle: map[CatalogDbConstants.aliasPrimeMoverMuscle]?.toString(),
-    secondaryMuscle: map[CatalogDbConstants.columnSecondaryMuscle]?.toString(),
-    // Added to constants if needed
-    tertiaryMuscle: map[CatalogDbConstants.columnTertiaryMuscle]?.toString(),
-    // Added to constants if needed
+    secondaryMuscles: map[CatalogDbConstants.columnSecondaryMuscle]?.toString(),
+    tertiaryMuscles: map[CatalogDbConstants.columnTertiaryMuscle]?.toString(),
     primaryEquipment: map[CatalogDbConstants.aliasPrimaryEquipment]?.toString(),
     primaryItems: map[CatalogDbConstants.columnPrimaryItems] as int?,
     secondaryEquipment: map[CatalogDbConstants.columnSecondaryEquipment]
@@ -198,16 +195,23 @@ class ExerciseModel extends Equatable {
 
   ExerciseEntity toEntity() => ExerciseEntity(
     id: id ?? '',
-    name: exercise ?? '',
-    difficulty: difficultyLevel ?? '',
-    targetMuscle: targetMuscleGroup ?? '',
-    videoUrl:
-        shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink ?? '',
-    image:
-        YoutubeUrl.thumbnailUrlOf(
-          shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink,
-        ) ??
-        '',
+    exercise: exercise ?? '',
+    difficultyLevel: difficultyLevel ?? '',
+    targetMuscleGroup: targetMuscleGroup ?? '',
+    primeMoverMuscle: primeMoverMuscle ?? '',
+    primaryEquipment: primaryEquipment ?? '',
+    secondaryEquipment: secondaryEquipment ?? '',
+    posture: posture ?? '',
+    grip: grip ?? '',
+    forceType: forceType ?? '',
+    secondaryMuscles: secondaryMuscles ?? '',
+    tertiaryMuscles: tertiaryMuscles ?? '',
+    bodyRegion: bodyRegion ?? '',
+    mechanics: mechanics ?? '',
+    laterality: laterality ?? '',
+    primaryExerciseClassification: primaryExerciseClassification ?? '',
+    shortYoutubeDemonstrationLink: shortYoutubeDemonstrationLink ?? '',
+    inDepthYoutubeExplanationLink: inDepthYoutubeExplanationLink ?? '',
   );
 
   @override
@@ -219,8 +223,8 @@ class ExerciseModel extends Equatable {
     difficultyLevel,
     targetMuscleGroup,
     primeMoverMuscle,
-    secondaryMuscle,
-    tertiaryMuscle,
+    secondaryMuscles,
+    tertiaryMuscles,
     primaryEquipment,
     primaryItems,
     secondaryEquipment,
