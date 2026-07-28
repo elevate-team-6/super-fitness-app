@@ -7,7 +7,7 @@ import '../../../../core/data/local/sqlite/catalog_local_data_source.dart';
 import '../../../../core/utils/app_keys.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../domain/entities/details_food_entity.dart';
-import '../../domain/entities/exercise_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import '../../domain/entities/home_user_entity.dart';
 import '../../domain/entities/level_entity.dart';
 import '../../domain/entities/meal_category_entity.dart';

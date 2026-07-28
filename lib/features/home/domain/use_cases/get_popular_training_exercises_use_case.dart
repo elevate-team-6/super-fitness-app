@@ -5,7 +5,7 @@ import 'package:injectable/injectable.dart';
 
 import '../../../../config/base_response/base_response.dart';
 import '../../../../core/utils/app_strings.dart';
-import '../entities/exercise_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import '../entities/level_entity.dart';
 import '../entities/muscle_entity.dart';
 import '../repo/home_repo_contract.dart';
