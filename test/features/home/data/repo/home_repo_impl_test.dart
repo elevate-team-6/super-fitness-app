@@ -14,7 +14,7 @@ import 'package:super_fitness/features/home/data/models/response/meal_model.dart
 import 'package:super_fitness/features/home/data/models/response/muscle_response.dart';
 import 'package:super_fitness/features/home/data/repo/home_repo_impl.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
-import 'package:super_fitness/features/home/domain/entities/exercise_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/home_user_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/level_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_category_entity.dart';
