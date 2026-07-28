@@ -74,7 +74,7 @@ class PopularTrainingCard extends StatelessWidget {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
+                          horizontal: 8.w,
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
@@ -89,7 +89,7 @@ class PopularTrainingCard extends StatelessWidget {
                       const Spacer(),
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
+                          horizontal: 8.w,
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
