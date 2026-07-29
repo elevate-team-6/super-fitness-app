@@ -148,5 +148,13 @@
   "detailsFoodNotFound": "لم نتمكن من العثور على هذه الوجبة",
   "ingredients": "المكونات",
   "description": "الوصف",
-  "watchVideo": "مشاهدة الفيديو"
+  "watchVideo": "مشاهدة الفيديو",
+  "changePassword": "تغيير كلمة المرور",
+  "oldPassword": "كلمة المرور القديمة",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "changePasswordSuccess": "تم تغيير كلمة المرور بنجاح",
+  "passwordSameAsOld": "يجب أن تكون كلمة المرور الجديدة مختلفة عن القديمة",
+  "changeYourPassword": "غيّر كلمة مرورك",
+  "enterPasswordDetails": "تأكد أن كلمة السر 8 أحرف أو أكثر"
 }

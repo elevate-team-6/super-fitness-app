@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
+import 'package:super_fitness/features/auth/presentation/screens/change_password_screen.dart';
 import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/change_password_view_model/change_password_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
 import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 
@@ -34,6 +36,7 @@ abstract class AppRoutes {
   static const String registerScreen = 'register';
   static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
+  static const String changePassword = '/changePassword';
   static const String mainLayout = 'mainLayout';
   static const String exerciseScreen = 'exerciseScreen';
   static const String food = 'food';
@@ -82,6 +85,14 @@ abstract class AppRoutes {
             builder: (_) => BlocProvider(
               create: (_) => getIt<ForgotPasswordCubit>(),
               child: const ForgotPasswordScreen(),
+            ),
+          );
+
+        case changePassword:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider(
+              create: (_) => getIt<ChangePasswordCubit>(),
+              child: const ChangePasswordScreen(),
             ),
           );
 
