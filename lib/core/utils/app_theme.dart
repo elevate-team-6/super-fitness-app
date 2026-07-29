@@ -144,6 +144,9 @@ abstract class AppTheme {
           return AppColors.black10;
         }),
         trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+        // The rows that host a switch are tappable themselves, so the control
+        // doesn't need to reserve Material's 48dp target around it.
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
 
       // Tab Bar Theme

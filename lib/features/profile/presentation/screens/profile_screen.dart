@@ -143,17 +143,6 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                         child: Switch(
                           value: !isArabic,
                           onChanged: (_) => context.setLocale(nextLocale),
-                          activeThumbColor: AppColors.white,
-                          activeTrackColor: AppColors.primary,
-                          inactiveThumbColor: AppColors.white,
-                          inactiveTrackColor: AppColors.white.withValues(
-                            alpha: 0.25,
-                          ),
-                          trackOutlineColor: const WidgetStatePropertyAll(
-                            Colors.transparent,
-                          ),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
                       onTap: () => context.setLocale(nextLocale),
