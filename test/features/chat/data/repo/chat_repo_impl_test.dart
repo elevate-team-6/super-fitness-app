@@ -3,16 +3,16 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/crashlytics_service.dart';
 import 'package:super_fitness/core/data/local/sqlite/catalog_local_data_source.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
-import 'package:super_fitness/config/services/crashlytics_service.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/chat/data/data_sources/chat_local_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/data_sources/chat_remote_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/models/chat_event_model.dart';
 import 'package:super_fitness/features/chat/data/models/hive/chat_hive_models.dart';
 import 'package:super_fitness/features/chat/data/repo/chat_repo_impl.dart';
 import 'package:super_fitness/features/chat/domain/entities/chat_message_entity.dart';
-import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/home/data/models/response/exercise_response.dart';
 
 import 'chat_repo_impl_test.mocks.dart';
@@ -124,48 +124,54 @@ void main() {
       ).called(1);
     });
 
-    test('should record error to crashlytics when remote stream fails', () async {
-      // arrange
-      when(
-        mockCacheHelper.readData(key: AppKeys.tokenKey),
-      ).thenAnswer((_) async => tToken);
-      when(
-        mockChatLocalDataSource.getSession(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
-      when(
-        mockChatLocalDataSource.saveSession(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
-      when(
-        mockChatLocalDataSource.updateSessionMessages(any, any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
+    test(
+      'should record error to crashlytics when remote stream fails',
+      () async {
+        // arrange
+        when(
+          mockCacheHelper.readData(key: AppKeys.tokenKey),
+        ).thenAnswer((_) async => tToken);
+        when(
+          mockChatLocalDataSource.getSession(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+        when(
+          mockChatLocalDataSource.saveSession(any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+        when(
+          mockChatLocalDataSource.updateSessionMessages(any, any),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
-      when(
-        mockRemoteDataSource.getChatResponseStream(
-          message: anyNamed('message'),
-          token: anyNamed('token'),
-          userContext: anyNamed('userContext'),
-        ),
-      ).thenAnswer(
-        (_) => Stream.fromIterable([
-          const ErrorBaseResponse<ChatEventModel>('Stream Error'),
-        ]),
-      );
+        when(
+          mockRemoteDataSource.getChatResponseStream(
+            message: anyNamed('message'),
+            token: anyNamed('token'),
+            userContext: anyNamed('userContext'),
+          ),
+        ).thenAnswer(
+          (_) => Stream.fromIterable([
+            const ErrorBaseResponse<ChatEventModel>('Stream Error'),
+          ]),
+        );
 
-      // act
-      final stream = repo.sendMessage(sessionId: tSessionId, message: tMessage);
-      final results = await stream.toList();
+        // act
+        final stream = repo.sendMessage(
+          sessionId: tSessionId,
+          message: tMessage,
+        );
+        final results = await stream.toList();
 
-      // assert
-      expect(results.last, isA<ErrorBaseResponse<ChatMessageEntity>>());
-      verify(
-        mockCrashlyticsService.recordError(
-          'Stream Error',
-          any,
-          reason: anyNamed('reason'),
-          information: anyNamed('information'),
-        ),
-      ).called(1);
-    });
+        // assert
+        expect(results.last, isA<ErrorBaseResponse<ChatMessageEntity>>());
+        verify(
+          mockCrashlyticsService.recordError(
+            'Stream Error',
+            any,
+            reason: anyNamed('reason'),
+            information: anyNamed('information'),
+          ),
+        ).called(1);
+      },
+    );
 
     test(
       'should update local storage only on specific events (refs/done)',

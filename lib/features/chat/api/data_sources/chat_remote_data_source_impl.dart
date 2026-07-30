@@ -41,7 +41,8 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
           case 503:
             errorMessage = AppStrings.serverError.tr();
           default:
-            errorMessage = "${AppStrings.chatUnexpectedError.tr()} (${response.statusCode})";
+            errorMessage =
+                "${AppStrings.chatUnexpectedError.tr()} (${response.statusCode})";
         }
         yield ErrorBaseResponse(errorMessage);
         return;

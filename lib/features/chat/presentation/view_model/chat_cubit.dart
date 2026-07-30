@@ -218,7 +218,8 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
         }
       }
 
-      if (!hasError && (assistantMessage == null || assistantMessage.text.trim().isEmpty)) {
+      if (!hasError &&
+          (assistantMessage == null || assistantMessage.text.trim().isEmpty)) {
         emit(
           state.copyWith(
             status: ChatStatus.failure,
