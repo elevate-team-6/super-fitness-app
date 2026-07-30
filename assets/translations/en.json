@@ -182,5 +182,14 @@
   "logout": "Logout",
   "english": "English",
   "arabic": "Arabic",
-  "pageFailedToLoad": "We couldn't load this page"
+  "pageFailedToLoad": "We couldn't load this page",
+  "selectMuscleGroup": "Select Muscle Group",
+  "Invalid email or password": "Invalid email or password",
+  "invalid credentials": "Invalid credentials",
+  "failed": "Failed",
+  "Email already exists": "Email already exists",
+  "Network error": "Network error",
+  "Error": "Error",
+  "server error": "Server error",
+  "not found": "Not found"
 }

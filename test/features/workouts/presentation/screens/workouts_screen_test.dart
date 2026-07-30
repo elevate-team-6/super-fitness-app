@@ -10,7 +10,6 @@ import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
-import 'package:super_fitness/core/widgets/custom_loading.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_group_entity.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
@@ -28,6 +27,8 @@ class _InMemoryAssetLoader extends AssetLoader {
     'workouts': 'Workouts',
     'noMusclesFound': 'No muscles found',
     'selectMuscleGroup': 'Select Muscle Group',
+    'server error': 'Server error',
+    'not found': 'Not found',
   };
 }
 
@@ -105,10 +106,9 @@ void main() {
       );
 
       await pumpWorkoutsScreen(tester);
-      // استخدام pump إضافي لضمان معالجة الـ Stream الأولية
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byType(CustomLoading), findsWidgets);
+      expect(find.text('Loading'), findsWidgets);
     });
 
     testWidgets(
@@ -123,7 +123,7 @@ void main() {
         );
 
         await pumpWorkoutsScreen(tester);
-        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.text('Abs'), findsOneWidget);
         expect(find.byType(MuscleGridItem), findsOneWidget);
@@ -143,7 +143,7 @@ void main() {
       );
 
       await pumpWorkoutsScreen(tester);
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Error message'), findsOneWidget);
     });
 
@@ -159,7 +159,7 @@ void main() {
       );
 
       await pumpWorkoutsScreen(tester);
-      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('No muscles found'), findsOneWidget);
     });
 
@@ -174,10 +174,10 @@ void main() {
         );
 
         await pumpWorkoutsScreen(tester);
-        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
         await tester.tap(find.text('Abs'));
-        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
         verify(
           mockCubit.doEvent(argThat(isA<GetMusclesByGroupIdEvent>())),

@@ -183,5 +183,14 @@
   "logout": "تسجيل الخروج",
   "english": "الإنجليزية",
   "arabic": "العربية",
-  "pageFailedToLoad": "لم نتمكن من تحميل هذه الصفحة"
+  "pageFailedToLoad": "لم نتمكن من تحميل هذه الصفحة",
+  "selectMuscleGroup": "اختر مجموعة عضلية",
+  "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  "invalid credentials": "بيانات الاعتماد غير صالحة",
+  "failed": "فشل",
+  "Email already exists": "البريد الإلكتروني موجود بالفعل",
+  "Network error": "خطأ في الشبكة",
+  "Error": "خطأ",
+  "server error": "خطأ في الخادم",
+  "not found": "غير موجود"
 }
