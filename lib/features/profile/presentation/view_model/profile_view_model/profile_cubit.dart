@@ -1,6 +1,5 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_cubit/base_cubit.dart';
-import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
