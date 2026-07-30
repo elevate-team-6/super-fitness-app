@@ -34,26 +34,32 @@ class CustomGlassContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveBorderRadius = borderRadius ?? BorderRadius.circular(50);
 
+    final surface = Container(
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: opacity),
+        borderRadius: effectiveBorderRadius,
+        border: border,
+      ),
+      child: child,
+    );
+
     return Container(
       width: width,
       height: height,
       margin: margin,
       child: ClipRRect(
         borderRadius: effectiveBorderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            padding:
-                padding ??
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: opacity),
-              borderRadius: effectiveBorderRadius,
-              border: border,
-            ),
-            child: child,
-          ),
-        ),
+        // A BackdropFilter drops its backdrop once it moves inside a scroll
+        // viewport, so callers in a scrollable pass `blur: 0` and lean on the
+        // tint alone — the same escape hatch AppScaffold offers.
+        child: blur <= 0
+            ? surface
+            : BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                child: surface,
+              ),
       ),
     );
   }

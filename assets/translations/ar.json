@@ -148,5 +148,15 @@
   "detailsFoodNotFound": "لم نتمكن من العثور على هذه الوجبة",
   "ingredients": "المكونات",
   "description": "الوصف",
-  "watchVideo": "مشاهدة الفيديو"
+  "watchVideo": "مشاهدة الفيديو",
+  "editProfile": "تعديل الملف الشخصي",
+  "changePassword": "تغيير كلمة المرور",
+  "selectLanguage": "اختيار اللغة",
+  "security": "الأمان",
+  "privacyPolicy": "سياسة الخصوصية",
+  "help": "المساعدة",
+  "logout": "تسجيل الخروج",
+  "english": "الإنجليزية",
+  "arabic": "العربية",
+  "pageFailedToLoad": "لم نتمكن من تحميل هذه الصفحة"
 }

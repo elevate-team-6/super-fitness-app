@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/custom_cached_image.dart';
+import 'package:super_fitness/core/widgets/pressable.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
 
 class MealTimeCard extends StatelessWidget {
@@ -14,7 +15,7 @@ class MealTimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Container(
         width: 100.w,

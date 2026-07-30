@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
@@ -12,6 +14,7 @@ import 'package:super_fitness/features/auth/data/models/request/verify_reset_cod
 import 'package:super_fitness/features/auth/data/models/response/forgot_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/reset_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
+import 'package:super_fitness/features/auth/data/models/response/user_model.dart';
 import 'package:super_fitness/features/auth/data/models/response/verify_reset_code_response.dart';
 import 'package:super_fitness/features/auth/domain/entities/forget_password_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
@@ -54,6 +57,7 @@ class AuthRepoImpl implements AuthRepoContract {
           key: AppKeys.tokenKey,
           value: model?.token,
         );
+        await _cacheUser(model?.user);
 
         return SuccessBaseResponse(model?.toEntity());
 
@@ -76,10 +80,24 @@ class AuthRepoImpl implements AuthRepoContract {
           key: AppKeys.tokenKey,
           value: signupData?.token,
         );
+        await _cacheUser(user);
+
         return SuccessBaseResponse(user.toEntity());
       case ErrorBaseResponse<SignupResponse>():
         return ErrorBaseResponse(response.errorMessage);
     }
+  }
+
+  /// Keeps the signed-in user next to the token so screens that only need to
+  /// show who is logged in (the profile tab) don't have to hit the network.
+  /// Cleared by [AuthService.logout] alongside the token.
+  Future<void> _cacheUser(UserModel? user) async {
+    if (user == null) return;
+
+    await _secureCacheHelper.writeData(
+      key: AppKeys.userDataKey,
+      value: jsonEncode(user.toJson()),
+    );
   }
 
   @override

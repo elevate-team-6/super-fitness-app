@@ -12,6 +12,7 @@ import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/utils/youtube_url.dart';
+import 'package:super_fitness/core/widgets/animated_state_switcher.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
 import 'package:super_fitness/features/home/presentation/view_model/details_food_view_model/details_food_cubit.dart';
@@ -57,9 +58,15 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
       body: BlocBuilder<DetailsFoodCubit, DetailsFoodState>(
         builder: (context, state) {
           final detailsState = state.detailsState;
+          final data = detailsState.data;
+          final isLoading = data == null;
+          final details = data ?? DetailsFoodPlaceholders.skeleton;
+          final videoUrl = YoutubeUrl.watchUrlOf(details.youtubeUrl);
+
+          final Widget content;
 
           if (detailsState.errorMessage != null) {
-            return SafeArea(
+            content = SafeArea(
               child: Column(
                 children: [
                   Align(
@@ -84,58 +91,56 @@ class _DetailsFoodScreenState extends State<DetailsFoodScreen>
                 ],
               ),
             );
+          } else {
+            content = Skeletonizer(
+              key: ValueKey(isLoading),
+              enabled: isLoading,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DetailsFoodHero(
+                      thumbnail: details.thumbnail,
+                      name: isLoading ? widget.mealName : details.name,
+                      onBack: () => Navigator.pop(context),
+                      onPlay: (isLoading || videoUrl == null)
+                          ? null
+                          : () => context.read<DetailsFoodCubit>().doIntent(
+                              const OpenMealVideoEvent(),
+                            ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (details.ingredients.isNotEmpty) ...[
+                            DetailsFoodSection(
+                              title: AppStrings.ingredients.tr(),
+                              child: MealIngredientsList(
+                                ingredients: details.ingredients,
+                              ),
+                            ),
+                            SizedBox(height: 24.h),
+                          ],
+                          if (details.instructions.isNotEmpty)
+                            DetailsFoodSection(
+                              title: AppStrings.description.tr(),
+                              child: Text(
+                                details.instructions,
+                                style: AppTextStyles.white2016500,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
 
-          final data = detailsState.data;
-          final isLoading = data == null;
-          final details = data ?? DetailsFoodPlaceholders.skeleton;
-          final videoUrl = YoutubeUrl.watchUrlOf(details.youtubeUrl);
-
-          return Skeletonizer(
-            enabled: isLoading,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DetailsFoodHero(
-                    thumbnail: details.thumbnail,
-                    name: isLoading ? widget.mealName : details.name,
-                    onBack: () => Navigator.pop(context),
-                    onPlay: (isLoading || videoUrl == null)
-                        ? null
-                        : () => context.read<DetailsFoodCubit>().doIntent(
-                            const OpenMealVideoEvent(),
-                          ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 16.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (details.ingredients.isNotEmpty) ...[
-                          DetailsFoodSection(
-                            title: AppStrings.ingredients.tr(),
-                            child: MealIngredientsList(
-                              ingredients: details.ingredients,
-                            ),
-                          ),
-                          SizedBox(height: 24.h),
-                        ],
-                        if (details.instructions.isNotEmpty)
-                          DetailsFoodSection(
-                            title: AppStrings.description.tr(),
-                            child: Text(
-                              details.instructions,
-                              style: AppTextStyles.white2016500,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
+          return AnimatedStateSwitcher(child: content);
         },
       ),
     );
