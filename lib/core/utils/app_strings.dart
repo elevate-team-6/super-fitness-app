@@ -184,6 +184,12 @@ abstract class AppStrings {
   static const String exerciseSingle = 'exercise_single';
   static const String exercisePlural = 'exercise_plural';
   static const String noExercisesFound = 'no_exercises_found';
+  static const String exerciseDetails = 'exerciseDetails';
+  static const String technicalSpecs = 'technicalSpecs';
+  static const String musclesTargeted = 'musclesTargeted';
+  static const String requiredEquipment = 'requiredEquipment';
+  static const String primeMover = 'primeMover';
+  static const String secondary = 'secondary';
 
   // Home
   static const String hi = 'hi';

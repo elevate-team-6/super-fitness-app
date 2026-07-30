@@ -56,11 +56,6 @@ class PopularTrainingCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.play_circle_fill,
-                    color: AppColors.primary.withValues(alpha: 0.8),
-                    size: 40.r,
-                  ),
                   SizedBox(height: 8.h),
                   Text(
                     title,

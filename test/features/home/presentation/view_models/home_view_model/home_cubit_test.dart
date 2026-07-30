@@ -5,7 +5,7 @@ import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
-import 'package:super_fitness/features/home/domain/entities/exercise_entity.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/home_user_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_category_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/muscle_entity.dart';
