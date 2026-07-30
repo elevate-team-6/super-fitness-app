@@ -1,8 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
@@ -12,15 +10,12 @@ class DetailsFoodHero extends StatelessWidget {
   final String thumbnail;
   final String name;
   final VoidCallback? onPlay;
-  final VoidCallback onBack;
-
   final Widget? footer;
 
   const DetailsFoodHero({
     super.key,
     required this.thumbnail,
     required this.name,
-    required this.onBack,
     this.onPlay,
     this.footer,
   });
@@ -37,16 +32,6 @@ class DetailsFoodHero extends StatelessWidget {
             placeholder: const ColoredBox(color: AppColors.black80),
           ),
           const _HeroScrim(),
-          SafeArea(
-            bottom: false,
-            child: Align(
-              alignment: AlignmentDirectional.topStart,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                child: _BackButton(onTap: onBack),
-              ),
-            ),
-          ),
           if (onPlay != null)
             Align(
               alignment: Alignment.center,
@@ -94,36 +79,6 @@ class _HeroScrim extends StatelessWidget {
   }
 }
 
-class _BackButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _BackButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: MaterialLocalizations.of(context).backButtonTooltip,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.all(10.w),
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
-          ),
-          child: SvgPicture.asset(
-            AppIcons.back,
-            width: 12.w,
-            height: 12.w,
-            matchTextDirection: true,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _WatchVideoButton extends StatelessWidget {
   final VoidCallback onTap;
 
@@ -137,16 +92,23 @@ class _WatchVideoButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.all(14.w),
+          width: 60.r,
+          height: 60.r,
           decoration: BoxDecoration(
             color: AppColors.primary,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.5),
+                blurRadius: 15,
+                spreadRadius: 2,
+              ),
+            ],
           ),
           child: Icon(
             Icons.play_arrow_rounded,
-            color: AppColors.black,
-            size: 32.sp,
+            color: AppColors.white,
+            size: 40.r,
           ),
         ),
       ),

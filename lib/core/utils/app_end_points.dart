@@ -10,6 +10,7 @@ abstract class AppEndPoints {
   static const String forgetPassword = "$baseUrl/auth/forgotPassword";
   static const String resetPassword = "$baseUrl/auth/resetPassword";
   static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
+
   // Workouts
   static const String getDifficultyLevelsByPrimeMover =
       "$baseUrl/levels/difficulty-levels/by-prime-mover";
@@ -27,6 +28,17 @@ abstract class AppEndPoints {
   // Workouts
   static const String muscles = "$baseUrl/muscles";
   static const String musclesGroup = "$baseUrl/musclesGroup";
+
+  // Exercises
+  static const String exercises = "$baseUrl/exercises";
+  static const String exercisesByMuscleDifficulty =
+      "$baseUrl/exercises/by-muscle-difficulty";
+
+  // Muscles
+  static const String randomMuscles = "$baseUrl/muscles/random";
+
+  // Levels
+  static const String levels = "$baseUrl/levels";
 
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:

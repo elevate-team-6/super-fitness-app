@@ -48,4 +48,11 @@ abstract class ApiParameters {
   // Workouts
   static const String primeMoverMuscleId = 'primeMoverMuscleId';
   static const String difficultyLevelId = 'difficultyLevelId';
+
+  // Home & Exercises
+  static const String acceptLanguage = 'Accept-Language';
+  static const String targetMuscleGroupId = 'targetMuscleGroupId';
+  static const String muscleId = 'muscleId';
+  static const String limit = 'limit';
+  static const String page = 'page';
 }

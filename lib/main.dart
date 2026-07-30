@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
 import 'config/services/google_auth_service.dart';
+import 'core/data/local/sqlite/asset_installer.dart';
 import 'core/utils/app_constants.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
@@ -32,6 +33,8 @@ Future<void> main() async {
   );
 
   configureDependencies();
+
+  await getIt<AssetInstaller>().initialize();
 
   final results = await Future.wait([
     AuthService.isOnboardingCompleted(),
