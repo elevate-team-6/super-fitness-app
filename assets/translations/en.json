@@ -171,5 +171,16 @@
   "intermediate": "Intermediate",
   "advanced": "Advanced",
   "failedToFetchLevelsOrMuscles": "Oops! We couldn't load some workouts. Please try again.",
-  "athlete": "Athlete"
+  "athlete": "Athlete",
+  "watchVideo": "Watch Video",
+  "editProfile": "Edit Profile",
+  "changePassword": "Change Password",
+  "selectLanguage": "Select Language",
+  "security": "Security",
+  "privacyPolicy": "Privacy Policy",
+  "help": "Help",
+  "logout": "Logout",
+  "english": "English",
+  "arabic": "Arabic",
+  "pageFailedToLoad": "We couldn't load this page"
 }

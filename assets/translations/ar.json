@@ -172,5 +172,16 @@
   "intermediate": "متوسط",
   "advanced": "متقدم",
   "failedToFetchLevelsOrMuscles": "عذراً! واجهنا مشكلة في تحميل بعض التمارين. يرجى المحاولة مرة أخرى.",
-  "athlete": "رياضي"
+  "athlete": "رياضي",
+  "watchVideo": "مشاهدة الفيديو",
+  "editProfile": "تعديل الملف الشخصي",
+  "changePassword": "تغيير كلمة المرور",
+  "selectLanguage": "اختيار اللغة",
+  "security": "الأمان",
+  "privacyPolicy": "سياسة الخصوصية",
+  "help": "المساعدة",
+  "logout": "تسجيل الخروج",
+  "english": "الإنجليزية",
+  "arabic": "العربية",
+  "pageFailedToLoad": "لم نتمكن من تحميل هذه الصفحة"
 }

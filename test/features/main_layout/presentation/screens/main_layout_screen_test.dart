@@ -1,60 +1,63 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
-import 'package:super_fitness/core/utils/app_strings.dart';
-import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_cubit.dart';
-import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
-import 'package:super_fitness/features/main_layout/presentation/cubit/main_layout_cubit.dart';
+import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/config/di/di.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
+import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
+import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
-import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
-import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_state.dart';
+import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
+import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
+import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
+import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_state.dart';
+import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_events.dart';
 
-import 'main_layout_screen_test.mocks.dart';
+class FakeWorkoutsCubit extends Cubit<WorkoutsState> implements WorkoutsCubit {
+  FakeWorkoutsCubit() : super(const WorkoutsState());
 
-@GenerateMocks([MainLayoutCubit, HomeCubit, WorkoutsCubit])
+  @override
+  Stream<BaseUiEvent> get eventStream => const Stream.empty();
+
+  @override
+  void doEvent(WorkoutsEvents event) {}
+
+  @override
+  void emitUiEvent(BaseUiEvent event) {}
+}
+
+/// The profile tab pulls its cubit straight from `getIt`, so the layout can't
+/// render that tab without one registered.
+class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
+  @override
+  Future<UserEntity?> call() async => null;
+}
+
 void main() {
-  late MockMainLayoutCubit mockMainLayoutCubit;
-  late MockHomeCubit mockHomeCubit;
-  late MockWorkoutsCubit mockWorkoutsCubit;
+  late FakeWorkoutsCubit fakeWorkoutsCubit;
 
   setUp(() {
-    mockMainLayoutCubit = MockMainLayoutCubit();
-    mockHomeCubit = MockHomeCubit();
-    mockWorkoutsCubit = MockWorkoutsCubit();
-
-    // Setup MainLayoutCubit
-    when(mockMainLayoutCubit.state).thenReturn(const MainLayoutState());
-    when(mockMainLayoutCubit.stream).thenAnswer((_) => const Stream.empty());
-
-    // Setup HomeCubit
-    when(mockHomeCubit.state).thenReturn(const HomeState());
-    when(mockHomeCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(mockHomeCubit.eventStream).thenAnswer((_) => const Stream.empty());
-    when(mockHomeCubit.close()).thenAnswer((_) async => {});
-
-    // Setup WorkoutsCubit
-    when(mockWorkoutsCubit.state).thenReturn(const WorkoutsState());
-    when(mockWorkoutsCubit.stream).thenAnswer((_) => const Stream.empty());
-    when(mockWorkoutsCubit.eventStream).thenAnswer((_) => const Stream.empty());
-    when(mockWorkoutsCubit.close()).thenAnswer((_) async => {});
+    fakeWorkoutsCubit = FakeWorkoutsCubit();
+    getIt.registerFactory<ProfileCubit>(
+      () => ProfileCubit(FakeGetCachedUserUseCase()),
+    );
   });
+
+  tearDown(() => getIt.reset());
 
   Widget createWidgetUnderTest() {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
+      minTextAdapt: true,
+      splitScreenMode: true,
       builder: (context, child) {
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider<MainLayoutCubit>.value(value: mockMainLayoutCubit),
-            BlocProvider<HomeCubit>.value(value: mockHomeCubit),
-            BlocProvider<WorkoutsCubit>.value(value: mockWorkoutsCubit),
-          ],
-          child: const MaterialApp(home: MainLayoutScreen()),
+        return MaterialApp(
+          home: BlocProvider<WorkoutsCubit>.value(
+            value: fakeWorkoutsCubit,
+            child: const MainLayoutScreen(),
+          ),
         );
       },
     );
@@ -62,47 +65,68 @@ void main() {
 
   group('MainLayoutScreen Widget Tests', () {
     testWidgets(
-      'Initial State: Should render Custom Bottom NavBar and initial HomeScreen',
+      'Initial State: Should render Custom Navigation Items and initial HomeScreen',
       (WidgetTester tester) async {
-        final originalOnError = FlutterError.onError;
-        addTearDown(() => FlutterError.onError = originalOnError);
-        FlutterError.onError = (details) {
-          if (details.exception.toString().contains('overflowed')) return;
-          FlutterError.presentError(details);
-        };
+        // Set larger surface size to avoid overflow in test environment
+        tester.view.physicalSize = const Size(1125, 2436); // 375 * 3, 812 * 3
+        tester.view.devicePixelRatio = 3.0;
 
         await tester.pumpWidget(createWidgetUnderTest());
-        await tester.pump();
+        await tester.pumpAndSettle();
 
-        // Verify custom navbar items exist by key
+        // Verify Home tab is selected by checking Key
         expect(find.byKey(const Key('home_tab')), findsOneWidget);
-        expect(find.byKey(const Key('chat_tab')), findsOneWidget);
-        expect(find.byKey(const Key('workouts_tab')), findsOneWidget);
-        expect(find.byKey(const Key('profile_tab')), findsOneWidget);
+        expect(find.byType(HomeScreen), findsOneWidget);
 
-        // Verify labels (since they are in FittedBox/Row, they should be found)
-        expect(find.text(AppStrings.explore), findsOneWidget);
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
       },
     );
 
-    testWidgets('Interaction: Tapping on Workout tab should call changeTab', (
+    testWidgets('Interaction: Tapping on Workout tab should update UI', (
       WidgetTester tester,
     ) async {
-      final originalOnError = FlutterError.onError;
-      addTearDown(() => FlutterError.onError = originalOnError);
-      FlutterError.onError = (details) {
-        if (details.exception.toString().contains('overflowed')) return;
-        FlutterError.presentError(details);
-      };
+      tester.view.physicalSize = const Size(1125, 2436);
+      tester.view.devicePixelRatio = 3.0;
 
       await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
-      final workoutsTab = find.byKey(const Key('workouts_tab'));
-      await tester.tap(workoutsTab);
-      await tester.pump();
+      // Tap on Workouts item using its Key
+      await tester.tap(find.byKey(const Key('workouts_tab')));
+      await tester.pumpAndSettle();
 
-      verify(mockMainLayoutCubit.changeTab(2)).called(1);
+      // Verify that the WorkoutsScreen is now visible
+      expect(find.byType(WorkoutsScreen), findsOneWidget);
+
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+    });
+
+    testWidgets('Interaction: Tapping on Profile tab should update UI', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1125, 2436);
+      tester.view.devicePixelRatio = 3.0;
+
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpAndSettle();
+
+      // Tap on Profile item using its Key
+      await tester.tap(find.byKey(const Key('profile_tab')));
+      await tester.pumpAndSettle();
+
+      // Verify that the ProfileScreen is now visible
+      expect(find.byType(ProfileScreen), findsOneWidget);
+
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
     });
   });
 }

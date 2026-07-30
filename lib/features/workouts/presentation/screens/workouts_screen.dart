@@ -10,15 +10,17 @@ import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:super_fitness/core/widgets/animated_state_switcher.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_grid_view.dart';
-import 'package:super_fitness/core/widgets/custom_loading.dart';
 import 'package:super_fitness/core/widgets/custom_tab_bar.dart';
 
 import '../view_models/workouts_view_model/workouts_cubit.dart';
 import '../view_models/workouts_view_model/workouts_events.dart';
 import '../view_models/workouts_view_model/workouts_state.dart';
 import '../widgets/muscle_grid_item.dart';
+import '../widgets/muscle_skeleton_placeholders.dart';
 
 class WorkoutsScreen extends StatefulWidget {
   const WorkoutsScreen({super.key});
@@ -68,6 +70,10 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> with UiEventHandler {
   }
 }
 
+// The grid's three message states are all a Center around a Text, so the
+// switcher can't tell them apart on type alone the way it can with the rest.
+enum _MusclesMessage { error, noGroupSelected, empty }
+
 class _MuscleGroupsTabs extends StatelessWidget {
   const _MuscleGroupsTabs();
 
@@ -77,25 +83,34 @@ class _MuscleGroupsTabs extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.muscleGroupsState != current.muscleGroupsState,
       builder: (context, state) {
-        if (state.muscleGroupsState.isLoading) {
-          return const CustomLoading(height: 50);
-        }
-
         final groups = state.muscleGroupsState.data ?? [];
 
-        if (groups.isEmpty) return const SizedBox.shrink();
+        final Widget content;
 
-        return DefaultTabController(
-          length: groups.length,
-          child: CustomTabBar(
-            tabs: groups.map((group) => group.name).toList(),
-            onTap: (index) {
-              context.read<WorkoutsCubit>().doEvent(
-                GetMusclesByGroupIdEvent(groups[index].id),
-              );
-            },
-          ),
-        );
+        if (state.muscleGroupsState.isLoading) {
+          content = Skeletonizer(
+            child: DefaultTabController(
+              length: kSkeletonMuscleGroups.length,
+              child: const CustomTabBar(tabs: kSkeletonMuscleGroups),
+            ),
+          );
+        } else if (groups.isEmpty) {
+          content = const SizedBox.shrink();
+        } else {
+          content = DefaultTabController(
+            length: groups.length,
+            child: CustomTabBar(
+              tabs: groups.map((group) => group.name).toList(),
+              onTap: (index) {
+                context.read<WorkoutsCubit>().doEvent(
+                  GetMusclesByGroupIdEvent(groups[index].id),
+                );
+              },
+            ),
+          );
+        }
+
+        return AnimatedStateSwitcher(child: content);
       },
     );
   }
@@ -111,58 +126,65 @@ class _MusclesGrid extends StatelessWidget {
           previous.musclesState != current.musclesState ||
           previous.selectedMuscleGroupId != current.selectedMuscleGroupId,
       builder: (context, state) {
-        if (state.musclesState.isLoading) {
-          return const CustomLoading();
-        }
+        final musclesState = state.musclesState;
+        final muscles = musclesState.data ?? [];
 
-        if (state.musclesState.errorMessage != null &&
-            (state.musclesState.data?.isEmpty ?? true)) {
-          return Center(
+        final Widget content;
+
+        if (musclesState.isLoading) {
+          content = Skeletonizer(
+            child: CustomGridView(
+              itemCount: skeletonMuscles.length,
+              itemBuilder: (context, index) =>
+                  MuscleGridItem(muscle: skeletonMuscles[index]),
+            ),
+          );
+        } else if (musclesState.errorMessage != null && muscles.isEmpty) {
+          content = Center(
+            key: const ValueKey(_MusclesMessage.error),
             child: Text(
-              state.musclesState.errorMessage!,
+              musclesState.errorMessage!,
               style: AppTextStyles.white16500,
             ),
           );
-        }
-
-        final muscles = state.musclesState.data ?? [];
-
-        if (muscles.isEmpty && state.selectedMuscleGroupId == null) {
-          return Center(
+        } else if (muscles.isEmpty && state.selectedMuscleGroupId == null) {
+          content = Center(
+            key: const ValueKey(_MusclesMessage.noGroupSelected),
             child: Text(
               AppStrings.selectMuscleGroup.tr(),
               style: AppTextStyles.white16500,
             ),
           );
-        }
-
-        if (muscles.isEmpty) {
-          return Center(
+        } else if (muscles.isEmpty) {
+          content = Center(
+            key: const ValueKey(_MusclesMessage.empty),
             child: Text(
               AppStrings.noMusclesFound.tr(),
               style: AppTextStyles.white16500,
             ),
           );
+        } else {
+          content = CustomGridView(
+            itemCount: muscles.length,
+            itemBuilder: (context, index) {
+              final muscle = muscles[index];
+              return MuscleGridItem(
+                muscle: muscle,
+                onTap: () {
+                  Navigator.of(context).pushNamed(
+                    AppRoutes.exerciseScreen,
+                    arguments: ExerciseArgs(
+                      primeMoverMuscleId: muscle.id,
+                      primeMoverMuscleName: muscle.name,
+                    ),
+                  );
+                },
+              );
+            },
+          );
         }
 
-        return CustomGridView(
-          itemCount: muscles.length,
-          itemBuilder: (context, index) {
-            final muscle = muscles[index];
-            return MuscleGridItem(
-              muscle: muscle,
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  AppRoutes.exerciseScreen,
-                  arguments: ExerciseArgs(
-                    primeMoverMuscleId: muscle.id,
-                    primeMoverMuscleName: muscle.name,
-                  ),
-                );
-              },
-            );
-          },
-        );
+        return AnimatedStateSwitcher(child: content);
       },
     );
   }
