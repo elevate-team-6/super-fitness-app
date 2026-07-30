@@ -19,93 +19,100 @@ import '../widgets/custom_svg_icon.dart';
 class MainLayoutScreen extends StatelessWidget {
   const MainLayoutScreen({super.key});
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ChatWelcomeScreen(),
-    WorkoutsScreen(),
-    ProfileScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MainLayoutCubit, MainLayoutState>(
-      builder: (context, state) {
-        return Scaffold(
-          body: IndexedStack(index: state.currentIndex, children: _screens),
-          extendBody: true,
-          bottomNavigationBar: _buildCustomBottomNavBar(context, state),
-        );
-      },
-    );
-  }
+    Localizations.localeOf(context);
 
-  Widget _buildCustomBottomNavBar(BuildContext context, MainLayoutState state) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 32.h),
-      child: Container(
-        height: 70.h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24.r),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: Container(
-              color: AppColors.black80.withValues(alpha: 0.8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _NavBarItem(
-                    key: const Key('home_tab'),
-                    index: 0,
-                    currentIndex: state.currentIndex,
-                    iconPath: AppIcons.home,
-                    label: AppStrings.explore.tr(),
-                    onTap: () => context.read<MainLayoutCubit>().changeTab(0),
+    final screens = [
+      HomeScreen(),
+      ChatWelcomeScreen(),
+      WorkoutsScreen(),
+      ProfileScreen(),
+    ];
+
+    return BlocProvider(
+      create: (context) => MainLayoutCubit(),
+      child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
+        builder: (context, state) {
+          return Scaffold(
+            body: IndexedStack(index: state.currentIndex, children: screens),
+            extendBody: true,
+            bottomNavigationBar: Padding(
+              padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 32.h),
+              child: Container(
+                height: 70.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24.r),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      color: AppColors.black80.withValues(alpha: 0.8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _NavBarItem(
+                            key: const Key('home_tab'),
+                            index: 0,
+                            currentIndex: state.currentIndex,
+                            iconPath: AppIcons.home,
+                            label: AppStrings.explore.tr(),
+                            onTap: () =>
+                                context.read<MainLayoutCubit>().changeTab(0),
+                          ),
+                          _NavBarItem(
+                            key: const Key('chat_tab'),
+                            index: 1,
+                            currentIndex: state.currentIndex,
+                            iconPath: AppIcons.chat,
+                            label: AppStrings.chat.tr(),
+                            onTap: () =>
+                                context.read<MainLayoutCubit>().changeTab(1),
+                          ),
+                          _NavBarItem(
+                            key: const Key('workouts_tab'),
+                            index: 2,
+                            currentIndex: state.currentIndex,
+                            iconPath: AppIcons.workOut,
+                            label: AppStrings.workouts.tr(),
+                            onTap: () =>
+                                context.read<MainLayoutCubit>().changeTab(2),
+                          ),
+                          _NavBarItem(
+                            key: const Key('profile_tab'),
+                            index: 3,
+                            currentIndex: state.currentIndex,
+                            iconPath: AppIcons.profile,
+                            label: AppStrings.profile.tr(),
+                            onTap: () =>
+                                context.read<MainLayoutCubit>().changeTab(3),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  _NavBarItem(
-                    key: const Key('chat_tab'),
-                    index: 1,
-                    currentIndex: state.currentIndex,
-                    iconPath: AppIcons.chat,
-                    label: AppStrings.chat.tr(),
-                    onTap: () => context.read<MainLayoutCubit>().changeTab(1),
-                  ),
-                  _NavBarItem(
-                    key: const Key('workouts_tab'),
-                    index: 2,
-                    currentIndex: state.currentIndex,
-                    iconPath: AppIcons.workOut,
-                    label: AppStrings.workouts.tr(),
-                    onTap: () => context.read<MainLayoutCubit>().changeTab(2),
-                  ),
-                  _NavBarItem(
-                    key: const Key('profile_tab'),
-                    index: 3,
-                    currentIndex: state.currentIndex,
-                    iconPath: AppIcons.profile,
-                    label: AppStrings.profile.tr(),
-                    onTap: () => context.read<MainLayoutCubit>().changeTab(3),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 }
 
 class _NavBarItem extends StatelessWidget {
+  static const Duration _transition = Duration(milliseconds: 220);
+
   final int index;
   final int currentIndex;
   final String iconPath;
@@ -132,21 +139,41 @@ class _NavBarItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomSvgIcon(
-              iconPath: iconPath,
-              color: isSelected ? AppColors.primary : AppColors.white,
-              size: 40.sp,
-            ),
-            if (isSelected) ...[
-              SizedBox(height: 4.h),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  label,
-                  style: AppTextStyles.primary13500.copyWith(fontSize: 12.sp),
+            AnimatedScale(
+              scale: isSelected ? 1.1 : 1,
+              duration: _transition,
+              curve: Curves.easeOut,
+              child: TweenAnimationBuilder<Color?>(
+                tween: ColorTween(
+                  end: isSelected ? AppColors.primary : AppColors.white,
+                ),
+                duration: _transition,
+                curve: Curves.easeOut,
+                builder: (context, color, _) => CustomSvgIcon(
+                  iconPath: iconPath,
+                  color: color,
+                  size: 40.sp,
                 ),
               ),
-            ],
+            ),
+            AnimatedSize(
+              duration: _transition,
+              curve: Curves.easeOut,
+              child: !isSelected
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: EdgeInsets.only(top: 4.h),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          label,
+                          style: AppTextStyles.primary13500.copyWith(
+                            fontSize: 12.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
           ],
         ),
       ),

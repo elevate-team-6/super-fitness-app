@@ -25,11 +25,12 @@ import '../../features/home/presentation/view_models/home_view_model/home_event.
 import '../../features/main_layout/presentation/cubit/main_layout_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/profile/presentation/screens/web_view_screen.dart';
 import '../../features/workouts/domain/entities/exercise_entity.dart';
 import '../../features/workouts/presentation/screens/exercise_details_screen.dart';
 import '../../features/workouts/presentation/screens/exercise_screen.dart';
-import '../../features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 import '../../features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
+import '../../features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -41,11 +42,12 @@ abstract class AppRoutes {
   static const String completeRegister = 'completeRegister';
   static const String forgetPassword = '/forgotPassword';
   static const String mainLayout = 'mainLayout';
+  static const String exerciseScreen = 'exerciseScreen';
   static const String food = 'food';
   static const String detailsFood = 'detailsFood';
-  static const String exerciseScreen = 'exercise';
   static const String exerciseDetails = 'exerciseDetails';
   static const String chat = 'chat';
+  static const String webView = 'webView';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -133,6 +135,13 @@ abstract class AppRoutes {
                     ..doIntent(LoadDetailsFoodEvent(args.mealId)),
               child: DetailsFoodScreen(mealName: args.mealName),
             ),
+          );
+
+        case webView:
+          final args = settings.arguments as WebViewArgs;
+
+          return MaterialPageRoute(
+            builder: (_) => WebViewScreen(title: args.title, url: args.url),
           );
 
         case exerciseScreen:
@@ -225,6 +234,15 @@ class CompleteRegisterArgs {
   final SocialSignupEntity? socialData;
 
   CompleteRegisterArgs({this.cubit, this.socialData});
+}
+
+class WebViewArgs {
+  /// Shown in the app bar while the page loads, so the user isn't looking at a
+  /// blank header.
+  final String title;
+  final String url;
+
+  const WebViewArgs({required this.title, required this.url});
 }
 
 class ExerciseArgs {

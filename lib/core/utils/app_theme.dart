@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app_colors.dart';
+import 'app_page_transitions.dart';
 import 'app_text_styles.dart';
 
 abstract class AppTheme {
@@ -151,6 +152,7 @@ abstract class AppTheme {
           return AppColors.black10;
         }),
         trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
 
       // Tab Bar Theme
@@ -189,6 +191,18 @@ abstract class AppTheme {
             bottomRight: Radius.circular(32.r),
           ),
         ),
+      ),
+
+      // Page transitions. iOS is deliberately left out: an unlisted platform
+      // falls back to Flutter's own default, which for iOS is the Cupertino
+      // transition, and its edge-swipe back gesture comes with it.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: AppPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
+          TargetPlatform.linux: AppPageTransitionsBuilder(),
+          TargetPlatform.windows: AppPageTransitionsBuilder(),
+        },
       ),
     );
   }

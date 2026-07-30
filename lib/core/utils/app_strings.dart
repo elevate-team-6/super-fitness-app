@@ -184,6 +184,18 @@ abstract class AppStrings {
   static const String description = 'description';
   static const String watchVideo = 'watchVideo';
 
+  // Profile
+  static const String editProfile = 'editProfile';
+  static const String changePassword = 'changePassword';
+  static const String selectLanguage = 'selectLanguage';
+  static const String security = 'security';
+  static const String privacyPolicy = 'privacyPolicy';
+  static const String help = 'help';
+  static const String logout = 'logout';
+  static const String english = 'english';
+  static const String arabic = 'arabic';
+  static const String pageFailedToLoad = 'pageFailedToLoad';
+
   // Workouts Feature
   static const String findBestExercisesForYou = 'find_best_exercises_for_you';
   static const String min30 = 'min_30';
