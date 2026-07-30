@@ -186,15 +186,15 @@ abstract class AppTheme {
         ),
       ),
 
-      // Page transitions
+      // Page transitions. iOS is deliberately left out: an unlisted platform
+      // falls back to Flutter's own default, which for iOS is the Cupertino
+      // transition, and its edge-swipe back gesture comes with it.
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: AppPageTransitionsBuilder(),
           TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
           TargetPlatform.linux: AppPageTransitionsBuilder(),
           TargetPlatform.windows: AppPageTransitionsBuilder(),
-          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
         },
       ),
     );
