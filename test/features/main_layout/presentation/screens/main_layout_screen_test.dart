@@ -7,6 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
+import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
+import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
 import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
@@ -19,6 +22,19 @@ import 'package:super_fitness/features/workouts/presentation/screens/workouts_sc
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_events.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_state.dart';
+
+class FakeChatCubit extends Cubit<ChatState> implements ChatCubit {
+  FakeChatCubit() : super(const ChatState());
+
+  @override
+  Stream<BaseUiEvent> get eventStream => const Stream.empty();
+
+  @override
+  void doEvent(ChatEvent event) {}
+
+  @override
+  void emitUiEvent(BaseUiEvent event) {}
+}
 
 class FakeWorkoutsCubit extends Cubit<WorkoutsState> implements WorkoutsCubit {
   FakeWorkoutsCubit() : super(const WorkoutsState());
@@ -66,7 +82,7 @@ class _InMemoryAssetLoader extends AssetLoader {
     'seeAll': 'See All',
     'recommendationForYou': 'Recommendation for you',
     'popular_training': 'Popular training',
-    'editProfile': 'Edit Profile',
+    'editProfile': 'Explore',
     'changePassword': 'Change Password',
     'selectLanguage': 'Select Language',
     'english': 'English',
@@ -75,6 +91,37 @@ class _InMemoryAssetLoader extends AssetLoader {
     'help': 'Help',
     'logout': 'Logout',
     'selectMuscleGroup': 'Select Muscle Group',
+    'connectionTimeout': 'Connection Timeout',
+    'unknownError': 'Unknown Error',
+    'noInternetConnection': 'No Internet Connection',
+    'authFailed': 'Auth Failed',
+    'serverError': 'Server Error',
+    'requestCancelled': 'Request Cancelled',
+    'sendTimeout': 'Send Timeout',
+    'receiveTimeout': 'Receive Timeout',
+    'unexpectedError': 'Unexpected Error',
+    'verificationCodeSentToYourEmail': 'Verification code sent to your email',
+    'verificationCodeIsCorrect': 'Verification code is correct',
+    'passwordResetSuccessfully': 'Password reset successfully',
+    'login_success': 'Login Success',
+    'invalid credentials': 'Invalid Credentials',
+    'failed': 'Failed',
+    'registerSuccess': 'Register Success',
+    'Email already exists': 'Email already exists',
+    'Network error': 'Network error',
+    'Error': 'Error',
+    'ingredients': 'Ingredients',
+    'description': 'Description',
+    'retry': 'Retry',
+    'foodRecommendation': 'Food Recommendation',
+    'noMealsFound': 'No Meals Found',
+    'oops': 'Oops',
+    'server error': 'Server Error',
+    'not found': 'Not Found',
+    'athlete': 'Athlete',
+    'smartCoach': 'Smart Coach',
+    'howCanIAssistYouToday': 'How can I assist you today?',
+    'getStarted': 'Get Started',
   };
 }
 
@@ -88,6 +135,7 @@ class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
 void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
   late FakeHomeCubit fakeHomeCubit;
+  late FakeChatCubit fakeChatCubit;
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
@@ -97,6 +145,7 @@ void main() {
   setUp(() {
     fakeWorkoutsCubit = FakeWorkoutsCubit();
     fakeHomeCubit = FakeHomeCubit();
+    fakeChatCubit = FakeChatCubit();
     getIt.registerFactory<ProfileCubit>(
       () => ProfileCubit(FakeGetCachedUserUseCase()),
     );
@@ -123,6 +172,7 @@ void main() {
                 providers: [
                   BlocProvider<WorkoutsCubit>.value(value: fakeWorkoutsCubit),
                   BlocProvider<HomeCubit>.value(value: fakeHomeCubit),
+                  BlocProvider<ChatCubit>.value(value: fakeChatCubit),
                 ],
                 child: const MainLayoutScreen(),
               ),
