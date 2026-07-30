@@ -8,6 +8,7 @@ import 'package:super_fitness/features/auth/data/models/request/verify_reset_cod
 import 'package:super_fitness/features/auth/data/models/response/forgot_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/reset_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/verify_reset_code_response.dart';
+import 'package:super_fitness/features/auth/data/models/response/logout_response_model.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
 
@@ -27,6 +28,9 @@ abstract class AuthApiClient {
 
   @POST(AppEndPoints.signup)
   Future<SignupResponse> signup(@Body() SignupRequest request);
+
+  @POST(AppEndPoints.logout)
+  Future<LogoutResponseModel> logout();
 
   @POST(AppEndPoints.forgetPassword)
   Future<ForgetPasswordResponse> forgotPassword(

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
 import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
@@ -28,11 +30,17 @@ class FakeWorkoutsCubit extends Cubit<WorkoutsState> implements WorkoutsCubit {
   void emitUiEvent(BaseUiEvent event) {}
 }
 
-/// The profile tab pulls its cubit straight from `getIt`, so the layout can't
-/// render that tab without one registered.
 class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
   @override
   Future<UserEntity?> call() async => null;
+}
+
+class FakeLogoutUseCase implements LogoutUseCase {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<BaseResponse<void>> call() async => const SuccessBaseResponse(null);
 }
 
 void main() {
@@ -41,7 +49,7 @@ void main() {
   setUp(() {
     fakeWorkoutsCubit = FakeWorkoutsCubit();
     getIt.registerFactory<ProfileCubit>(
-      () => ProfileCubit(FakeGetCachedUserUseCase()),
+      () => ProfileCubit(FakeGetCachedUserUseCase(), FakeLogoutUseCase()),
     );
   });
 
@@ -67,14 +75,12 @@ void main() {
     testWidgets(
       'Initial State: Should render Custom Navigation Items and initial HomeScreen',
       (WidgetTester tester) async {
-        // Set larger surface size to avoid overflow in test environment
-        tester.view.physicalSize = const Size(1125, 2436); // 375 * 3, 812 * 3
+        tester.view.physicalSize = const Size(1125, 2436);
         tester.view.devicePixelRatio = 3.0;
 
         await tester.pumpWidget(createWidgetUnderTest());
         await tester.pumpAndSettle();
 
-        // Verify Home tab is selected by checking Key
         expect(find.byKey(const Key('home_tab')), findsOneWidget);
         expect(find.byType(HomeScreen), findsOneWidget);
 
@@ -94,11 +100,9 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      // Tap on Workouts item using its Key
       await tester.tap(find.byKey(const Key('workouts_tab')));
       await tester.pumpAndSettle();
 
-      // Verify that the WorkoutsScreen is now visible
       expect(find.byType(WorkoutsScreen), findsOneWidget);
 
       addTearDown(() {
@@ -116,11 +120,9 @@ void main() {
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      // Tap on Profile item using its Key
       await tester.tap(find.byKey(const Key('profile_tab')));
       await tester.pumpAndSettle();
 
-      // Verify that the ProfileScreen is now visible
       expect(find.byType(ProfileScreen), findsOneWidget);
 
       addTearDown(() {

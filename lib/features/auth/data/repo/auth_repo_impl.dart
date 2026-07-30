@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
+import 'package:super_fitness/features/auth/data/models/response/logout_response_model.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
@@ -185,5 +186,19 @@ class AuthRepoImpl implements AuthRepoContract {
     } catch (e) {
       return ErrorBaseResponse(e.toString());
     }
+  }
+
+  @override
+  Future<BaseResponse<void>> logout() async {
+    final response = await _authRemoteDataSource.logout();
+
+    // Clear authentication related data but keep onboarding status
+    await _secureCacheHelper.deleteData(key: AppKeys.tokenKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.userDataKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.userIdKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.emailKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.rememberMeKey);
+
+    return const SuccessBaseResponse(null);
   }
 }
