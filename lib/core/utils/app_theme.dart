@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'app_colors.dart';
+import 'app_page_transitions.dart';
 import 'app_text_styles.dart';
 
 abstract class AppTheme {
@@ -185,6 +186,21 @@ abstract class AppTheme {
             bottomRight: Radius.circular(32.r),
           ),
         ),
+      ),
+
+      // Page transitions. Set here rather than per-route so every push picks
+      // it up, including the ones added after this.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: AppPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
+          TargetPlatform.linux: AppPageTransitionsBuilder(),
+          TargetPlatform.windows: AppPageTransitionsBuilder(),
+          // iOS and macOS keep the platform transition: the edge-swipe back
+          // gesture comes with it, and overriding it takes the gesture away.
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
       ),
     );
   }
