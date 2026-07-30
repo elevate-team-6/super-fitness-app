@@ -77,7 +77,14 @@
   "explore": "اكتشف",
   "workouts": "التمارين",
   "chat": "الكوتش",
+  "smartCoach": "أنا مدربك الذكي",
+  "howCanIAssistYouToday": "كيف يمكنني مساعدتك\nاليوم؟",
+  "getStarted": "ابدأ الآن",
+  "previousConversations": "المحادثات السابقة",
+  "typeAMessage": "اكتب رسالة...",
+  "coachIsBusy": "المدرب مشغول ولكنه لا يزال هنا من أجلك",
   "profile": "الملف الشخصي",
+  "selectMuscleGroup": "اختر مجموعة العضلات",
   "doIt": "ابدأ الآن",
   "forgetPassword": "نسيت كلمة المرور",
   "enterEmail": "أدخل بريدك الإلكتروني",
@@ -172,5 +179,6 @@
   "intermediate": "متوسط",
   "advanced": "متقدم",
   "failedToFetchLevelsOrMuscles": "عذراً! واجهنا مشكلة في تحميل بعض التمارين. يرجى المحاولة مرة أخرى.",
-  "athlete": "رياضي"
+  "athlete": "رياضي",
+  "newChat": "دردشة جديدة"
 }

@@ -76,7 +76,14 @@
   "explore": "Explore",
   "workouts": "Workouts",
   "chat": "Chat",
+  "smartCoach": "I Am Your Smart Coach",
+  "howCanIAssistYouToday": "How Can I Assist You\nToday ?",
+  "getStarted": "Get Started",
+  "previousConversations": "Previous Conversations",
+  "typeAMessage": "Type a message...",
+  "coachIsBusy": "Coach is busy but still here for you",
   "profile": "Profile",
+  "selectMuscleGroup": "Select Muscle Group",
   "doIt": "Do IT",
   "forgetPassword": "Forget Password",
   "enterEmail": "Enter Your Email",
@@ -171,5 +178,6 @@
   "intermediate": "Intermediate",
   "advanced": "Advanced",
   "failedToFetchLevelsOrMuscles": "Oops! We couldn't load some workouts. Please try again.",
-  "athlete": "Athlete"
+  "athlete": "Athlete",
+  "newChat": "New Chat"
 }

@@ -32,6 +32,7 @@ abstract class AppIcons {
   static const String yoga = '${_iconsPath}yoga_icon.png';
   static const String aerobics = '${_iconsPath}aerobics_icon.png';
   static const String trainer = '${_iconsPath}trainer_icon.png';
+  static const String menu = '${_iconsPath}menu.svg';
   static const String meal =
       '${_iconsPath}meal.svg'; // Placeholder if specific meal icon not found
 }
@@ -50,10 +51,13 @@ abstract class AppImages {
   static const String onboarding1 = '${_imagesPath}onboarding1.png';
   static const String onboarding2 = '${_imagesPath}onboarding2.png';
   static const String onboarding3 = '${_imagesPath}onboarding3.png';
+  static const String smartCoach = '${_imagesPath}smart_coach_image.png';
+  static const String coachProfile = '${_imagesPath}coach_profile_image.jpg';
 }
 
 abstract class AppLottie {
   static const String _lottiePath = 'assets/lottie_files/';
 
   static const String loading = '${_lottiePath}loading.json';
+  static const String aiChatBot = '${_lottiePath}ai_chat_bot.json';
 }
