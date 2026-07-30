@@ -15,8 +15,8 @@ import 'package:super_fitness/features/workouts/presentation/screens/workouts_sc
 import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_events.dart';
 import 'package:super_fitness/features/workouts/presentation/view_model/workouts_view_model/workouts_state.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:super_fitness/features/workouts/presentation/widgets/muscle_grid_item.dart';
-import 'package:super_fitness/core/widgets/custom_loading.dart';
 
 import 'workouts_screen_test.mocks.dart';
 
@@ -107,7 +107,10 @@ void main() {
       // استخدام pump إضافي لضمان معالجة الـ Stream الأولية
       await tester.pump();
 
-      expect(find.byType(CustomLoading), findsWidgets);
+      expect(
+        find.byWidgetPredicate((widget) => widget is Skeletonizer),
+        findsWidgets,
+      );
     });
 
     testWidgets(

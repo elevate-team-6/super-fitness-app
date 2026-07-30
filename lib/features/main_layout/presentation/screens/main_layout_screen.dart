@@ -111,8 +111,6 @@ class MainLayoutScreen extends StatelessWidget {
 }
 
 class _NavBarItem extends StatelessWidget {
-  /// Long enough to read as a movement, short enough that a user tapping
-  /// through the tabs never waits on it.
   static const Duration _transition = Duration(milliseconds: 220);
 
   final int index;
@@ -158,9 +156,6 @@ class _NavBarItem extends StatelessWidget {
                 ),
               ),
             ),
-            // The label belongs to the selected tab only. Animating the
-            // column's height into it lets the icon slide up to make room
-            // instead of the text popping in underneath it.
             AnimatedSize(
               duration: _transition,
               curve: Curves.easeOut,

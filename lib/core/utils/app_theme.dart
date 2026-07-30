@@ -145,8 +145,6 @@ abstract class AppTheme {
           return AppColors.black10;
         }),
         trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
-        // The rows that host a switch are tappable themselves, so the control
-        // doesn't need to reserve Material's 48dp target around it.
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
 
@@ -188,16 +186,13 @@ abstract class AppTheme {
         ),
       ),
 
-      // Page transitions. Set here rather than per-route so every push picks
-      // it up, including the ones added after this.
+      // Page transitions
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: AppPageTransitionsBuilder(),
           TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
           TargetPlatform.linux: AppPageTransitionsBuilder(),
           TargetPlatform.windows: AppPageTransitionsBuilder(),
-          // iOS and macOS keep the platform transition: the edge-swipe back
-          // gesture comes with it, and overriding it takes the gesture away.
           TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
         },

@@ -7,6 +7,7 @@ import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
+import 'package:super_fitness/core/widgets/animated_state_switcher.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_card.dart';
@@ -60,9 +61,14 @@ class FoodScreen extends StatelessWidget {
                   child: BlocBuilder<FoodCubit, FoodState>(
                     builder: (context, state) {
                       final mealsState = state.mealsState;
+                      final data = mealsState.data;
+                      final isLoading = data == null;
+                      final meals = data ?? skeletonMeals;
+
+                      final Widget content;
 
                       if (mealsState.errorMessage != null) {
-                        return SingleChildScrollView(
+                        content = SingleChildScrollView(
                           child: CustomErrorStateView(
                             message: mealsState.errorMessage!,
                             onRetry: () => context.read<FoodCubit>().doIntent(
@@ -70,42 +76,44 @@ class FoodScreen extends StatelessWidget {
                             ),
                           ),
                         );
-                      }
-
-                      final data = mealsState.data;
-                      if (data != null && data.isEmpty) {
-                        return Center(
+                      } else if (data != null && data.isEmpty) {
+                        content = Center(
                           child: Text(
                             AppStrings.noMealsFound.tr(),
                             style: AppTextStyles.white2016500,
                           ),
                         );
-                      }
-
-                      final isLoading = data == null;
-                      final meals = data ?? skeletonMeals;
-
-                      return Skeletonizer(
-                        enabled: isLoading,
-                        child: CustomGridView(
-                          itemCount: meals.length,
-                          padding: EdgeInsets.zero,
-                          crossAxisSpacing: 12.w,
-                          mainAxisSpacing: 12.h,
-                          itemBuilder: (context, index) => CustomCard(
-                            title: meals[index].name,
-                            image: meals[index].thumbnail,
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.detailsFood,
-                              arguments: DetailsFoodArgs(
-                                mealId: meals[index].id,
-                                mealName: meals[index].name,
+                      } else {
+                        // A cached meal time is emitted straight as data, with
+                        // no loading state in between, so two loaded grids can
+                        // follow each other. The meal time tells them apart.
+                        content = Skeletonizer(
+                          key: ValueKey(
+                            isLoading ? null : state.selectedMealTime,
+                          ),
+                          enabled: isLoading,
+                          child: CustomGridView(
+                            itemCount: meals.length,
+                            padding: EdgeInsets.zero,
+                            crossAxisSpacing: 12.w,
+                            mainAxisSpacing: 12.h,
+                            itemBuilder: (context, index) => CustomCard(
+                              title: meals[index].name,
+                              image: meals[index].thumbnail,
+                              onTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.detailsFood,
+                                arguments: DetailsFoodArgs(
+                                  mealId: meals[index].id,
+                                  mealName: meals[index].name,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
+                        );
+                      }
+
+                      return AnimatedStateSwitcher(child: content);
                     },
                   ),
                 ),

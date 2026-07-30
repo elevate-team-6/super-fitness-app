@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// The push animation every route in the app shares: the incoming page fades
-/// in while rising a short distance.
-///
-/// Vertical on purpose. The app ships in English and Arabic, and a horizontal
-/// slide would have to flip direction with the locale to avoid pushing pages
-/// in from the wrong edge.
 class AppPageTransitionsBuilder extends PageTransitionsBuilder {
   const AppPageTransitionsBuilder();
 
-  /// A nudge rather than the quarter-screen travel of Flutter's fade-upwards
-  /// transition, which reads as heavy on screens this dark.
   static final Animatable<Offset> _rise = Tween<Offset>(
     begin: const Offset(0, 0.04),
     end: Offset.zero,
@@ -21,8 +13,6 @@ class AppPageTransitionsBuilder extends PageTransitionsBuilder {
   @override
   Duration get transitionDuration => const Duration(milliseconds: 260);
 
-  /// Shorter than the push: going back should feel like the screen is already
-  /// on its way out.
   @override
   Duration get reverseTransitionDuration => const Duration(milliseconds: 200);
 
