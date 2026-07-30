@@ -111,7 +111,7 @@ void main() {
       assetLoader: _InMemoryAssetLoader(),
       child: Builder(
         builder: (context) => ScreenUtilInit(
-          designSize: const Size(375, 812),
+          designSize: const Size(800, 1200),
           minTextAdapt: true,
           splitScreenMode: true,
           builder: (context, child) {
@@ -138,7 +138,7 @@ void main() {
       'Initial State: Should render Custom Navigation Items and initial HomeScreen',
       (WidgetTester tester) async {
         // Set larger surface size to avoid overflow in test environment
-        tester.view.physicalSize = const Size(600, 1000);
+        tester.view.physicalSize = const Size(800, 1200);
         tester.view.devicePixelRatio = 1.0;
 
         await tester.pumpWidget(createWidgetUnderTest());
@@ -158,7 +158,7 @@ void main() {
     testWidgets('Interaction: Tapping on Workout tab should update UI', (
       WidgetTester tester,
     ) async {
-      tester.view.physicalSize = const Size(600, 1000);
+      tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(createWidgetUnderTest());
@@ -180,7 +180,7 @@ void main() {
     testWidgets('Interaction: Tapping on Profile tab should update UI', (
       WidgetTester tester,
     ) async {
-      tester.view.physicalSize = const Size(600, 1000);
+      tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(createWidgetUnderTest());
