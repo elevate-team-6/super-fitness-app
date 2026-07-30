@@ -158,6 +158,42 @@ void main() {
       },
     );
 
+    test(
+      'should yield ErrorBaseResponse when the stream is empty (no SSE data)',
+      () async {
+        // arrange
+        final byteStream = Stream.fromIterable([utf8.encode('\n\n')]);
+        final response = http.StreamedResponse(byteStream, 200);
+
+        when(
+          mockApiClient.getChatResponse(
+            message: anyNamed('message'),
+            token: anyNamed('token'),
+            userContext: anyNamed('userContext'),
+          ),
+        ).thenAnswer((_) async => response);
+
+        // act
+        final result = dataSource.getChatResponseStream(
+          message: tMessage,
+          token: tToken,
+        );
+
+        // assert
+        await expectLater(
+          result,
+          emitsInOrder([
+            isA<ErrorBaseResponse<ChatEventModel>>().having(
+              (r) => r.errorMessage,
+              'message',
+              contains('coachIsBusy'), // Key from AppStrings
+            ),
+            emitsDone,
+          ]),
+        );
+      },
+    );
+
     test('should yield ErrorBaseResponse when an exception occurs', () async {
       // arrange
       when(

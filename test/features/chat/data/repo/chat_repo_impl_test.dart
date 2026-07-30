@@ -5,6 +5,7 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/core/data/local/sqlite/catalog_local_data_source.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
+import 'package:super_fitness/config/services/crashlytics_service.dart';
 import 'package:super_fitness/features/chat/data/data_sources/chat_local_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/data_sources/chat_remote_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/models/chat_event_model.dart';
@@ -21,6 +22,7 @@ import 'chat_repo_impl_test.mocks.dart';
   CatalogLocalDataSource,
   SecureCacheHelper,
   ChatLocalDataSourceContract,
+  CrashlyticsService,
 ])
 void main() {
   setUpAll(() {
@@ -43,6 +45,7 @@ void main() {
   late MockCatalogLocalDataSource mockLocalDataSource;
   late MockSecureCacheHelper mockCacheHelper;
   late MockChatLocalDataSourceContract mockChatLocalDataSource;
+  late MockCrashlyticsService mockCrashlyticsService;
   late ChatRepoImpl repo;
 
   setUp(() {
@@ -50,6 +53,7 @@ void main() {
     mockLocalDataSource = MockCatalogLocalDataSource();
     mockCacheHelper = MockSecureCacheHelper();
     mockChatLocalDataSource = MockChatLocalDataSourceContract();
+    mockCrashlyticsService = MockCrashlyticsService();
 
     when(
       mockCacheHelper.readData(key: anyNamed('key')),
@@ -64,6 +68,7 @@ void main() {
       mockLocalDataSource,
       mockCacheHelper,
       mockChatLocalDataSource,
+      mockCrashlyticsService,
     );
 
     when(
@@ -115,6 +120,49 @@ void main() {
           argThat(
             predicate((s) => s is ChatSessionHiveModel && s.id == tSessionId),
           ),
+        ),
+      ).called(1);
+    });
+
+    test('should record error to crashlytics when remote stream fails', () async {
+      // arrange
+      when(
+        mockCacheHelper.readData(key: AppKeys.tokenKey),
+      ).thenAnswer((_) async => tToken);
+      when(
+        mockChatLocalDataSource.getSession(any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
+      when(
+        mockChatLocalDataSource.saveSession(any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
+      when(
+        mockChatLocalDataSource.updateSessionMessages(any, any),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
+
+      when(
+        mockRemoteDataSource.getChatResponseStream(
+          message: anyNamed('message'),
+          token: anyNamed('token'),
+          userContext: anyNamed('userContext'),
+        ),
+      ).thenAnswer(
+        (_) => Stream.fromIterable([
+          const ErrorBaseResponse<ChatEventModel>('Stream Error'),
+        ]),
+      );
+
+      // act
+      final stream = repo.sendMessage(sessionId: tSessionId, message: tMessage);
+      final results = await stream.toList();
+
+      // assert
+      expect(results.last, isA<ErrorBaseResponse<ChatMessageEntity>>());
+      verify(
+        mockCrashlyticsService.recordError(
+          'Stream Error',
+          any,
+          reason: anyNamed('reason'),
+          information: anyNamed('information'),
         ),
       ).called(1);
     });

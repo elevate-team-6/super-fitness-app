@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../config/base_response/base_response.dart';
 import '../../../../config/cache/secure_cache_helper.dart';
+import '../../../../config/services/crashlytics_service.dart';
 import '../../../../core/data/local/sqlite/catalog_local_data_source.dart';
 import '../../../../core/utils/app_keys.dart';
 import '../../../../core/utils/app_strings.dart';
@@ -27,12 +28,14 @@ class ChatRepoImpl implements ChatRepoContract {
   final CatalogLocalDataSource _localDataSource;
   final SecureCacheHelper _secureCacheHelper;
   final ChatLocalDataSourceContract _chatLocalDataSource;
+  final CrashlyticsService _crashlyticsService;
 
   ChatRepoImpl(
     this._remoteDataSource,
     this._localDataSource,
     this._secureCacheHelper,
     this._chatLocalDataSource,
+    this._crashlyticsService,
   );
 
   @override
@@ -182,6 +185,12 @@ class ChatRepoImpl implements ChatRepoContract {
           }
 
         case ErrorBaseResponse<ChatEventModel>():
+          await _crashlyticsService.recordError(
+            result.errorMessage,
+            StackTrace.current,
+            reason: "Chat Remote Error",
+            information: ["SessionID: $sessionId"],
+          );
           yield ErrorBaseResponse(result.errorMessage);
       }
     }

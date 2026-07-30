@@ -32,11 +32,22 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
       );
 
       if (response.statusCode != 200) {
-        yield ErrorBaseResponse(
-          "${AppStrings.serverError.tr()}: ${response.statusCode}",
-        );
+        String errorMessage;
+        switch (response.statusCode) {
+          case 401:
+            errorMessage = AppStrings.authFailed.tr();
+          case 500:
+          case 502:
+          case 503:
+            errorMessage = AppStrings.serverError.tr();
+          default:
+            errorMessage = "${AppStrings.chatUnexpectedError.tr()} (${response.statusCode})";
+        }
+        yield ErrorBaseResponse(errorMessage);
         return;
       }
+
+      bool hasReceivedData = false;
 
       // Transform the byte stream into a line-by-line event stream
       await for (final line
@@ -49,6 +60,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
 
           try {
             final json = jsonDecode(data);
+            hasReceivedData = true;
             yield SuccessBaseResponse(ChatEventModel.fromJson(json));
           } catch (e, stack) {
             await _crashlyticsService.recordError(
@@ -56,9 +68,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
               stack,
               reason: "SSE Parse Error",
             );
-            yield ErrorBaseResponse(AppStrings.unexpectedError.tr());
+            yield ErrorBaseResponse(AppStrings.chatUnexpectedError.tr());
           }
         }
+      }
+
+      if (!hasReceivedData) {
+        yield ErrorBaseResponse(AppStrings.coachIsBusy.tr());
       }
     } catch (e, stack) {
       await _crashlyticsService.recordError(
@@ -66,7 +82,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
         stack,
         reason: "Chat Stream Failure",
       );
-      yield ErrorBaseResponse(AppStrings.noInternetConnection.tr());
+      yield ErrorBaseResponse(AppStrings.chatConnectionError.tr());
     }
   }
 }

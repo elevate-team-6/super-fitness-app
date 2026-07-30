@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
 
@@ -5,6 +6,7 @@ import '../../../../../config/base_cubit/base_cubit.dart';
 import '../../../../../config/base_response/base_response.dart';
 import '../../../../../config/base_state/base_state.dart';
 import '../../../../../config/base_ui_event/base_ui_event.dart';
+import '../../../../../core/utils/app_strings.dart';
 import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/use_cases/create_session_use_case.dart';
 import '../../domain/use_cases/delete_session_use_case.dart';
@@ -170,6 +172,7 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     try {
       final stream = _sendMessageUseCase(sessionId: sessionId, message: text);
       ChatMessageEntity? assistantMessage;
+      bool hasError = false;
 
       await for (final result in stream) {
         switch (result) {
@@ -203,6 +206,7 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
               );
             }
           case ErrorBaseResponse<ChatMessageEntity>():
+            hasError = true;
             emit(
               state.copyWith(
                 status: ChatStatus.failure,
@@ -213,9 +217,20 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
             return;
         }
       }
-      emit(
-        state.copyWith(status: ChatStatus.success, lastPendingMessage: null),
-      );
+
+      if (!hasError && (assistantMessage == null || assistantMessage.text.trim().isEmpty)) {
+        emit(
+          state.copyWith(
+            status: ChatStatus.failure,
+            errorMessage: AppStrings.chatUnexpectedError.tr(),
+          ),
+        );
+        emitUiEvent(DisplayErrorEvent(AppStrings.chatUnexpectedError.tr()));
+      } else {
+        emit(
+          state.copyWith(status: ChatStatus.success, lastPendingMessage: null),
+        );
+      }
     } catch (e) {
       emit(
         state.copyWith(status: ChatStatus.failure, errorMessage: e.toString()),
