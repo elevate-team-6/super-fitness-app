@@ -6,7 +6,5 @@ class LogoutResponseModel {
   const LogoutResponseModel({this.message});
 
   factory LogoutResponseModel.fromJson(Map<String, dynamic> json) =>
-      LogoutResponseModel(
-        message: json[ApiParameters.message] as String?,
-      );
+      LogoutResponseModel(message: json[ApiParameters.message] as String?);
 }

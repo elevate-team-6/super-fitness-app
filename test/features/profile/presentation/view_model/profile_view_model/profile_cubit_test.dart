@@ -72,9 +72,9 @@ void main() {
     blocTest<ProfileCubit, ProfileState>(
       'LogoutEvent calls LogoutUseCase',
       build: () {
-        when(logoutUseCase()).thenAnswer(
-          (_) async => const SuccessBaseResponse(null),
-        );
+        when(
+          logoutUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
         return ProfileCubit(useCase, logoutUseCase);
       },
       act: (cubit) => cubit.doIntent(const LogoutEvent()),

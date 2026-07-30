@@ -77,7 +77,9 @@ void main() {
 
     // The screen pulls its cubit from the container rather than a route, so
     // the test has to stand one up.
-    getIt.registerFactory<ProfileCubit>(() => ProfileCubit(useCase, logoutUseCase));
+    getIt.registerFactory<ProfileCubit>(
+      () => ProfileCubit(useCase, logoutUseCase),
+    );
   });
 
   tearDown(() => getIt.reset());
@@ -245,26 +247,29 @@ void main() {
       expect((pushedRoute?.arguments as WebViewArgs).url, AppConstants.helpUrl);
     });
 
-    testWidgets('Logout shows confirmation dialog and calls cubit when confirmed', (
-      tester,
-    ) async {
-      when(useCase()).thenAnswer((_) async => null);
-      when(logoutUseCase()).thenAnswer((_) async => const SuccessBaseResponse(null));
+    testWidgets(
+      'Logout shows confirmation dialog and calls cubit when confirmed',
+      (tester) async {
+        when(useCase()).thenAnswer((_) async => null);
+        when(
+          logoutUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
-      await pumpProfile(tester);
+        await pumpProfile(tester);
 
-      await tester.tap(find.text('Logout'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Logout'));
+        await tester.pumpAndSettle();
 
-      // Verify dialog is shown
-      expect(find.text('Logout'), findsNWidgets(2)); // Title and Menu Item
-      expect(find.text('Are you sure you want to log out?'), findsOneWidget);
+        // Verify dialog is shown
+        expect(find.text('Logout'), findsNWidgets(2)); // Title and Menu Item
+        expect(find.text('Are you sure you want to log out?'), findsOneWidget);
 
-      // Confirm logout
-      await tester.tap(find.text('Yes'));
-      await tester.pumpAndSettle();
+        // Confirm logout
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
 
-      verify(logoutUseCase()).called(1);
-    });
+        verify(logoutUseCase()).called(1);
+      },
+    );
   });
 }
