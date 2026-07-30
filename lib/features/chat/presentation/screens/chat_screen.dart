@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/config/base_ui_handler/ui_event_handler_mixin.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
@@ -18,12 +22,22 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with UiEventHandler {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  StreamSubscription<BaseUiEvent>? _uiEventSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _uiEventSubscription = context.read<ChatCubit>().eventStream.listen(
+      handleUiEvent,
+    );
+  }
 
   @override
   void dispose() {
+    _uiEventSubscription?.cancel();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();

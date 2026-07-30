@@ -126,6 +126,9 @@ abstract class AppStrings {
   static const String previousConversations = 'previousConversations';
   static const String typeAMessage = 'typeAMessage';
   static const String coachIsBusy = 'coachIsBusy';
+  static const String chatConnectionError = 'chatConnectionError';
+  static const String chatUnexpectedError = 'chatUnexpectedError';
+  static const String chatSessionError = 'chatSessionError';
 
   // Signup
   static const String registerFailed = 'registerFailed';
