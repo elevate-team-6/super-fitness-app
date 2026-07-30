@@ -56,11 +56,6 @@ class PopularTrainingCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.play_circle_fill,
-                    color: AppColors.primary.withValues(alpha: 0.8),
-                    size: 40.r,
-                  ),
                   SizedBox(height: 8.h),
                   Text(
                     title,
@@ -74,7 +69,7 @@ class PopularTrainingCard extends StatelessWidget {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
+                          horizontal: 8.w,
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
@@ -89,7 +84,7 @@ class PopularTrainingCard extends StatelessWidget {
                       const Spacer(),
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
+                          horizontal: 8.w,
                           vertical: 4.h,
                         ),
                         decoration: BoxDecoration(

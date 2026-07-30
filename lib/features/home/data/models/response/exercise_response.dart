@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 
-import '../../../../../core/utils/youtube_url.dart';
-import '../../../domain/entities/exercise_entity.dart';
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 
 part 'exercise_response.g.dart';
 
@@ -53,9 +53,9 @@ class ExerciseModel extends Equatable {
   @JsonKey(name: 'prime_mover_muscle')
   final String? primeMoverMuscle;
   @JsonKey(name: 'secondary_muscle')
-  final String? secondaryMuscle;
+  final String? secondaryMuscles;
   @JsonKey(name: 'tertiary_muscle')
-  final String? tertiaryMuscle;
+  final String? tertiaryMuscles;
   @JsonKey(name: 'primary_equipment')
   final String? primaryEquipment;
   @JsonKey(name: '_primary_items')
@@ -111,8 +111,8 @@ class ExerciseModel extends Equatable {
     this.difficultyLevel,
     this.targetMuscleGroup,
     this.primeMoverMuscle,
-    this.secondaryMuscle,
-    this.tertiaryMuscle,
+    this.secondaryMuscles,
+    this.tertiaryMuscles,
     this.primaryEquipment,
     this.primaryItems,
     this.secondaryEquipment,
@@ -143,20 +143,75 @@ class ExerciseModel extends Equatable {
   factory ExerciseModel.fromJson(Map<String, dynamic> json) =>
       _$ExerciseModelFromJson(json);
 
+  factory ExerciseModel.fromSqlite(Map<String, dynamic> map) => ExerciseModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    exercise: map[CatalogDbConstants.aliasExerciseName]?.toString(),
+    difficultyLevel: map[CatalogDbConstants.aliasDifficultyLevel]?.toString(),
+    targetMuscleGroup: map[CatalogDbConstants.aliasTargetMuscleGroup]
+        ?.toString(),
+    primeMoverMuscle: map[CatalogDbConstants.aliasPrimeMoverMuscle]?.toString(),
+    secondaryMuscles: map[CatalogDbConstants.columnSecondaryMuscle]?.toString(),
+    tertiaryMuscles: map[CatalogDbConstants.columnTertiaryMuscle]?.toString(),
+    primaryEquipment: map[CatalogDbConstants.aliasPrimaryEquipment]?.toString(),
+    primaryItems: map[CatalogDbConstants.columnPrimaryItems] as int?,
+    secondaryEquipment: map[CatalogDbConstants.columnSecondaryEquipment]
+        ?.toString(),
+    secondaryItems: map[CatalogDbConstants.columnSecondaryItems] as int?,
+    posture: map[CatalogDbConstants.columnPosture]?.toString(),
+    singleOrDoubleArm: map[CatalogDbConstants.columnSingleOrDoubleArm]
+        ?.toString(),
+    continuousOrAlternatingArms: map[CatalogDbConstants.columnArmsMode]
+        ?.toString(),
+    grip: map[CatalogDbConstants.columnGrip]?.toString(),
+    loadPositionEnding: map[CatalogDbConstants.columnLoadPositionEnding]
+        ?.toString(),
+    continuousOrAlternatingLegs: map[CatalogDbConstants.columnLegsMode]
+        ?.toString(),
+    footElevation: map[CatalogDbConstants.columnFootElevation]?.toString(),
+    combinationExercises: map[CatalogDbConstants.columnCombinationExercises]
+        ?.toString(),
+    movementPattern1: map[CatalogDbConstants.columnMovementPattern1]
+        ?.toString(),
+    movementPattern2: map[CatalogDbConstants.columnMovementPattern2]
+        ?.toString(),
+    movementPattern3: map[CatalogDbConstants.columnMovementPattern3]
+        ?.toString(),
+    planeOfMotion1: map[CatalogDbConstants.columnPlaneOfMotion1]?.toString(),
+    planeOfMotion2: map[CatalogDbConstants.columnPlaneOfMotion2]?.toString(),
+    planeOfMotion3: map[CatalogDbConstants.columnPlaneOfMotion3]?.toString(),
+    bodyRegion: map[CatalogDbConstants.columnBodyRegionName]?.toString(),
+    forceType: map[CatalogDbConstants.columnForceType]?.toString(),
+    mechanics: map[CatalogDbConstants.columnMechanics]?.toString(),
+    laterality: map[CatalogDbConstants.columnLaterality]?.toString(),
+    primaryExerciseClassification: map[CatalogDbConstants.columnClassification]
+        ?.toString(),
+    shortYoutubeDemonstrationLink: map[CatalogDbConstants.columnDemoUrl]
+        ?.toString(),
+    inDepthYoutubeExplanationLink: map[CatalogDbConstants.columnExplainUrl]
+        ?.toString(),
+  );
+
   Map<String, dynamic> toJson() => _$ExerciseModelToJson(this);
 
   ExerciseEntity toEntity() => ExerciseEntity(
     id: id ?? '',
-    name: exercise ?? '',
-    difficulty: difficultyLevel ?? '',
-    targetMuscle: targetMuscleGroup ?? '',
-    videoUrl:
-        shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink ?? '',
-    image:
-        YoutubeUrl.thumbnailUrlOf(
-          shortYoutubeDemonstrationLink ?? inDepthYoutubeExplanationLink,
-        ) ??
-        '',
+    exercise: exercise ?? '',
+    difficultyLevel: difficultyLevel ?? '',
+    targetMuscleGroup: targetMuscleGroup ?? '',
+    primeMoverMuscle: primeMoverMuscle ?? '',
+    primaryEquipment: primaryEquipment ?? '',
+    secondaryEquipment: secondaryEquipment ?? '',
+    posture: posture ?? '',
+    grip: grip ?? '',
+    forceType: forceType ?? '',
+    secondaryMuscles: secondaryMuscles ?? '',
+    tertiaryMuscles: tertiaryMuscles ?? '',
+    bodyRegion: bodyRegion ?? '',
+    mechanics: mechanics ?? '',
+    laterality: laterality ?? '',
+    primaryExerciseClassification: primaryExerciseClassification ?? '',
+    shortYoutubeDemonstrationLink: shortYoutubeDemonstrationLink ?? '',
+    inDepthYoutubeExplanationLink: inDepthYoutubeExplanationLink ?? '',
   );
 
   @override
@@ -168,8 +223,8 @@ class ExerciseModel extends Equatable {
     difficultyLevel,
     targetMuscleGroup,
     primeMoverMuscle,
-    secondaryMuscle,
-    tertiaryMuscle,
+    secondaryMuscles,
+    tertiaryMuscles,
     primaryEquipment,
     primaryItems,
     secondaryEquipment,

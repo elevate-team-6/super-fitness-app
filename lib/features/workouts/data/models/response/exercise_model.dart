@@ -2,6 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
+
 part 'exercise_model.g.dart';
 
 @JsonSerializable(createToJson: false)
@@ -17,7 +19,16 @@ class ExerciseModel extends Equatable {
   final String? primeMoverMuscle;
   @JsonKey(name: 'primary_equipment')
   final String? primaryEquipment;
+  @JsonKey(name: 'secondary_equipment')
+  final String? secondaryEquipment;
   final String? posture;
+  final String? grip;
+  @JsonKey(name: 'force_type')
+  final String? forceType;
+  @JsonKey(name: 'secondary_muscle')
+  final String? secondaryMuscles;
+  @JsonKey(name: 'tertiary_muscle')
+  final String? tertiaryMuscles;
   @JsonKey(name: 'body_region')
   final String? bodyRegion;
   final String? mechanics;
@@ -36,7 +47,12 @@ class ExerciseModel extends Equatable {
     this.targetMuscleGroup,
     this.primeMoverMuscle,
     this.primaryEquipment,
+    this.secondaryEquipment,
     this.posture,
+    this.grip,
+    this.forceType,
+    this.secondaryMuscles,
+    this.tertiaryMuscles,
     this.bodyRegion,
     this.mechanics,
     this.laterality,
@@ -48,6 +64,36 @@ class ExerciseModel extends Equatable {
   factory ExerciseModel.fromJson(Map<String, dynamic> json) =>
       _$ExerciseModelFromJson(json);
 
+  factory ExerciseModel.fromSqlite(Map<String, dynamic> map) => ExerciseModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    exercise: map[CatalogDbConstants.aliasExerciseName]?.toString(),
+    difficultyLevel: map[CatalogDbConstants.aliasDifficultyLevel]?.toString(),
+    targetMuscleGroup: map[CatalogDbConstants.aliasTargetMuscleGroup]
+        ?.toString(),
+    primeMoverMuscle: map[CatalogDbConstants.aliasPrimeMoverMuscle]?.toString(),
+    primaryEquipment: map[CatalogDbConstants.aliasPrimaryEquipment]?.toString(),
+    secondaryEquipment: map[CatalogDbConstants.columnSecondaryEquipment]
+        ?.toString(),
+    posture: map[CatalogDbConstants.columnPosture]?.toString(),
+    grip: map[CatalogDbConstants.columnGrip]?.toString(),
+    forceType: map[CatalogDbConstants.columnForceType]?.toString(),
+    secondaryMuscles: map[CatalogDbConstants.columnSecondaryMuscle]?.toString(),
+    tertiaryMuscles: map[CatalogDbConstants.columnTertiaryMuscle]?.toString(),
+    bodyRegion: map[CatalogDbConstants.columnBodyRegionName]?.toString(),
+    mechanics: map[CatalogDbConstants.columnMechanics]?.toString(),
+    laterality: map[CatalogDbConstants.columnLaterality]?.toString(),
+    primaryExerciseClassification: map[CatalogDbConstants.columnClassification]
+        ?.toString(),
+    shortYoutubeDemonstrationLink:
+        (map[CatalogDbConstants.aliasShortYoutubeLink] ??
+                map[CatalogDbConstants.columnDemoUrl])
+            ?.toString(),
+    inDepthYoutubeExplanationLink:
+        (map[CatalogDbConstants.aliasInDepthYoutubeLink] ??
+                map[CatalogDbConstants.columnExplainUrl])
+            ?.toString(),
+  );
+
   ExerciseEntity toEntity() => ExerciseEntity(
     id: id ?? '',
     exercise: exercise ?? '',
@@ -55,7 +101,12 @@ class ExerciseModel extends Equatable {
     targetMuscleGroup: targetMuscleGroup ?? '',
     primeMoverMuscle: primeMoverMuscle ?? '',
     primaryEquipment: primaryEquipment ?? '',
+    secondaryEquipment: secondaryEquipment ?? '',
     posture: posture ?? '',
+    grip: grip ?? '',
+    forceType: forceType ?? '',
+    secondaryMuscles: secondaryMuscles ?? '',
+    tertiaryMuscles: tertiaryMuscles ?? '',
     bodyRegion: bodyRegion ?? '',
     mechanics: mechanics ?? '',
     laterality: laterality ?? '',
@@ -72,7 +123,12 @@ class ExerciseModel extends Equatable {
     targetMuscleGroup,
     primeMoverMuscle,
     primaryEquipment,
+    secondaryEquipment,
     posture,
+    grip,
+    forceType,
+    secondaryMuscles,
+    tertiaryMuscles,
     bodyRegion,
     mechanics,
     laterality,

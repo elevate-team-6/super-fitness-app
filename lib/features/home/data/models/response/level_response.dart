@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 import '../../../domain/entities/level_entity.dart';
 
 part 'level_response.g.dart';
@@ -30,6 +31,11 @@ class LevelModel extends Equatable {
 
   factory LevelModel.fromJson(Map<String, dynamic> json) =>
       _$LevelModelFromJson(json);
+
+  factory LevelModel.fromSqlite(Map<String, dynamic> map) => LevelModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    name: map[CatalogDbConstants.columnName]?.toString(),
+  );
 
   Map<String, dynamic> toJson() => _$LevelModelToJson(this);
 

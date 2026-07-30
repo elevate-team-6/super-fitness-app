@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 import '../../../domain/entities/muscle_entity.dart';
 
 part 'muscle_response.g.dart';
@@ -39,6 +40,12 @@ class MuscleModel extends Equatable {
 
   factory MuscleModel.fromJson(Map<String, dynamic> json) =>
       _$MuscleModelFromJson(json);
+
+  factory MuscleModel.fromSqlite(Map<String, dynamic> map) => MuscleModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    name: map[CatalogDbConstants.columnName]?.toString(),
+    image: map[CatalogDbConstants.columnImage]?.toString(),
+  );
 
   Map<String, dynamic> toJson() => _$MuscleModelToJson(this);
 

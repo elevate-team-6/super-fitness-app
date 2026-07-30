@@ -92,16 +92,23 @@ class _WatchVideoButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.all(14.w),
+          width: 60.r,
+          height: 60.r,
           decoration: BoxDecoration(
             color: AppColors.primary,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.5),
+                blurRadius: 15,
+                spreadRadius: 2,
+              ),
+            ],
           ),
           child: Icon(
             Icons.play_arrow_rounded,
-            color: AppColors.black,
-            size: 32.sp,
+            color: AppColors.white,
+            size: 40.r,
           ),
         ),
       ),
