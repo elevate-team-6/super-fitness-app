@@ -9,7 +9,7 @@ import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/app_text_styles.dart';
-import '../../../chat/presentation/screens/chat_screen.dart';
+import '../../../chat/presentation/screens/chat_welcome_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../workouts/presentation/screens/workouts_screen.dart';
@@ -21,7 +21,7 @@ class MainLayoutScreen extends StatelessWidget {
 
   final List<Widget> _screens = const [
     HomeScreen(),
-    ChatScreen(),
+    ChatWelcomeScreen(),
     WorkoutsScreen(),
     ProfileScreen(),
   ];

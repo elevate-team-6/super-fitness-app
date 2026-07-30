@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
@@ -19,10 +20,11 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase and Localization in parallel
+  // Initialize Firebase, Hive and Localization in parallel
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    Hive.initFlutter(),
   ]);
 
   // Setup Crashlytics non-blockingly to avoid slowing down startup
