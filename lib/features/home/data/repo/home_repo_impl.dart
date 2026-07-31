@@ -1,13 +1,15 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 
 import '../../../../config/base_response/base_response.dart';
 import '../../../../config/cache/secure_cache_helper.dart';
 import '../../../../core/data/local/sqlite/catalog_local_data_source.dart';
 import '../../../../core/utils/app_keys.dart';
 import '../../../../core/utils/app_strings.dart';
+import '../../../auth/data/models/response/user_model.dart';
 import '../../domain/entities/details_food_entity.dart';
-import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 import '../../domain/entities/home_user_entity.dart';
 import '../../domain/entities/level_entity.dart';
 import '../../domain/entities/meal_category_entity.dart';
@@ -24,18 +26,17 @@ class HomeRepoImpl implements HomeRepoContract {
 
   @override
   Future<BaseResponse<HomeUserEntity>> getCachedUserData() async {
-    try {
-      final name = await _secureCacheHelper.readData(key: AppKeys.userNameKey);
-      final image = await _secureCacheHelper.readData(
-        key: AppKeys.userImageKey,
-      );
+    final raw = await _secureCacheHelper.readData(key: AppKeys.userDataKey);
+    if (raw == null || raw.isEmpty) return ErrorBaseResponse("");
 
-      return SuccessBaseResponse(
-        HomeUserEntity(name: name ?? AppStrings.athlete.tr(), image: image),
-      );
-    } catch (e) {
-      return SuccessBaseResponse(HomeUserEntity.empty);
-    }
+    final json = jsonDecode(raw) as Map<String, dynamic>;
+    final userEntity = UserModel.fromJson(json).toEntity();
+    return SuccessBaseResponse(
+      HomeUserEntity(
+        name: "${userEntity.firstName} ${userEntity.lastName}",
+        image: userEntity.photo,
+      ),
+    );
   }
 
   @override
