@@ -758,10 +758,6 @@ void main() {
   group('changePassword', () {
     const tPassword = 'OldPassword@123';
     const tNewPassword = 'NewPassword@123';
-    const tChangePasswordRequest = ChangePasswordRequest(
-      password: tPassword,
-      newPassword: tNewPassword,
-    );
 
     const tResetPasswordResponse = ResetPasswordResponse(
       message: 'Password changed successfully',
