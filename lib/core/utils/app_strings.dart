@@ -202,6 +202,11 @@ abstract class AppStrings {
   static const String requiredEquipment = 'requiredEquipment';
   static const String primeMover = 'primeMover';
   static const String secondary = 'secondary';
+  static const String grip = 'grip';
+  static const String posture = 'posture';
+  static const String mechanics = 'mechanics';
+  static const String forceType = 'forceType';
+  static const String na = 'na';
 
   // Home
   static const String hi = 'hi';

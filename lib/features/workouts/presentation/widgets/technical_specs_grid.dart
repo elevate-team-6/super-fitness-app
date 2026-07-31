@@ -35,22 +35,22 @@ class TechnicalSpecsGrid extends StatelessWidget {
           children: [
             _TechTile(
               icon: Icons.front_hand_rounded,
-              label: 'Grip',
+              label: AppStrings.grip.tr(),
               value: exercise.grip,
             ),
             _TechTile(
               icon: Icons.person_rounded,
-              label: 'Posture',
+              label: AppStrings.posture.tr(),
               value: exercise.posture,
             ),
             _TechTile(
               icon: Icons.settings_rounded,
-              label: 'Mechanics',
+              label: AppStrings.mechanics.tr(),
               value: exercise.mechanics,
             ),
             _TechTile(
               icon: Icons.bolt_rounded,
-              label: 'Force Type',
+              label: AppStrings.forceType.tr(),
               value: exercise.forceType,
             ),
           ],
@@ -104,7 +104,7 @@ class _TechTile extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  value.isEmpty ? 'N/A' : value,
+                  value.isEmpty ? AppStrings.na.tr() : value,
                   style: AppTextStyles.white14700,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
