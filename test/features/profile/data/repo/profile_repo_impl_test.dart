@@ -6,15 +6,19 @@ import 'package:super_fitness/features/profile/data/data_sources/profile_local_d
 import 'package:super_fitness/features/profile/data/data_sources/profile_remote_data_source_contract.dart';
 import 'package:super_fitness/features/profile/data/repo/profile_repo_impl.dart';
 
+import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+
 import 'profile_repo_impl_test.mocks.dart';
 
 @GenerateMocks([
   ProfileLocalDataSourceContract,
   ProfileRemoteDataSourceContract,
+  SecureCacheHelper,
 ])
 void main() {
   late MockProfileLocalDataSourceContract local;
   late MockProfileRemoteDataSourceContract remote;
+  late MockSecureCacheHelper secureCache;
   late ProfileRepoImpl repo;
 
   const user = UserEntity(id: 'user_123', firstName: 'Ahmed', lastName: 'Emam');
@@ -22,7 +26,8 @@ void main() {
   setUp(() {
     local = MockProfileLocalDataSourceContract();
     remote = MockProfileRemoteDataSourceContract();
-    repo = ProfileRepoImpl(remote, local);
+    secureCache = MockSecureCacheHelper();
+    repo = ProfileRepoImpl(remote, local, secureCache);
   });
 
   test('serves the cached user from the local source', () async {
