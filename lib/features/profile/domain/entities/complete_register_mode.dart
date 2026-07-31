@@ -1,0 +1,4 @@
+enum CompleteRegisterMode {
+  register,
+  edit,
+}
