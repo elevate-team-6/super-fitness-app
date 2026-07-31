@@ -1,0 +1,57 @@
+import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
+import '../../../domain/entities/muscle_entity.dart';
+
+part 'muscle_response.g.dart';
+
+@JsonSerializable()
+class MuscleResponse extends Equatable {
+  final String? message;
+  final int? totalMuscles;
+  final List<MuscleModel>? muscles;
+  final List<MuscleModel>? musclesGroup;
+
+  const MuscleResponse({
+    this.message,
+    this.totalMuscles,
+    this.muscles,
+    this.musclesGroup,
+  });
+
+  factory MuscleResponse.fromJson(Map<String, dynamic> json) =>
+      _$MuscleResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MuscleResponseToJson(this);
+
+  @override
+  List<Object?> get props => [message, totalMuscles, muscles, musclesGroup];
+}
+
+@JsonSerializable()
+class MuscleModel extends Equatable {
+  @JsonKey(name: '_id')
+  final String? id;
+  final String? name;
+  final String? image;
+
+  const MuscleModel({this.id, this.name, this.image});
+
+  factory MuscleModel.fromJson(Map<String, dynamic> json) =>
+      _$MuscleModelFromJson(json);
+
+  factory MuscleModel.fromSqlite(Map<String, dynamic> map) => MuscleModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    name: map[CatalogDbConstants.columnName]?.toString(),
+    image: map[CatalogDbConstants.columnImage]?.toString(),
+  );
+
+  Map<String, dynamic> toJson() => _$MuscleModelToJson(this);
+
+  MuscleEntity toEntity() =>
+      MuscleEntity(id: id ?? '', name: name ?? '', image: image);
+
+  @override
+  List<Object?> get props => [id, name, image];
+}

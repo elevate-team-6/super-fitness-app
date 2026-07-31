@@ -195,6 +195,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       return title;
     }
 
+    if (title == null) {
+      return const SizedBox.shrink();
+    }
+
     return Image.asset(AppIcons.fitnessAppIcon, height: 48.h);
   }
 

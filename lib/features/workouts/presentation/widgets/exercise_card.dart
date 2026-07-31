@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:super_fitness/core/utils/app_colors.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/utils/youtube_url.dart';
 import 'package:super_fitness/core/widgets/custom_cached_image.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ExerciseCard extends StatelessWidget {
   final ExerciseEntity exercise;
@@ -21,16 +21,6 @@ class ExerciseCard extends StatelessWidget {
     this.isLast = false,
   });
 
-  Future<void> _playVideo() async {
-    final url =
-        YoutubeUrl.watchUrlOf(exercise.shortYoutubeDemonstrationLink) ??
-        YoutubeUrl.watchUrlOf(exercise.inDepthYoutubeExplanationLink);
-
-    if (url == null) return;
-
-    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-  }
-
   @override
   Widget build(BuildContext context) {
     final hasVideo =
@@ -38,7 +28,13 @@ class ExerciseCard extends StatelessWidget {
         YoutubeUrl.videoIdOf(exercise.inDepthYoutubeExplanationLink) != null;
 
     return GestureDetector(
-      onTap: onTap ?? (hasVideo ? _playVideo : null),
+      onTap:
+          onTap ??
+          () => Navigator.pushNamed(
+            context,
+            AppRoutes.exerciseDetails,
+            arguments: exercise,
+          ),
       child: Container(
         padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(

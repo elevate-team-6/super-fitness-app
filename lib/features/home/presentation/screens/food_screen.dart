@@ -2,26 +2,30 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_app_bar.dart';
-import 'package:super_fitness/core/widgets/custom_card.dart';
-import 'package:super_fitness/core/widgets/custom_error_state_view.dart';
 import 'package:super_fitness/core/widgets/custom_grid_view.dart';
 import 'package:super_fitness/core/widgets/custom_tab_bar.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
-import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_cubit.dart';
-import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_event.dart';
-import 'package:super_fitness/features/home/presentation/view_model/food_view_model/food_state.dart';
-import 'package:super_fitness/features/home/presentation/widgets/meal_skeleton_placeholders.dart';
+import 'package:super_fitness/features/home/presentation/view_models/food_view_model/food_cubit.dart';
+import 'package:super_fitness/features/home/presentation/view_models/food_view_model/food_event.dart';
+import 'package:super_fitness/features/home/presentation/view_models/food_view_model/food_state.dart';
+import 'package:super_fitness/features/home/presentation/widgets/home_sections_shimmer.dart';
+import 'package:super_fitness/features/home/presentation/widgets/meal_card.dart';
 
-class FoodScreen extends StatelessWidget {
+import '../widgets/home_error_widget.dart';
+
+class FoodScreen extends StatefulWidget {
   const FoodScreen({super.key});
 
+  @override
+  State<FoodScreen> createState() => _FoodScreenState();
+}
+
+class _FoodScreenState extends State<FoodScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -37,80 +41,113 @@ class FoodScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.only(top: 8, bottom: 8.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DefaultTabController(
-                length: MealTime.values.length,
-                initialIndex: MealTime.values.indexOf(
-                  context.read<FoodCubit>().state.selectedMealTime,
-                ),
-                child: CustomTabBar(
-                  padding: EdgeInsets.zero,
-                  tabs: MealTime.values.map((m) => m.labelKey.tr()).toList(),
-                  onTap: (index) => context.read<FoodCubit>().doIntent(
-                    SelectMealTimeEvent(MealTime.values[index]),
+          child: BlocBuilder<FoodCubit, FoodState>(
+            builder: (context, state) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTabBar(state),
+                  SizedBox(height: 16.h),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: _buildMealsGrid(state),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(height: 16.h),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: BlocBuilder<FoodCubit, FoodState>(
-                    builder: (context, state) {
-                      final mealsState = state.mealsState;
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
 
-                      if (mealsState.errorMessage != null) {
-                        return SingleChildScrollView(
-                          child: CustomErrorStateView(
-                            message: mealsState.errorMessage!,
-                            onRetry: () => context.read<FoodCubit>().doIntent(
-                              const LoadMealsEvent(),
-                            ),
-                          ),
-                        );
-                      }
+  Widget _buildTabBar(FoodState state) {
+    final categoriesState = state.categoriesState;
 
-                      final data = mealsState.data;
-                      if (data != null && data.isEmpty) {
-                        return Center(
-                          child: Text(
-                            AppStrings.noMealsFound.tr(),
-                            style: AppTextStyles.white2016500,
-                          ),
-                        );
-                      }
+    if (categoriesState.isLoading) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: HomeSectionsShimmer.upcomingWorkoutsTabs(),
+      );
+    }
 
-                      final isLoading = data == null;
-                      final meals = data ?? skeletonMeals;
+    if (categoriesState.errorMessage != null) {
+      return const SizedBox.shrink();
+    }
 
-                      return Skeletonizer(
-                        enabled: isLoading,
-                        child: CustomGridView(
-                          itemCount: meals.length,
-                          padding: EdgeInsets.zero,
-                          crossAxisSpacing: 12.w,
-                          mainAxisSpacing: 12.h,
-                          itemBuilder: (context, index) => CustomCard(
-                            title: meals[index].name,
-                            image: meals[index].thumbnail,
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.detailsFood,
-                              arguments: DetailsFoodArgs(
-                                mealId: meals[index].id,
-                                mealName: meals[index].name,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+    final categories = categoriesState.data ?? [];
+    if (categories.isEmpty) return const SizedBox.shrink();
+
+    final selectedIndex = categories.indexWhere(
+      (element) => element.name == state.selectedCategory,
+    );
+
+    return DefaultTabController(
+      length: categories.length,
+      initialIndex: selectedIndex != -1 ? selectedIndex : 0,
+      child: CustomTabBar(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        tabs: categories.map((c) => c.name).toList(),
+        onTap: (index) => context.read<FoodCubit>().doIntent(
+          ChangeCategoryEvent(categories[index].name),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMealsGrid(FoodState state) {
+    final mealsState = state.mealsState;
+
+    if (mealsState.isLoading) {
+      return CustomGridView(
+        itemCount: 6,
+        padding: EdgeInsets.zero,
+        crossAxisSpacing: 12.w,
+        mainAxisSpacing: 12.h,
+        itemBuilder: (context, index) => HomeSectionsShimmer.mealCardShimmer(),
+      );
+    }
+
+    if (mealsState.errorMessage != null) {
+      return HomeErrorWidget(
+        message: mealsState.errorMessage!,
+        onRetry: () {
+          final cubit = context.read<FoodCubit>();
+          if (state.categoriesState.errorMessage != null) {
+            cubit.doIntent(const GetMealsCategoriesEvent());
+          } else {
+            cubit.doIntent(ChangeCategoryEvent(state.selectedCategory ?? ''));
+          }
+        },
+      );
+    }
+
+    final meals = mealsState.data ?? [];
+    if (meals.isEmpty) {
+      return Center(
+        child: Text(
+          AppStrings.noMealsFound.tr(),
+          style: AppTextStyles.white2016500,
+        ),
+      );
+    }
+
+    return CustomGridView(
+      itemCount: meals.length,
+      padding: EdgeInsets.zero,
+      crossAxisSpacing: 12.w,
+      mainAxisSpacing: 12.h,
+      itemBuilder: (context, index) => MealCard(
+        name: meals[index].name,
+        image: meals[index].thumbnail,
+        onTap: () => Navigator.pushNamed(
+          context,
+          AppRoutes.detailsFood,
+          arguments: DetailsFoodArgs(
+            mealId: meals[index].id,
+            mealName: meals[index].name,
           ),
         ),
       ),

@@ -426,6 +426,14 @@ void main() {
         verify(
           mockCache.writeData(key: AppKeys.tokenKey, value: 'test_token_123'),
         ).called(1);
+        // The user is cached next to the token so the profile tab can show who
+        // is signed in without a network call.
+        verify(
+          mockCache.writeData(
+            key: AppKeys.userDataKey,
+            value: anyNamed('value'),
+          ),
+        ).called(1);
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
         verifyNoMoreInteractions(mockCache);
       },

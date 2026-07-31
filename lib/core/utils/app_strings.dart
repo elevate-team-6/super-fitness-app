@@ -188,10 +188,51 @@ abstract class AppStrings {
   static const String description = 'description';
   static const String watchVideo = 'watchVideo';
 
+  // Profile
+  static const String editProfile = 'editProfile';
+  static const String changePassword = 'changePassword';
+  static const String selectLanguage = 'selectLanguage';
+  static const String security = 'security';
+  static const String privacyPolicy = 'privacyPolicy';
+  static const String help = 'help';
+  static const String logout = 'logout';
+  static const String english = 'english';
+  static const String arabic = 'arabic';
+  static const String pageFailedToLoad = 'pageFailedToLoad';
+
   // Workouts Feature
   static const String findBestExercisesForYou = 'find_best_exercises_for_you';
   static const String min30 = 'min_30';
   static const String exerciseSingle = 'exercise_single';
   static const String exercisePlural = 'exercise_plural';
   static const String noExercisesFound = 'no_exercises_found';
+  static const String exerciseDetails = 'exerciseDetails';
+  static const String technicalSpecs = 'technicalSpecs';
+  static const String musclesTargeted = 'musclesTargeted';
+  static const String requiredEquipment = 'requiredEquipment';
+  static const String primeMover = 'primeMover';
+  static const String secondary = 'secondary';
+
+  // Home
+  static const String hi = 'hi';
+  static const String letsStartYourDay = 'lets_start_your_day';
+  static const String category = 'category';
+  static const String gym = 'gym';
+  static const String fitness = 'fitness';
+  static const String yoga = 'yoga';
+  static const String aerobics = 'aerobics';
+  static const String trainer = 'trainer';
+  static const String upcomingFeature = 'upcoming_feature';
+  static const String recommendationToday = 'recommendation_today';
+  static const String upcomingWorkouts = 'upcoming_workouts';
+  static const String popularTraining = 'popular_training';
+  static const String tasksCount = 'tasks_count';
+  static const String beginner = 'beginner';
+  static const String intermediate = 'intermediate';
+  static const String advanced = 'advanced';
+
+  // Error/Fallback
+  static const String failedToFetchLevelsOrMuscles =
+      'failedToFetchLevelsOrMuscles';
+  static const String athlete = 'athlete';
 }

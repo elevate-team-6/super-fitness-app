@@ -2,15 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/features/workouts/data/data_sources/workout_remote_data_source_contract.dart';
-import 'package:super_fitness/features/workouts/data/models/response/difficulty_level_model.dart';
-import 'package:super_fitness/features/workouts/data/models/response/difficulty_levels_response.dart';
+import 'package:super_fitness/core/data/local/sqlite/catalog_local_data_source.dart';
+import 'package:super_fitness/features/home/data/models/response/level_response.dart';
+import 'package:super_fitness/features/home/data/models/response/muscle_response.dart';
 import 'package:super_fitness/features/workouts/data/models/response/exercise_model.dart';
-import 'package:super_fitness/features/workouts/data/models/response/exercises_by_muscle_difficulty_response.dart';
-import 'package:super_fitness/features/workouts/data/models/response/muscle_group_model.dart';
-import 'package:super_fitness/features/workouts/data/models/response/muscle_groups_response.dart';
-import 'package:super_fitness/features/workouts/data/models/response/muscle_model.dart';
-import 'package:super_fitness/features/workouts/data/models/response/muscles_response.dart';
 import 'package:super_fitness/features/workouts/data/repo/workout_repo_impl.dart';
 import 'package:super_fitness/features/workouts/domain/entities/difficulty_level_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
@@ -19,105 +14,66 @@ import 'package:super_fitness/features/workouts/domain/entities/muscle_group_ent
 
 import 'workout_repo_impl_test.mocks.dart';
 
-@GenerateMocks([WorkoutRemoteDataSourceContract])
+@GenerateMocks([CatalogLocalDataSource])
 void main() {
   late WorkoutRepoImpl repository;
-  late MockWorkoutRemoteDataSourceContract mockRemoteDataSource;
+  late MockCatalogLocalDataSource mockLocalDataSource;
 
   const tMuscleId = '69d982ef85f6bfa972bf2248';
   const tDifficultyId = '69d982f085f6bfa972bf225c';
 
   setUp(() {
-    mockRemoteDataSource = MockWorkoutRemoteDataSourceContract();
-    repository = WorkoutRepoImpl(mockRemoteDataSource);
-
-    provideDummy<BaseResponse<List<MuscleGroupEntity>>>(
-      const ErrorBaseResponse('dummy'),
-    );
-    provideDummy<BaseResponse<List<MuscleEntity>>>(
-      const ErrorBaseResponse('dummy'),
-    );
-    provideDummy<BaseResponse<MuscleGroupsResponse>>(
-      const ErrorBaseResponse('dummy'),
-    );
-    provideDummy<BaseResponse<MusclesResponse>>(
-      const ErrorBaseResponse('dummy'),
-    );
-    provideDummy<BaseResponse<DifficultyLevelsResponse>>(
-      const ErrorBaseResponse('dummy'),
-    );
-    provideDummy<BaseResponse<ExercisesByMuscleDifficultyResponse>>(
-      const ErrorBaseResponse('dummy'),
-    );
+    mockLocalDataSource = MockCatalogLocalDataSource();
+    repository = WorkoutRepoImpl(mockLocalDataSource);
   });
 
   group('getMuscleGroups', () {
-    const tMuscleGroupModel = MuscleGroupModel(id: '1', name: 'Abs');
-
-    const tMuscleGroupsResponse = MuscleGroupsResponse(
-      message: 'success',
-      musclesGroup: [tMuscleGroupModel],
-    );
-
+    const tMuscleModels = [MuscleModel(id: '1', name: 'Abs')];
     const tMuscleGroupEntity = MuscleGroupEntity(id: '1', name: 'Abs');
 
     test(
-      'should return SuccessBaseResponse with List<MuscleGroupEntity> when remote data source returns SuccessBaseResponse',
+      'should return SuccessBaseResponse with List<MuscleGroupEntity> when local data source returns data',
       () async {
-        when(mockRemoteDataSource.getMuscleGroups()).thenAnswer(
-          (_) async => const SuccessBaseResponse(tMuscleGroupsResponse),
-        );
+        // arrange
+        when(
+          mockLocalDataSource.getMuscleGroups(),
+        ).thenAnswer((_) async => tMuscleModels);
 
+        // act
         final result = await repository.getMuscleGroups();
 
+        // assert
         expect(result, isA<SuccessBaseResponse<List<MuscleGroupEntity>>>());
-
         expect(
           (result as SuccessBaseResponse<List<MuscleGroupEntity>>).data,
           equals([tMuscleGroupEntity]),
         );
-
-        verify(mockRemoteDataSource.getMuscleGroups()).called(1);
+        verify(mockLocalDataSource.getMuscleGroups()).called(1);
       },
     );
 
     test(
-      'should return ErrorBaseResponse when remote data source returns ErrorBaseResponse',
+      'should return ErrorBaseResponse when local data source throws error',
       () async {
-        const error = 'Something went wrong';
-
+        // arrange
         when(
-          mockRemoteDataSource.getMuscleGroups(),
-        ).thenAnswer((_) async => const ErrorBaseResponse(error));
+          mockLocalDataSource.getMuscleGroups(),
+        ).thenThrow(Exception('database error'));
 
+        // act
         final result = await repository.getMuscleGroups();
 
+        // assert
         expect(result, isA<ErrorBaseResponse<List<MuscleGroupEntity>>>());
-
-        expect(
-          (result as ErrorBaseResponse<List<MuscleGroupEntity>>).errorMessage,
-          error,
-        );
-
-        verify(mockRemoteDataSource.getMuscleGroups()).called(1);
       },
     );
   });
 
   group('getMusclesByGroupId', () {
     const tGroupId = '1';
-
-    const tMuscleModel = MuscleModel(
-      id: 'm1',
-      name: 'Biceps',
-      image: 'image.png',
-    );
-
-    const tMusclesResponse = MusclesResponse(
-      message: 'success',
-      muscles: [tMuscleModel],
-    );
-
+    const tMuscleModels = [
+      MuscleModel(id: 'm1', name: 'Biceps', image: 'image.png'),
+    ];
     const tMuscleEntity = MuscleEntity(
       id: 'm1',
       name: 'Biceps',
@@ -125,180 +81,98 @@ void main() {
     );
 
     test(
-      'should return SuccessBaseResponse with List<MuscleEntity> when remote data source returns SuccessBaseResponse',
+      'should return SuccessBaseResponse with List<MuscleEntity> when local data source returns data',
       () async {
+        // arrange
         when(
-          mockRemoteDataSource.getMusclesByGroupId(tGroupId),
-        ).thenAnswer((_) async => const SuccessBaseResponse(tMusclesResponse));
+          mockLocalDataSource.getMusclesByGroupId(tGroupId),
+        ).thenAnswer((_) async => tMuscleModels);
 
+        // act
         final result = await repository.getMusclesByGroupId(tGroupId);
 
+        // assert
         expect(result, isA<SuccessBaseResponse<List<MuscleEntity>>>());
-
         expect(
           (result as SuccessBaseResponse<List<MuscleEntity>>).data,
           equals([tMuscleEntity]),
         );
-
-        verify(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).called(1);
-      },
-    );
-
-    test(
-      'should return ErrorBaseResponse when remote data source returns ErrorBaseResponse',
-      () async {
-        const error = 'Something went wrong';
-
-        when(
-          mockRemoteDataSource.getMusclesByGroupId(tGroupId),
-        ).thenAnswer((_) async => const ErrorBaseResponse(error));
-
-        final result = await repository.getMusclesByGroupId(tGroupId);
-
-        expect(result, isA<ErrorBaseResponse<List<MuscleEntity>>>());
-
-        expect(
-          (result as ErrorBaseResponse<List<MuscleEntity>>).errorMessage,
-          error,
-        );
-
-        verify(mockRemoteDataSource.getMusclesByGroupId(tGroupId)).called(1);
+        verify(mockLocalDataSource.getMusclesByGroupId(tGroupId)).called(1);
       },
     );
   });
 
   group('getDifficultyLevelsByPrimeMover', () {
-    const tDifficultyLevelsResponse = DifficultyLevelsResponse(
-      message: 'success',
-      totalLevels: 2,
-      difficultyLevels: [
-        DifficultyLevelModel(id: '1', name: 'Beginner'),
-        DifficultyLevelModel(id: '2', name: 'Intermediate'),
-      ],
-    );
+    final tLevelModels = [
+      const LevelModel(id: '1', name: 'Beginner'),
+      const LevelModel(id: '2', name: 'Intermediate'),
+    ];
 
     test(
       'returns SuccessBaseResponse with List<DifficultyLevelEntity> when data source succeeds',
       () async {
+        // arrange
         when(
-          mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
-        ).thenAnswer(
-          (_) async => const SuccessBaseResponse(tDifficultyLevelsResponse),
-        );
+          mockLocalDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
+        ).thenAnswer((_) async => tLevelModels);
 
+        // act
         final result = await repository.getDifficultyLevelsByPrimeMover(
           tMuscleId,
         );
 
+        // assert
         expect(result, isA<SuccessBaseResponse<List<DifficultyLevelEntity>>>());
-
         final data =
             (result as SuccessBaseResponse<List<DifficultyLevelEntity>>).data;
-
         expect(data?.length, 2);
         expect(data?[0].name, 'Beginner');
         expect(data?[1].name, 'Intermediate');
-
         verify(
-          mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
+          mockLocalDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
         ).called(1);
       },
     );
-
-    test('returns ErrorBaseResponse when data source fails', () async {
-      when(
-        mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
-      ).thenAnswer((_) async => const ErrorBaseResponse('Server Error'));
-
-      final result = await repository.getDifficultyLevelsByPrimeMover(
-        tMuscleId,
-      );
-
-      expect(result, isA<ErrorBaseResponse<List<DifficultyLevelEntity>>>());
-
-      final error = result as ErrorBaseResponse<List<DifficultyLevelEntity>>;
-
-      expect(error.errorMessage, 'Server Error');
-
-      verify(
-        mockRemoteDataSource.getDifficultyLevelsByPrimeMover(tMuscleId),
-      ).called(1);
-    });
   });
 
   group('getExercisesByMuscleDifficulty', () {
-    const tExercisesResponse = ExercisesByMuscleDifficultyResponse(
-      message: 'success',
-      totalExercises: 10,
-      totalPages: 1,
-      currentPage: 1,
-      exercises: [
-        ExerciseModel(
-          id: 'ex1',
-          exercise: 'Bench Press',
-          difficultyLevel: 'Beginner',
-        ),
-      ],
-    );
+    final tExerciseModels = [
+      const ExerciseModel(
+        id: 'ex1',
+        exercise: 'Bench Press',
+        difficultyLevel: 'Beginner',
+      ),
+    ];
 
     test(
       'returns SuccessBaseResponse with List<ExerciseEntity> when data source succeeds',
       () async {
+        // arrange
         when(
-          mockRemoteDataSource.getExercisesByMuscleDifficulty(
+          mockLocalDataSource.getExercisesByMuscleDifficulty(
             tMuscleId,
             tDifficultyId,
           ),
-        ).thenAnswer(
-          (_) async => const SuccessBaseResponse(tExercisesResponse),
-        );
+        ).thenAnswer((_) async => tExerciseModels);
 
+        // act
         final result = await repository.getExercisesByMuscleDifficulty(
           tMuscleId,
           tDifficultyId,
         );
 
+        // assert
         expect(result, isA<SuccessBaseResponse<List<ExerciseEntity>>>());
-
         final data = (result as SuccessBaseResponse<List<ExerciseEntity>>).data;
-
         expect(data?.length, 1);
         expect(data?.first.exercise, 'Bench Press');
-
         verify(
-          mockRemoteDataSource.getExercisesByMuscleDifficulty(
+          mockLocalDataSource.getExercisesByMuscleDifficulty(
             tMuscleId,
             tDifficultyId,
           ),
         ).called(1);
       },
     );
-
-    test('returns ErrorBaseResponse when data source fails', () async {
-      when(
-        mockRemoteDataSource.getExercisesByMuscleDifficulty(
-          tMuscleId,
-          tDifficultyId,
-        ),
-      ).thenAnswer((_) async => const ErrorBaseResponse('Network Error'));
-
-      final result = await repository.getExercisesByMuscleDifficulty(
-        tMuscleId,
-        tDifficultyId,
-      );
-
-      expect(result, isA<ErrorBaseResponse<List<ExerciseEntity>>>());
-
-      final error = result as ErrorBaseResponse<List<ExerciseEntity>>;
-
-      expect(error.errorMessage, 'Network Error');
-
-      verify(
-        mockRemoteDataSource.getExercisesByMuscleDifficulty(
-          tMuscleId,
-          tDifficultyId,
-        ),
-      ).called(1);
-    });
   });
 }

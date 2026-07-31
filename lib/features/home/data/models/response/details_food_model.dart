@@ -1,3 +1,4 @@
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
 import 'package:super_fitness/core/utils/app_params.dart';
 import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
 import 'package:super_fitness/features/home/domain/entities/meal_ingredient_entity.dart';
@@ -40,6 +41,30 @@ class DetailsFoodModel {
         strYoutube: json[ApiParameters.strYoutube] as String?,
         ingredients: _parseIngredients(json),
       );
+
+  factory DetailsFoodModel.fromSqlite(
+    Map<String, dynamic> map, {
+    List<Map<String, dynamic>>? ingredients,
+  }) => DetailsFoodModel(
+    idMeal: map[CatalogDbConstants.keyIdMeal]?.toString(),
+    strMeal: map[CatalogDbConstants.keyStrMeal]?.toString(),
+    strMealThumb: map[CatalogDbConstants.keyStrMealThumb]?.toString(),
+    strCategory: map[CatalogDbConstants.keyStrCategory]?.toString(),
+    strArea: map[CatalogDbConstants.keyStrArea]?.toString(),
+    strInstructions: map[CatalogDbConstants.keyStrInstructions]?.toString(),
+    strTags: map[CatalogDbConstants.keyStrTags]?.toString(),
+    strYoutube: map[CatalogDbConstants.keyStrYoutube]?.toString(),
+    ingredients:
+        ingredients
+            ?.map(
+              (i) => MealIngredientEntity(
+                name: i[CatalogDbConstants.columnName]?.toString() ?? '',
+                measure: i[CatalogDbConstants.aliasMeasure]?.toString() ?? '',
+              ),
+            )
+            .toList() ??
+        const [],
+  );
 
   /// Walks the 20 fixed slots and keeps the ones with an ingredient name. A
   /// missing measure is fine (`to serve`-style rows sometimes have none), but a

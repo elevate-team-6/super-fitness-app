@@ -1,5 +1,7 @@
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
 
+import '../../../../../core/data/local/sqlite/catalog_db_constants.dart';
+
 class MuscleModel {
   final String? id;
   final String? name;
@@ -14,6 +16,12 @@ class MuscleModel {
       image: json['image'] as String?,
     );
   }
+
+  factory MuscleModel.fromSqlite(Map<String, dynamic> map) => MuscleModel(
+    id: map[CatalogDbConstants.columnId]?.toString(),
+    name: map[CatalogDbConstants.columnName]?.toString(),
+    image: map[CatalogDbConstants.columnImage]?.toString(),
+  );
 
   MuscleEntity toEntity() =>
       MuscleEntity(id: id ?? '', name: name ?? '', image: image ?? '');
