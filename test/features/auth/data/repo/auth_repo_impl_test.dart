@@ -15,6 +15,7 @@ import 'package:super_fitness/features/auth/data/models/response/verify_reset_co
 import 'package:super_fitness/features/auth/data/repo/auth_repo_impl.dart';
 import 'package:super_fitness/features/auth/domain/entities/forget_password_entity.dart';
 import 'package:super_fitness/features/auth/domain/entities/sign_in_entity.dart';
+import 'package:super_fitness/features/auth/data/models/request/change_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/signup_request.dart';
 import 'package:super_fitness/features/auth/data/models/response/signup_response.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
@@ -750,6 +751,161 @@ void main() {
           (result as ErrorBaseResponse).errorMessage,
           AppStrings.facebookLoginCancelled,
         );
+      },
+    );
+  });
+
+  group('changePassword', () {
+    const tPassword = 'OldPassword@123';
+    const tNewPassword = 'NewPassword@123';
+    const tChangePasswordRequest = ChangePasswordRequest(
+      password: tPassword,
+      newPassword: tNewPassword,
+    );
+
+    const tResetPasswordResponse = ResetPasswordResponse(
+      message: 'Password changed successfully',
+      token: 'new_token_123',
+    );
+
+    test(
+      'should return SuccessBaseResponse with ForgetPasswordEntity when changePassword is successful',
+      () async {
+        // arrange
+        when(mockAuthRemoteDataSource.changePassword(any)).thenAnswer(
+          (_) async => const SuccessBaseResponse<ResetPasswordResponse>(
+            tResetPasswordResponse,
+          ),
+        );
+
+        // act
+        final result = await repo.changePassword(
+          password: tPassword,
+          newPassword: tNewPassword,
+        );
+
+        // assert
+        expect(result, isA<SuccessBaseResponse<ForgetPasswordEntity>>());
+        final entity =
+            (result as SuccessBaseResponse<ForgetPasswordEntity>).data;
+        expect(entity?.message, equals('Password changed successfully'));
+        expect(entity?.token, equals('new_token_123'));
+        verify(
+          mockAuthRemoteDataSource.changePassword(
+            argThat(
+              isA<ChangePasswordRequest>()
+                  .having((r) => r.password, 'password', tPassword)
+                  .having((r) => r.newPassword, 'newPassword', tNewPassword),
+            ),
+          ),
+        ).called(1);
+        verify(
+          mockCache.writeData(key: AppKeys.tokenKey, value: 'new_token_123'),
+        ).called(1);
+        verifyNoMoreInteractions(mockAuthRemoteDataSource);
+      },
+    );
+
+    test(
+      'should return ErrorBaseResponse when remote data source returns error',
+      () async {
+        // arrange
+        const errorMessage = 'Incorrect current password';
+        when(mockAuthRemoteDataSource.changePassword(any)).thenAnswer(
+          (_) async =>
+              const ErrorBaseResponse<ResetPasswordResponse>(errorMessage),
+        );
+
+        // act
+        final result = await repo.changePassword(
+          password: tPassword,
+          newPassword: tNewPassword,
+        );
+
+        // assert
+        expect(result, isA<ErrorBaseResponse<ForgetPasswordEntity>>());
+        expect(
+          (result as ErrorBaseResponse<ForgetPasswordEntity>).errorMessage,
+          equals(errorMessage),
+        );
+        verify(
+          mockAuthRemoteDataSource.changePassword(
+            argThat(
+              isA<ChangePasswordRequest>()
+                  .having((r) => r.password, 'password', tPassword)
+                  .having((r) => r.newPassword, 'newPassword', tNewPassword),
+            ),
+          ),
+        ).called(1);
+        verifyNever(
+          mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
+        );
+        verifyNoMoreInteractions(mockAuthRemoteDataSource);
+      },
+    );
+
+    test(
+      'should save token to secure cache when changePassword is successful',
+      () async {
+        // arrange
+        when(mockAuthRemoteDataSource.changePassword(any)).thenAnswer(
+          (_) async => const SuccessBaseResponse<ResetPasswordResponse>(
+            tResetPasswordResponse,
+          ),
+        );
+
+        // act
+        await repo.changePassword(
+          password: tPassword,
+          newPassword: tNewPassword,
+        );
+
+        // assert
+        verify(
+          mockCache.writeData(key: AppKeys.tokenKey, value: 'new_token_123'),
+        ).called(1);
+      },
+    );
+
+    test('should not save token when changePassword fails', () async {
+      // arrange
+      when(mockAuthRemoteDataSource.changePassword(any)).thenAnswer(
+        (_) async => const ErrorBaseResponse<ResetPasswordResponse>('Error'),
+      );
+
+      // act
+      await repo.changePassword(password: tPassword, newPassword: tNewPassword);
+
+      // assert
+      verifyNever(
+        mockCache.writeData(key: anyNamed('key'), value: anyNamed('value')),
+      );
+    });
+
+    test(
+      'should pass correct ChangePasswordRequest to remote data source',
+      () async {
+        // arrange
+        when(mockAuthRemoteDataSource.changePassword(any)).thenAnswer(
+          (_) async => const SuccessBaseResponse<ResetPasswordResponse>(
+            tResetPasswordResponse,
+          ),
+        );
+
+        // act
+        await repo.changePassword(
+          password: tPassword,
+          newPassword: tNewPassword,
+        );
+
+        // assert
+        final captured =
+            verify(
+                  mockAuthRemoteDataSource.changePassword(captureAny),
+                ).captured.single
+                as ChangePasswordRequest;
+        expect(captured.password, equals(tPassword));
+        expect(captured.newPassword, equals(tNewPassword));
       },
     );
   });

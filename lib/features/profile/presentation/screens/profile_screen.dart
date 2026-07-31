@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:super_fitness/core/utils/app_routes.dart';
 
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_strings.dart';
@@ -15,7 +16,12 @@ class ProfileScreen extends StatelessWidget {
       backgroundImage:
           AppImages.authBackground, // Using auth as placeholder for profile
       body: Center(
-        child: Text(AppStrings.profile.tr(), style: AppTextStyles.white20500),
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(AppRoutes.changePassword);
+          },
+          child: Text("change password"),
+        ),
       ),
     );
   }

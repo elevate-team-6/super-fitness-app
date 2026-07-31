@@ -85,11 +85,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                       children: [
                         Text(
                           AppStrings.enterPasswordDetails.tr(),
-                          style: AppTextStyles.white20500,
+                          style: AppTextStyles.white18400,
                         ),
                         Text(
                           AppStrings.changeYourPassword.tr(),
-                          style: AppTextStyles.white24500,
+                          style: AppTextStyles.white2020500,
                         ),
                       ],
                     ),
@@ -165,9 +165,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                             child: SvgPicture.asset(AppIcons.lock),
                           ),
                           suffixIcon: IconButton(
-                            onPressed: () => context
-                                .read<ChangePasswordCubit>()
-                                .doEvent(ToggleConfirmPasswordVisibilityEvent()),
+                            onPressed: () =>
+                                context.read<ChangePasswordCubit>().doEvent(
+                                  ToggleConfirmPasswordVisibilityEvent(),
+                                ),
                             icon: Icon(
                               state.obscureConfirmPassword
                                   ? Icons.visibility_off_outlined
@@ -201,8 +202,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen>
                           child: ElevatedButton(
                             onPressed: state.isFormValid
                                 ? () => context
-                                    .read<ChangePasswordCubit>()
-                                    .doEvent(ChangePasswordEvent())
+                                      .read<ChangePasswordCubit>()
+                                      .doEvent(ChangePasswordEvent())
                                 : null,
                             child: Text(AppStrings.changePassword.tr()),
                           ),

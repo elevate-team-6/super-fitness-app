@@ -12,12 +12,11 @@ import 'change_password_events.dart';
 import 'change_password_state.dart';
 
 @injectable
-class ChangePasswordCubit
-    extends BaseCubit<ChangePasswordState, BaseUiEvent> {
+class ChangePasswordCubit extends BaseCubit<ChangePasswordState, BaseUiEvent> {
   final ChangePasswordUseCase _changePasswordUseCase;
 
   ChangePasswordCubit(this._changePasswordUseCase)
-      : super(const ChangePasswordState());
+    : super(const ChangePasswordState());
 
   void doEvent(ChangePasswordEvents event) {
     switch (event) {
@@ -49,14 +48,13 @@ class ChangePasswordCubit
 
   void _validateForm() {
     final oldNotEmpty = state.oldPassword.isNotEmpty;
-    final newValid =
-        AppValidations.validatePassword(state.newPassword) == null;
+    final newValid = AppValidations.validatePassword(state.newPassword) == null;
     final confirmMatches =
         AppValidations.validateConfirmPassword(
-              state.confirmPassword,
-              state.newPassword,
-            ) ==
-            null;
+          state.confirmPassword,
+          state.newPassword,
+        ) ==
+        null;
     final notSameAsOld = state.newPassword != state.oldPassword;
 
     emit(
@@ -67,10 +65,10 @@ class ChangePasswordCubit
   }
 
   Future<void> _changePassword() async {
+    if (!state.isFormValid || state.changePasswordState.isLoading) return;
+
     emitUiEvent(ShowLoadingEvent());
-    emit(
-      state.copyWith(changePasswordState: const BaseState(isLoading: true)),
-    );
+    emit(state.copyWith(changePasswordState: const BaseState(isLoading: true)));
 
     final response = await _changePasswordUseCase(
       password: state.oldPassword,
@@ -82,9 +80,7 @@ class ChangePasswordCubit
 
     switch (response) {
       case SuccessBaseResponse<ForgetPasswordEntity>():
-        emitUiEvent(
-          DisplaySuccessEvent(AppStrings.changePasswordSuccess.tr()),
-        );
+        emitUiEvent(DisplaySuccessEvent(AppStrings.changePasswordSuccess.tr()));
         emitUiEvent(NavigateEvent('', navigationType: NavigationType.pop));
 
       case ErrorBaseResponse<ForgetPasswordEntity>():
