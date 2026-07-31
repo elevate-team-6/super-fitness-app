@@ -113,16 +113,24 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                     ProfileMenuItem(
                       icon: Icons.person_outline,
                       label: AppStrings.editProfile.tr(),
-                      // TODO(team): point this at the edit profile route and
-                      // refresh on the way back, so the header picks up the
-                      // saved values:
-                      //   await Navigator.pushNamed(context, AppRoutes.editProfile);
-                      //   if (!mounted) return;
-                      //   context.read<ProfileCubit>()
-                      //       .doIntent(const RefreshProfileEvent());
-                      // That refresh re-reads the cache, so the save has to
-                      // write the updated user there — same as
-                      // AuthRepoImpl._cacheUser does at sign-in.
+                      onTap: () async {
+                        final user =
+                            context
+                                .read<ProfileCubit>()
+                                .state
+                                .profileState
+                                .data;
+                        if (user == null) return;
+                        await Navigator.pushNamed(
+                          context,
+                          AppRoutes.editProfile,
+                          arguments: EditProfileArgs(user: user),
+                        );
+                        if (!context.mounted) return;
+                        context.read<ProfileCubit>().doIntent(
+                          const RefreshProfileEvent(),
+                        );
+                      },
                     ),
                     divider,
                     ProfileMenuItem(

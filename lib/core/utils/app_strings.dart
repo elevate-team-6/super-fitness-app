@@ -189,6 +189,28 @@ abstract class AppStrings {
   static const String english = 'english';
   static const String arabic = 'arabic';
   static const String pageFailedToLoad = 'pageFailedToLoad';
+  static const String update = 'update';
+  static const String save = 'save';
+  static const String editGender = 'editGender';
+  static const String editAge = 'editAge';
+  static const String editWeight = 'editWeight';
+  static const String editHeight = 'editHeight';
+  static const String editGoal = 'editGoal';
+  static const String editActivity = 'editActivity';
+  static const String profileUpdatedSuccessfully = 'profileUpdatedSuccessfully';
+  static const String gender = 'gender';
+  static const String age = 'age';
+  static const String weight = 'weight';
+  static const String height = 'height';
+  static const String goal = 'goal';
+  static const String activityLevel = 'activityLevel';
+  static const String tapToEdit = 'tapToEdit';
+  static const String yourWeight = 'yourWeight';
+  static const String yourGoal = 'yourGoal';
+  static const String yourActivityLevel = 'yourActivityLevel';
+  static const String yourGender = 'yourGender';
+  static const String yourAge = 'yourAge';
+  static const String yourHeight = 'yourHeight';
 
   // Workouts Feature
   static const String findBestExercisesForYou = 'find_best_exercises_for_you';
