@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> with UiEventHandler {
                 padding: EdgeInsets.only(
                   left: 16.w,
                   right: 16.w,
-                  bottom: 100.h,
+                  bottom: 110.h,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

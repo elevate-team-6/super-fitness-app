@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -6,6 +8,7 @@ import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/core/data/local/sqlite/catalog_local_data_source.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
+import 'package:super_fitness/features/auth/data/models/response/user_model.dart';
 import 'package:super_fitness/features/home/data/models/response/details_food_model.dart';
 import 'package:super_fitness/features/home/data/models/response/exercise_response.dart';
 import 'package:super_fitness/features/home/data/models/response/level_response.dart';
@@ -40,12 +43,16 @@ void main() {
       'should return SuccessBaseResponse with UserEntity when cache has data',
       () async {
         // arrange
+        const tUserModel = UserModel(
+          firstName: 'Test',
+          lastName: 'User',
+          photo: 'image_url',
+        );
+        final tJsonString = jsonEncode(tUserModel.toJson());
+
         when(
-          mockCacheHelper.readData(key: AppKeys.userNameKey),
-        ).thenAnswer((_) async => 'Test User');
-        when(
-          mockCacheHelper.readData(key: AppKeys.userImageKey),
-        ).thenAnswer((_) async => 'image_url');
+          mockCacheHelper.readData(key: AppKeys.userDataKey),
+        ).thenAnswer((_) async => tJsonString);
 
         // act
         final result = await repo.getCachedUserData();
