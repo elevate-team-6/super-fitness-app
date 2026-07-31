@@ -54,6 +54,7 @@ Future<void> main() async {
       ],
       path: AppConstants.translationsPath,
       fallbackLocale: const Locale('en'),
+      useOnlyLangCode: true,
 
       child: MyApp(isOnboardingDone: isOnboardingDone, isLoggedIn: isLoggedIn),
     ),
@@ -88,6 +89,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Sync Intl global locale with EasyLocalization's locale
+    Intl.defaultLocale = context.locale.languageCode;
+
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,

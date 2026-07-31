@@ -32,11 +32,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    height ?? 90.h;
     if (backgroundImage != null) {
       return _buildImageAppBar(context);
     }
     return AppBar(
+      toolbarHeight: preferredSize.height,
       centerTitle: centerTitle,
       leading: onBackPressed != null
           ? Padding(
@@ -68,8 +68,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Widget _buildImageAppBar(BuildContext context) {
+    final double topPadding = MediaQuery.of(context).padding.top;
     return Container(
-      height: preferredSize.height,
+      height: preferredSize.height + topPadding,
       decoration: BoxDecoration(
         borderRadius: hasBottomBorderRadius
             ? BorderRadius.vertical(bottom: Radius.circular(20.r))
@@ -97,7 +98,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.only(
+              left: 16.w,
+              right: 16.w,
+              top: topPadding + 8.h,
+              bottom: 8.h,
+            ),
             child: Column(
               children: [
                 Row(
@@ -108,10 +114,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         onTap: onBackPressed,
                         child: Container(
                           padding: EdgeInsets.all(8.w),
-                          margin: EdgeInsets.only(
-                            right: 32.w,
-                            top: height! > 100 ? 32.h : 16.h,
-                          ),
                           decoration: const BoxDecoration(
                             color: AppColors.primary,
                             shape: BoxShape.circle,
@@ -207,6 +209,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     height ??
         (backgroundImage != null
             ? 400.h
-            : (kToolbarHeight + (subtitle != null ? 20.h : 0))),
+            : (kToolbarHeight + (subtitle != null ? 35.h : 0))),
   );
 }

@@ -83,132 +83,136 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
         ),
         body: BlocBuilder<RegisterCubit, RegisterState>(
           builder: (context, state) {
-            return Column(
-              children: [
-                SizedBox(height: 40.h),
-                MultiStepProgressHeader(
-                  currentStep: state.currentStep,
-                  title: _getTitle(state.currentStep),
-                  subtitle: _getSubtitle(state.currentStep),
-                ),
-                SizedBox(height: 24.h),
-                CustomGlassContainer(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 24.w,
-                    vertical: 24.h,
+            return SafeArea(
+              child: Column(
+                children: [
+                  SizedBox(height: 40.h),
+                  MultiStepProgressHeader(
+                    currentStep: state.currentStep,
+                    title: _getTitle(state.currentStep),
+                    subtitle: _getSubtitle(state.currentStep),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Flexible(
-                        child: ExpandablePageView(
-                          animationDuration: const Duration(milliseconds: 500),
-                          animationCurve: Curves.fastOutSlowIn,
-                          controller: _pageController,
-                          physics: const NeverScrollableScrollPhysics(),
-                          children: [
-                            GenderSelectionView(
-                              selectedGender: state.gender,
-                              onGenderSelected: (gender) {
-                                context.read<RegisterCubit>().doEvent(
-                                  SelectGenderEvent(gender),
-                                );
-                              },
+                  SizedBox(height: 24.h),
+                  CustomGlassContainer(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w,
+                      vertical: 24.h,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: ExpandablePageView(
+                            animationDuration: const Duration(
+                              milliseconds: 500,
                             ),
-                            CustomHorizontalWheelPicker(
-                              minValue: 16,
-                              maxValue: 90,
-                              selectedValue: state.age,
-                              unit: AppStrings.year.tr(),
-                              onValueChanged: (age) {
-                                context.read<RegisterCubit>().doEvent(
-                                  UpdateAgeEvent(age),
-                                );
-                              },
-                            ),
-                            CustomHorizontalWheelPicker(
-                              minValue: 30,
-                              maxValue: 250,
-                              selectedValue: state.weight,
-                              unit: AppStrings.kg.tr(),
-                              onValueChanged: (weight) {
-                                context.read<RegisterCubit>().doEvent(
-                                  UpdateWeightEvent(weight),
-                                );
-                              },
-                            ),
-                            CustomHorizontalWheelPicker(
-                              minValue: 100,
-                              maxValue: 250,
-                              selectedValue: state.height,
-                              unit: AppStrings.cm.tr(),
-                              onValueChanged: (height) {
-                                context.read<RegisterCubit>().doEvent(
-                                  UpdateHeightEvent(height),
-                                );
-                              },
-                            ),
-                            SelectableOptionList(
-                              options: const [
-                                AppStrings.gainWeight,
-                                AppStrings.loseWeight,
-                                AppStrings.getFitter,
-                                AppStrings.gainMoreFlexible,
-                                AppStrings.learnTheBasic,
-                              ],
-                              selectedOption: state.goal,
-                              onOptionSelected: (goal) {
-                                context.read<RegisterCubit>().doEvent(
-                                  SelectGoalEvent(goal),
-                                );
-                              },
-                            ),
-                            SelectableOptionList(
-                              options: const [
-                                AppStrings.sedentary,
-                                AppStrings.lightlyActive,
-                                AppStrings.moderatelyActive,
-                                AppStrings.veryActive,
-                                AppStrings.extraActive,
-                              ],
-                              selectedOption: state.activityLevel,
-                              onOptionSelected: (level) {
-                                context.read<RegisterCubit>().doEvent(
-                                  SelectActivityLevelEvent(level),
-                                );
-                              },
-                            ),
-                          ],
+                            animationCurve: Curves.fastOutSlowIn,
+                            controller: _pageController,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              GenderSelectionView(
+                                selectedGender: state.gender,
+                                onGenderSelected: (gender) {
+                                  context.read<RegisterCubit>().doEvent(
+                                    SelectGenderEvent(gender),
+                                  );
+                                },
+                              ),
+                              CustomHorizontalWheelPicker(
+                                minValue: 16,
+                                maxValue: 90,
+                                selectedValue: state.age,
+                                unit: AppStrings.year.tr(),
+                                onValueChanged: (age) {
+                                  context.read<RegisterCubit>().doEvent(
+                                    UpdateAgeEvent(age),
+                                  );
+                                },
+                              ),
+                              CustomHorizontalWheelPicker(
+                                minValue: 30,
+                                maxValue: 250,
+                                selectedValue: state.weight,
+                                unit: AppStrings.kg.tr(),
+                                onValueChanged: (weight) {
+                                  context.read<RegisterCubit>().doEvent(
+                                    UpdateWeightEvent(weight),
+                                  );
+                                },
+                              ),
+                              CustomHorizontalWheelPicker(
+                                minValue: 100,
+                                maxValue: 250,
+                                selectedValue: state.height,
+                                unit: AppStrings.cm.tr(),
+                                onValueChanged: (height) {
+                                  context.read<RegisterCubit>().doEvent(
+                                    UpdateHeightEvent(height),
+                                  );
+                                },
+                              ),
+                              SelectableOptionList(
+                                options: const [
+                                  AppStrings.gainWeight,
+                                  AppStrings.loseWeight,
+                                  AppStrings.getFitter,
+                                  AppStrings.gainMoreFlexible,
+                                  AppStrings.learnTheBasic,
+                                ],
+                                selectedOption: state.goal,
+                                onOptionSelected: (goal) {
+                                  context.read<RegisterCubit>().doEvent(
+                                    SelectGoalEvent(goal),
+                                  );
+                                },
+                              ),
+                              SelectableOptionList(
+                                options: const [
+                                  AppStrings.sedentary,
+                                  AppStrings.lightlyActive,
+                                  AppStrings.moderatelyActive,
+                                  AppStrings.veryActive,
+                                  AppStrings.extraActive,
+                                ],
+                                selectedOption: state.activityLevel,
+                                onOptionSelected: (level) {
+                                  context.read<RegisterCubit>().doEvent(
+                                    SelectActivityLevelEvent(level),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 24.h),
-                      ElevatedButton(
-                        onPressed: _isStepValid(state)
-                            ? () {
-                                if (state.currentStep < 6) {
-                                  context.read<RegisterCubit>().doEvent(
-                                    NextStepEvent(),
-                                  );
-                                } else {
-                                  context.read<RegisterCubit>().doEvent(
-                                    SubmitSignupEvent(),
-                                  );
+                        SizedBox(height: 24.h),
+                        ElevatedButton(
+                          onPressed: _isStepValid(state)
+                              ? () {
+                                  if (state.currentStep < 6) {
+                                    context.read<RegisterCubit>().doEvent(
+                                      NextStepEvent(),
+                                    );
+                                  } else {
+                                    context.read<RegisterCubit>().doEvent(
+                                      SubmitSignupEvent(),
+                                    );
+                                  }
                                 }
-                              }
-                            : null,
-                        child: Text(
-                          (state.currentStep < 6
-                                  ? AppStrings.next
-                                  : AppStrings.done)
-                              .tr(),
-                          style: AppTextStyles.white20500,
+                              : null,
+                          child: Text(
+                            (state.currentStep < 6
+                                    ? AppStrings.next
+                                    : AppStrings.done)
+                                .tr(),
+                            style: AppTextStyles.white20500,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 40.h),
-              ],
+                  SizedBox(height: 40.h),
+                ],
+              ),
             );
           },
         ),
