@@ -17,7 +17,6 @@ import '../../features/auth/presentation/view_model/forget_password_view_model/f
 
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/home/presentation/screens/details_food_screen.dart';
 import '../../features/home/presentation/screens/food_screen.dart';
