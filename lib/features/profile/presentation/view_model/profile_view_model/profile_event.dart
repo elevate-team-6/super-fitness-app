@@ -14,3 +14,7 @@ class LoadProfileEvent extends ProfileEvents {
 class RefreshProfileEvent extends ProfileEvents {
   const RefreshProfileEvent();
 }
+
+class LogoutEvent extends ProfileEvents {
+  const LogoutEvent();
+}

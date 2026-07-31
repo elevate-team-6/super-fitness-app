@@ -91,17 +91,16 @@ class CatalogLocalDataSource {
     List<String> ids,
   ) async {
     if (ids.isEmpty) return [];
-    final nameCol = _nameCol;
 
     final placeholders = List.filled(ids.length, '?').join(', ');
     final query =
         '''
       SELECT 
         e.*, 
-        e.$nameCol as ${CatalogDbConstants.aliasExerciseName},
-        l.$nameCol as ${CatalogDbConstants.aliasDifficultyLevel},
-        mg.$nameCol as ${CatalogDbConstants.aliasTargetMuscleGroup},
-        m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle}
+        ${_getNameCol('e')} as ${CatalogDbConstants.aliasExerciseName},
+        ${_getNameCol('l')} as ${CatalogDbConstants.aliasDifficultyLevel},
+        ${_getNameCol('mg')} as ${CatalogDbConstants.aliasTargetMuscleGroup},
+        ${_getNameCol('m')} as ${CatalogDbConstants.aliasPrimeMoverMuscle}
       FROM ${CatalogDbConstants.tableExercise} e
       LEFT JOIN ${CatalogDbConstants.tableDifficultyLevel} l ON e.${CatalogDbConstants.columnDifficultyId} = l.${CatalogDbConstants.columnId}
       LEFT JOIN ${CatalogDbConstants.tableMuscleGroup} mg ON e.${CatalogDbConstants.columnMuscleGroupId} = mg.${CatalogDbConstants.columnId}
@@ -218,9 +217,6 @@ class CatalogLocalDataSource {
 
   Future<List<MealModel>> getMealsByIds(List<String> ids) async {
     if (ids.isEmpty) return [];
-    final nameCol = _isArabic
-        ? CatalogDbConstants.columnNameAr
-        : CatalogDbConstants.columnName;
 
     final placeholders = List.filled(ids.length, '?').join(', ');
     final results = await _sqliteHelper.rawQuery(
@@ -229,9 +225,9 @@ class CatalogLocalDataSource {
           '''
         SELECT 
           m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
-          m.$nameCol as ${CatalogDbConstants.keyStrMeal}, 
+          ${_getNameCol('m')} as ${CatalogDbConstants.keyStrMeal}, 
           m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.keyStrMealThumb},
-          a.$nameCol as ${CatalogDbConstants.keyStrArea}
+          ${_getNameCol('a')} as ${CatalogDbConstants.keyStrArea}
         FROM ${CatalogDbConstants.tableMeal} m
         LEFT JOIN ${CatalogDbConstants.tableMealCategory} c ON m.${CatalogDbConstants.columnCategoryId} = c.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableMealArea} a ON m.${CatalogDbConstants.columnAreaId} = a.${CatalogDbConstants.columnId}

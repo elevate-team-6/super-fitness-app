@@ -210,4 +210,18 @@ class AuthRepoImpl implements AuthRepoContract {
       return ErrorBaseResponse(e.toString());
     }
   }
+
+  @override
+  Future<BaseResponse<void>> logout() async {
+    await _authRemoteDataSource.logout();
+
+    // Clear authentication related data but keep onboarding status
+    await _secureCacheHelper.deleteData(key: AppKeys.tokenKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.userDataKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.userIdKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.emailKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.rememberMeKey);
+
+    return const SuccessBaseResponse(null);
+  }
 }

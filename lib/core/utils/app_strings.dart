@@ -204,6 +204,8 @@ abstract class AppStrings {
   static const String privacyPolicy = 'privacyPolicy';
   static const String help = 'help';
   static const String logout = 'logout';
+  static const String logoutConfirmationTitle = 'logoutConfirmationTitle';
+  static const String logoutConfirmationMessage = 'logoutConfirmationMessage';
   static const String english = 'english';
   static const String arabic = 'arabic';
   static const String pageFailedToLoad = 'pageFailedToLoad';

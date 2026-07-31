@@ -33,4 +33,6 @@ abstract interface class AuthRepoContract {
   Future<BaseResponse<SocialAccountEntity>> signInWithGoogle();
 
   Future<BaseResponse<SocialAccountEntity>> signInWithFacebook();
+
+  Future<BaseResponse<void>> logout();
 }

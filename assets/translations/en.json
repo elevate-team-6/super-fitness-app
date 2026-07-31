@@ -195,6 +195,8 @@
   "privacyPolicy": "Privacy Policy",
   "help": "Help",
   "logout": "Logout",
+  "logoutConfirmationTitle": "Logout",
+  "logoutConfirmationMessage": "Are you sure you want to log out?",
   "english": "English",
   "arabic": "Arabic",
   "pageFailedToLoad": "We couldn't load this page",

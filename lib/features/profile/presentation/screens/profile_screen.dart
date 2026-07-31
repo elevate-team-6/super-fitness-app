@@ -19,6 +19,7 @@ import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_event.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_state.dart';
+import 'package:super_fitness/features/profile/presentation/widgets/logout_dialog.dart';
 import 'package:super_fitness/features/profile/presentation/widgets/profile_header.dart';
 import 'package:super_fitness/features/profile/presentation/widgets/profile_menu_item.dart';
 
@@ -205,7 +206,14 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                       icon: Icons.logout,
                       label: AppStrings.logout.tr(),
                       isHighlighted: true,
-                      // TODO(team): wire to AuthService.logout + back to login.
+                      onTap: () async {
+                        final shouldLogout = await LogoutDialog.show(context);
+                        if (shouldLogout == true && context.mounted) {
+                          context.read<ProfileCubit>().doIntent(
+                            const LogoutEvent(),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),

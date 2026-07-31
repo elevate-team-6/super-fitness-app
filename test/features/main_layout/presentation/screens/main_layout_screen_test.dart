@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
 import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
@@ -132,6 +134,14 @@ class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
   Future<UserEntity?> call() async => null;
 }
 
+class FakeLogoutUseCase implements LogoutUseCase {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<BaseResponse<void>> call() async => const SuccessBaseResponse(null);
+}
+
 void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
   late FakeHomeCubit fakeHomeCubit;
@@ -147,7 +157,7 @@ void main() {
     fakeHomeCubit = FakeHomeCubit();
     fakeChatCubit = FakeChatCubit();
     getIt.registerFactory<ProfileCubit>(
-      () => ProfileCubit(FakeGetCachedUserUseCase()),
+      () => ProfileCubit(FakeGetCachedUserUseCase(), FakeLogoutUseCase()),
     );
   });
 
