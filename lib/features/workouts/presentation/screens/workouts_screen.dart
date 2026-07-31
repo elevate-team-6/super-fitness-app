@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,9 +15,10 @@ import 'package:super_fitness/core/widgets/animated_state_switcher.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_grid_view.dart';
 import 'package:super_fitness/core/widgets/custom_tab_bar.dart';
-import '../view_model/workouts_view_model/workouts_cubit.dart';
-import '../view_model/workouts_view_model/workouts_events.dart';
-import '../view_model/workouts_view_model/workouts_state.dart';
+
+import '../view_models/workouts_view_model/workouts_cubit.dart';
+import '../view_models/workouts_view_model/workouts_events.dart';
+import '../view_models/workouts_view_model/workouts_state.dart';
 import '../widgets/muscle_grid_item.dart';
 import '../widgets/muscle_skeleton_placeholders.dart';
 

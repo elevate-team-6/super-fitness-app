@@ -72,44 +72,48 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       },
       child: AppScaffold(
         backgroundImage: AppImages.onboardingBackground,
-        body: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const LanguageSwitchWidget(),
-                // Skip Button
-                OnboardingSkipButton(
-                  pageController: _pageController,
-                  currentIndex: _currentIndex,
-                  itemCount: _onboardingData.length,
-                ),
-              ],
-            ),
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const LanguageSwitchWidget(),
+                  // Skip Button
+                  OnboardingSkipButton(
+                    pageController: _pageController,
+                    currentIndex: _currentIndex,
+                    itemCount: _onboardingData.length,
+                  ),
+                ],
+              ),
 
-            // Images PageView
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (index) => setState(() => _currentIndex = index),
-                itemCount: _onboardingData.length,
-                itemBuilder: (context, index) => Image.asset(
-                  _onboardingData[index].image,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.bottomCenter,
+              // Images PageView
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (index) =>
+                      setState(() => _currentIndex = index),
+                  itemCount: _onboardingData.length,
+                  itemBuilder: (context, index) => Image.asset(
+                    _onboardingData[index].image,
+                    fit: BoxFit.contain,
+                    alignment: Alignment.bottomCenter,
+                  ),
                 ),
               ),
-            ),
 
-            // Bottom Content
-            OnboardingContent(
-              model: _onboardingData[_currentIndex],
-              itemCount: _onboardingData.length,
-              currentIndex: _currentIndex,
-              onNext: _onNext,
-              onBack: _onBack,
-            ),
-          ],
+              // Bottom Content
+              OnboardingContent(
+                model: _onboardingData[_currentIndex],
+                itemCount: _onboardingData.length,
+                currentIndex: _currentIndex,
+                onNext: _onNext,
+                onBack: _onBack,
+              ),
+            ],
+          ),
         ),
       ),
     );

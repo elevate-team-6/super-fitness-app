@@ -4,27 +4,31 @@ import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
 import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
-import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
-import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
-
-import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
+import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
+
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
+import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
-import '../../features/home/domain/entities/meal_time.dart';
-import '../../features/home/presentation/screens/food_screen.dart';
 import '../../features/home/presentation/screens/details_food_screen.dart';
-import '../../features/home/presentation/view_model/food_view_model/food_cubit.dart';
-import '../../features/home/presentation/view_model/food_view_model/food_event.dart';
-import '../../features/home/presentation/view_model/details_food_view_model/details_food_cubit.dart';
-import '../../features/home/presentation/view_model/details_food_view_model/details_food_event.dart';
+import '../../features/home/presentation/screens/food_screen.dart';
+import '../../features/home/presentation/view_models/details_food_view_model/details_food_cubit.dart';
+import '../../features/home/presentation/view_models/details_food_view_model/details_food_event.dart';
+import '../../features/home/presentation/view_models/food_view_model/food_cubit.dart';
+import '../../features/home/presentation/view_models/food_view_model/food_event.dart';
+import '../../features/home/presentation/view_models/home_view_model/home_cubit.dart';
+import '../../features/home/presentation/view_models/home_view_model/home_event.dart';
+import '../../features/main_layout/presentation/cubit/main_layout_cubit.dart';
 import '../../features/main_layout/presentation/screens/main_layout_screen.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/profile/presentation/screens/web_view_screen.dart';
-import '../../features/workouts/presentation/view_model/workouts_view_model/workouts_cubit.dart';
+import '../../features/workouts/domain/entities/exercise_entity.dart';
+import '../../features/workouts/presentation/screens/exercise_details_screen.dart';
 import '../../features/workouts/presentation/screens/exercise_screen.dart';
 import '../../features/workouts/presentation/view_models/exercise_view_model/exercise_cubit.dart';
+import '../../features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 
 abstract class AppRoutes {
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -39,6 +43,7 @@ abstract class AppRoutes {
   static const String exerciseScreen = 'exerciseScreen';
   static const String food = 'food';
   static const String detailsFood = 'detailsFood';
+  static const String exerciseDetails = 'exerciseDetails';
   static const String webView = 'webView';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -89,20 +94,29 @@ abstract class AppRoutes {
 
         case mainLayout:
           return MaterialPageRoute(
-            builder: (_) => BlocProvider(
-              create: (context) => getIt<WorkoutsCubit>(),
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => getIt<MainLayoutCubit>()),
+                BlocProvider(
+                  create: (_) =>
+                      getIt<HomeCubit>()
+                        ..doEvent(const FetchAllHomeDataEvent()),
+                ),
+                BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
+              ],
               child: const MainLayoutScreen(),
             ),
           );
 
         case food:
-          final args = settings.arguments as FoodScreenArgs;
+          final args = settings.arguments as FoodScreenArgs?;
 
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) =>
-                  getIt<FoodCubit>()
-                    ..doIntent(SelectMealTimeEvent(args.mealTime)),
+              create: (_) => getIt<FoodCubit>()
+                ..doIntent(
+                  GetMealsCategoriesEvent(initialCategory: args?.categoryName),
+                ),
               child: const FoodScreen(),
             ),
           );
@@ -112,9 +126,9 @@ abstract class AppRoutes {
 
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => getIt<DetailsFoodCubit>()
-                ..setMealId(args.mealId)
-                ..doIntent(const LoadDetailsFoodEvent()),
+              create: (_) =>
+                  getIt<DetailsFoodCubit>()
+                    ..doIntent(LoadDetailsFoodEvent(args.mealId)),
               child: DetailsFoodScreen(mealName: args.mealName),
             ),
           );
@@ -136,6 +150,12 @@ abstract class AppRoutes {
                 primeMoverMuscleName: args.primeMoverMuscleName,
               ),
             ),
+          );
+
+        case exerciseDetails:
+          final exercise = settings.arguments as ExerciseEntity;
+          return MaterialPageRoute(
+            builder: (_) => ExerciseDetailsScreen(exercise: exercise),
           );
 
         default:
@@ -182,10 +202,9 @@ class ForgotPasswordArgs {
 }
 
 class FoodScreenArgs {
-  /// Meal time the food screen opens on, set by whichever Home card was tapped.
-  final MealTime mealTime;
+  final String? categoryName;
 
-  FoodScreenArgs(this.mealTime);
+  FoodScreenArgs({this.categoryName});
 }
 
 class DetailsFoodArgs {

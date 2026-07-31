@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
 import 'config/services/google_auth_service.dart';
+import 'core/data/local/sqlite/asset_installer.dart';
 import 'core/utils/app_constants.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
@@ -33,6 +34,8 @@ Future<void> main() async {
 
   configureDependencies();
 
+  await getIt<AssetInstaller>().initialize();
+
   final results = await Future.wait([
     AuthService.isOnboardingCompleted(),
     AuthService.isLoggedIn(),
@@ -49,6 +52,7 @@ Future<void> main() async {
       ],
       path: AppConstants.translationsPath,
       fallbackLocale: const Locale('en'),
+      useOnlyLangCode: true,
 
       child: MyApp(isOnboardingDone: isOnboardingDone, isLoggedIn: isLoggedIn),
     ),
@@ -83,6 +87,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // Sync Intl global locale with EasyLocalization's locale
+    Intl.defaultLocale = context.locale.languageCode;
+
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,

@@ -1,97 +1,136 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
-import 'package:super_fitness/config/base_response/base_response.dart';
-import 'package:super_fitness/core/utils/app_strings.dart';
-import 'package:super_fitness/features/home/data/data_sources/home_remote_data_source_contract.dart';
-import 'package:super_fitness/features/home/data/models/response/details_food_response_model.dart';
-import 'package:super_fitness/features/home/data/models/response/meal_model.dart';
-import 'package:super_fitness/features/home/data/models/response/meals_response_model.dart';
-import 'package:super_fitness/features/home/domain/entities/details_food_entity.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_entity.dart';
-import 'package:super_fitness/features/home/domain/entities/meal_time.dart';
-import 'package:super_fitness/features/home/domain/repo/home_repo_contract.dart';
+import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
 
-@Injectable(as: HomeRepoContract)
+import '../../../../config/base_response/base_response.dart';
+import '../../../../config/cache/secure_cache_helper.dart';
+import '../../../../core/data/local/sqlite/catalog_local_data_source.dart';
+import '../../../../core/utils/app_keys.dart';
+import '../../../../core/utils/app_strings.dart';
+import '../../../auth/data/models/response/user_model.dart';
+import '../../domain/entities/details_food_entity.dart';
+import '../../domain/entities/home_user_entity.dart';
+import '../../domain/entities/level_entity.dart';
+import '../../domain/entities/meal_category_entity.dart';
+import '../../domain/entities/meal_entity.dart';
+import '../../domain/entities/muscle_entity.dart';
+import '../../domain/repo/home_repo_contract.dart';
+
+@LazySingleton(as: HomeRepoContract)
 class HomeRepoImpl implements HomeRepoContract {
-  final HomeRemoteDataSourceContract _remoteDataSource;
+  final CatalogLocalDataSource _localDataSource;
+  final SecureCacheHelper _secureCacheHelper;
 
-  const HomeRepoImpl(this._remoteDataSource);
+  HomeRepoImpl(this._localDataSource, this._secureCacheHelper);
 
   @override
-  Future<BaseResponse<List<MealEntity>>> getMealsByMealTime(
-    MealTime mealTime,
-  ) async {
-    final responses = await Future.wait(
-      mealTime.categories.map(_remoteDataSource.getMealsByCategory),
+  Future<BaseResponse<HomeUserEntity>> getCachedUserData() async {
+    final raw = await _secureCacheHelper.readData(key: AppKeys.userDataKey);
+    if (raw == null || raw.isEmpty) return ErrorBaseResponse("");
+
+    final json = jsonDecode(raw) as Map<String, dynamic>;
+    final userEntity = UserModel.fromJson(json).toEntity();
+    return SuccessBaseResponse(
+      HomeUserEntity(
+        name: "${userEntity.firstName} ${userEntity.lastName}",
+        image: userEntity.photo,
+      ),
     );
+  }
 
-    final buckets = <List<MealModel>>[];
-    String? firstError;
-
-    for (final response in responses) {
-      switch (response) {
-        case SuccessBaseResponse<MealsResponseModel>():
-          final meals = response.data?.meals;
-          if (meals != null && meals.isNotEmpty) buckets.add(meals);
-
-        case ErrorBaseResponse<MealsResponseModel>():
-          firstError ??= response.errorMessage;
-      }
+  @override
+  Future<BaseResponse<List<ExerciseEntity>>> getRandomExercises({
+    String? primeMoverMuscleId,
+    String? difficultyLevelId,
+    int? limit,
+  }) async {
+    try {
+      final exercises = await _localDataSource.getRandomExercises(
+        primeMoverMuscleId: primeMoverMuscleId,
+        difficultyLevelId: difficultyLevelId,
+        limit: limit,
+      );
+      return SuccessBaseResponse(exercises.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
+  }
 
-    // Only fail when nothing came back at all — one dead category shouldn't
-    // blank out a meal time that has other categories behind it.
-    if (buckets.isEmpty) {
-      return firstError != null
-          ? ErrorBaseResponse(firstError)
-          : const SuccessBaseResponse(<MealEntity>[]);
+  @override
+  Future<BaseResponse<List<MuscleEntity>>> getMuscleGroups() async {
+    try {
+      final muscles = await _localDataSource.getMuscleGroups();
+      return SuccessBaseResponse(muscles.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
+  }
 
-    return SuccessBaseResponse(_interleave(buckets));
+  @override
+  Future<BaseResponse<List<MuscleEntity>>> getRandomMuscles() async {
+    try {
+      final muscles = await _localDataSource.getRandomMuscles();
+      return SuccessBaseResponse(muscles.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
+    }
+  }
+
+  @override
+  Future<BaseResponse<List<MuscleEntity>>> getMusclesByGroupId(
+    String id,
+  ) async {
+    try {
+      final muscles = await _localDataSource.getMusclesByGroupId(id);
+      return SuccessBaseResponse(muscles.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
+    }
+  }
+
+  @override
+  Future<BaseResponse<List<LevelEntity>>> getLevels() async {
+    try {
+      final levels = await _localDataSource.getLevels();
+      return SuccessBaseResponse(levels.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
+    }
+  }
+
+  @override
+  Future<BaseResponse<List<MealCategoryEntity>>> getMealsCategories() async {
+    try {
+      final categories = await _localDataSource.getMealsCategories();
+      return SuccessBaseResponse(categories.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
+    }
+  }
+
+  @override
+  Future<BaseResponse<List<MealEntity>>> getMealsByCategory(
+    String category,
+  ) async {
+    try {
+      final meals = await _localDataSource.getMealsByCategory(category);
+      return SuccessBaseResponse(meals.map((e) => e.toEntity()).toList());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
+    }
   }
 
   @override
   Future<BaseResponse<DetailsFoodEntity>> getDetailsFood(String id) async {
-    final response = await _remoteDataSource.getDetailsFood(id);
-
-    switch (response) {
-      case SuccessBaseResponse<DetailsFoodResponseModel>():
-        final meals = response.data?.meals;
-
-        // An unknown id comes back as `{"meals": null}` with a 200, so the
-        // empty case has to be turned into an error here rather than upstream.
-        if (meals == null || meals.isEmpty) {
-          return const ErrorBaseResponse(AppStrings.detailsFoodNotFound);
-        }
-
-        return SuccessBaseResponse(meals.first.toEntity());
-
-      case ErrorBaseResponse<DetailsFoodResponseModel>():
-        return ErrorBaseResponse(response.errorMessage);
-    }
-  }
-
-  /// Round-robins the categories so a multi-category meal time doesn't render
-  /// as "all the chicken, then all the pasta". Duplicate ids are dropped.
-  List<MealEntity> _interleave(List<List<MealModel>> buckets) {
-    final longest = buckets.fold<int>(
-      0,
-      (max, bucket) => bucket.length > max ? bucket.length : max,
-    );
-
-    final seenIds = <String>{};
-    final meals = <MealEntity>[];
-
-    for (var index = 0; index < longest; index++) {
-      for (final bucket in buckets) {
-        if (index >= bucket.length) continue;
-
-        final meal = bucket[index].toEntity();
-        if (meal.id.isEmpty || !seenIds.add(meal.id)) continue;
-
-        meals.add(meal);
+    try {
+      final meal = await _localDataSource.getDetailsFood(id);
+      if (meal == null) {
+        return const ErrorBaseResponse(AppStrings.detailsFoodNotFound);
       }
+      return SuccessBaseResponse(meal.toEntity());
+    } catch (e) {
+      return ErrorBaseResponse(e.toString());
     }
-
-    return meals;
   }
 }

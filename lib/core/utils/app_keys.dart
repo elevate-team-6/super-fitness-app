@@ -8,4 +8,6 @@ abstract class AppKeys {
   static const String cacheDurationHours = 'cache_duration_hours';
   static const String emailKey = 'email';
   static const String userDataKey = 'user_data';
+  static String userNameKey = 'userName';
+  static String userImageKey = 'userImage';
 }
