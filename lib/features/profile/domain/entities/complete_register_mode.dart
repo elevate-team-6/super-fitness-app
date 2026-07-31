@@ -1,4 +1,1 @@
-enum CompleteRegisterMode {
-  register,
-  edit,
-}
+enum CompleteRegisterMode { register, edit }

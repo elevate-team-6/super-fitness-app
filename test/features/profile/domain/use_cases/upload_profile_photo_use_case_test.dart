@@ -28,7 +28,9 @@ void main() {
   group('UploadProfilePhotoUseCase', () {
     test('returns success response from repository unchanged', () async {
       const expectedResponse = SuccessBaseResponse<String>('success');
-      when(repo.uploadPhoto(dummyFile)).thenAnswer((_) async => expectedResponse);
+      when(
+        repo.uploadPhoto(dummyFile),
+      ).thenAnswer((_) async => expectedResponse);
 
       final result = await useCase(dummyFile);
 
@@ -38,7 +40,9 @@ void main() {
 
     test('returns error response from repository unchanged', () async {
       const expectedResponse = ErrorBaseResponse<String>('Upload failed');
-      when(repo.uploadPhoto(dummyFile)).thenAnswer((_) async => expectedResponse);
+      when(
+        repo.uploadPhoto(dummyFile),
+      ).thenAnswer((_) async => expectedResponse);
 
       final result = await useCase(dummyFile);
 

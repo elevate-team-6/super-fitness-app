@@ -9,4 +9,3 @@ abstract class ProfileRemoteDataSourceContract {
 
   Future<BaseResponse<String>> uploadPhoto(File photo);
 }
-

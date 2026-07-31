@@ -114,12 +114,11 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                       icon: Icons.person_outline,
                       label: AppStrings.editProfile.tr(),
                       onTap: () async {
-                        final user =
-                            context
-                                .read<ProfileCubit>()
-                                .state
-                                .profileState
-                                .data;
+                        final user = context
+                            .read<ProfileCubit>()
+                            .state
+                            .profileState
+                            .data;
                         if (user == null) return;
                         await Navigator.pushNamed(
                           context,

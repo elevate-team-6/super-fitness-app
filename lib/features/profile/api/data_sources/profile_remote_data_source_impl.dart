@@ -49,4 +49,3 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSourceContract {
     }
   }
 }
-

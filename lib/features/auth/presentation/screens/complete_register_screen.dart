@@ -38,8 +38,7 @@ class CompleteRegisterScreen extends StatefulWidget {
   });
 
   @override
-  State<CompleteRegisterScreen> createState() =>
-      _CompleteRegisterScreenState();
+  State<CompleteRegisterScreen> createState() => _CompleteRegisterScreenState();
 }
 
 class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
@@ -103,35 +102,29 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
             return _buildContent(
               currentStep: 1,
               gender: state.gender,
-              onGenderSelected:
-                  (g) => context.read<EditProfileCubit>().doEvent(
-                    edit_event.UpdateGenderEvent(g),
-                  ),
+              onGenderSelected: (g) => context.read<EditProfileCubit>().doEvent(
+                edit_event.UpdateGenderEvent(g),
+              ),
               age: state.age,
-              onAgeChanged:
-                  (a) => context.read<EditProfileCubit>().doEvent(
-                    edit_event.UpdateAgeEvent(a),
-                  ),
+              onAgeChanged: (a) => context.read<EditProfileCubit>().doEvent(
+                edit_event.UpdateAgeEvent(a),
+              ),
               weight: state.weight,
-              onWeightChanged:
-                  (w) => context.read<EditProfileCubit>().doEvent(
-                    edit_event.UpdateWeightEvent(w),
-                  ),
+              onWeightChanged: (w) => context.read<EditProfileCubit>().doEvent(
+                edit_event.UpdateWeightEvent(w),
+              ),
               height: state.height,
-              onHeightChanged:
-                  (h) => context.read<EditProfileCubit>().doEvent(
-                    edit_event.UpdateHeightEvent(h),
-                  ),
+              onHeightChanged: (h) => context.read<EditProfileCubit>().doEvent(
+                edit_event.UpdateHeightEvent(h),
+              ),
               goal: state.goal,
-              onGoalSelected:
-                  (g) => context.read<EditProfileCubit>().doEvent(
-                    edit_event.UpdateGoalEvent(g),
-                  ),
+              onGoalSelected: (g) => context.read<EditProfileCubit>().doEvent(
+                edit_event.UpdateGoalEvent(g),
+              ),
               activityLevel: state.activityLevel,
-              onActivitySelected:
-                  (l) => context.read<EditProfileCubit>().doEvent(
-                    edit_event.UpdateActivityEvent(l),
-                  ),
+              onActivitySelected: (l) => context
+                  .read<EditProfileCubit>()
+                  .doEvent(edit_event.UpdateActivityEvent(l)),
               isStepValid: true,
               buttonText: AppStrings.save.tr(),
               onButtonPressed: () {
@@ -161,8 +154,8 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
     }
 
     return BlocListener<RegisterCubit, RegisterState>(
-      listenWhen:
-          (previous, current) => previous.currentStep != current.currentStep,
+      listenWhen: (previous, current) =>
+          previous.currentStep != current.currentStep,
       listener: (context, state) {
         if (state.currentStep > 0 && state.currentStep <= 6) {
           if (_pageController.hasClients) {
@@ -192,46 +185,31 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
             return _buildContent(
               currentStep: state.currentStep,
               gender: state.gender,
-              onGenderSelected:
-                  (g) => context.read<RegisterCubit>().doEvent(
-                    SelectGenderEvent(g),
-                  ),
+              onGenderSelected: (g) =>
+                  context.read<RegisterCubit>().doEvent(SelectGenderEvent(g)),
               age: state.age,
-              onAgeChanged:
-                  (a) => context.read<RegisterCubit>().doEvent(
-                    UpdateAgeEvent(a),
-                  ),
+              onAgeChanged: (a) =>
+                  context.read<RegisterCubit>().doEvent(UpdateAgeEvent(a)),
               weight: state.weight,
-              onWeightChanged:
-                  (w) => context.read<RegisterCubit>().doEvent(
-                    UpdateWeightEvent(w),
-                  ),
+              onWeightChanged: (w) =>
+                  context.read<RegisterCubit>().doEvent(UpdateWeightEvent(w)),
               height: state.height,
-              onHeightChanged:
-                  (h) => context.read<RegisterCubit>().doEvent(
-                    UpdateHeightEvent(h),
-                  ),
+              onHeightChanged: (h) =>
+                  context.read<RegisterCubit>().doEvent(UpdateHeightEvent(h)),
               goal: state.goal,
-              onGoalSelected:
-                  (g) => context.read<RegisterCubit>().doEvent(
-                    SelectGoalEvent(g),
-                  ),
+              onGoalSelected: (g) =>
+                  context.read<RegisterCubit>().doEvent(SelectGoalEvent(g)),
               activityLevel: state.activityLevel,
-              onActivitySelected:
-                  (l) => context.read<RegisterCubit>().doEvent(
-                    SelectActivityLevelEvent(l),
-                  ),
+              onActivitySelected: (l) => context.read<RegisterCubit>().doEvent(
+                SelectActivityLevelEvent(l),
+              ),
               isStepValid: _isStepValid(state),
               buttonText:
-                  (state.currentStep < 6
-                          ? AppStrings.next
-                          : AppStrings.done)
+                  (state.currentStep < 6 ? AppStrings.next : AppStrings.done)
                       .tr(),
               onButtonPressed: () {
                 if (state.currentStep < 6) {
-                  context.read<RegisterCubit>().doEvent(
-                    const NextStepEvent(),
-                  );
+                  context.read<RegisterCubit>().doEvent(const NextStepEvent());
                 } else {
                   context.read<RegisterCubit>().doEvent(
                     const SubmitSignupEvent(),

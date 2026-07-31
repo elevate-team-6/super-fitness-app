@@ -106,8 +106,9 @@ abstract class AppRoutes {
           final args = settings.arguments as EditProfileArgs;
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
-              create: (_) => getIt<EditProfileCubit>()
-                ..doEvent(InitializeProfileEvent(args.user)),
+              create: (_) =>
+                  getIt<EditProfileCubit>()
+                    ..doEvent(InitializeProfileEvent(args.user)),
               child: EditProfileScreen(user: args.user),
             ),
           );

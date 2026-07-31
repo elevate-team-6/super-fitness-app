@@ -63,7 +63,9 @@ class EditProfileState extends Equatable {
     if (goal != (orig.goal ?? '')) return true;
 
     final String currentApiLevel = _mapToApiActivityLevel(activityLevel);
-    final String origApiLevel = _mapToApiActivityLevel(orig.activityLevel ?? '');
+    final String origApiLevel = _mapToApiActivityLevel(
+      orig.activityLevel ?? '',
+    );
     if (currentApiLevel != origApiLevel) return true;
 
     return false;
@@ -117,7 +119,9 @@ class EditProfileState extends Equatable {
       height: height ?? this.height,
       goal: goal ?? this.goal,
       activityLevel: activityLevel ?? this.activityLevel,
-      selectedImage: clearSelectedImage ? null : (selectedImage ?? this.selectedImage),
+      selectedImage: clearSelectedImage
+          ? null
+          : (selectedImage ?? this.selectedImage),
       updateProfileState: updateProfileState ?? this.updateProfileState,
     );
   }

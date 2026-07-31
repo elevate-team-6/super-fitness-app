@@ -11,4 +11,3 @@ abstract class ProfileRepoContract {
 
   Future<BaseResponse<String>> uploadPhoto(File photo);
 }
-

@@ -17,10 +17,8 @@ class EditProfileCubit extends BaseCubit<EditProfileState, BaseUiEvent> {
   final EditProfileUseCase _editProfileUseCase;
   final UploadProfilePhotoUseCase _uploadProfilePhotoUseCase;
 
-  EditProfileCubit(
-    this._editProfileUseCase,
-    this._uploadProfilePhotoUseCase,
-  ) : super(const EditProfileState());
+  EditProfileCubit(this._editProfileUseCase, this._uploadProfilePhotoUseCase)
+    : super(const EditProfileState());
 
   void doEvent(EditProfileEvents event) {
     switch (event) {
@@ -133,20 +131,27 @@ class EditProfileCubit extends BaseCubit<EditProfileState, BaseUiEvent> {
 
     if (!hasImage && !hasFields) return;
 
-    emit(
-      state.copyWith(updateProfileState: const BaseState(isLoading: true)),
-    );
+    emit(state.copyWith(updateProfileState: const BaseState(isLoading: true)));
     emitUiEvent(ShowLoadingEvent());
 
     // Case 1: Only image changed
     if (hasImage && !hasFields) {
-      final uploadResult = await _uploadProfilePhotoUseCase(state.selectedImage!);
+      final uploadResult = await _uploadProfilePhotoUseCase(
+        state.selectedImage!,
+      );
       emitUiEvent(HideLoadingEvent());
 
       switch (uploadResult) {
         case SuccessBaseResponse<String>():
-          emit(state.copyWith(clearSelectedImage: true, updateProfileState: const BaseState()));
-          emitUiEvent(DisplaySuccessEvent(uploadResult.data ?? AppStrings.success));
+          emit(
+            state.copyWith(
+              clearSelectedImage: true,
+              updateProfileState: const BaseState(),
+            ),
+          );
+          emitUiEvent(
+            DisplaySuccessEvent(uploadResult.data ?? AppStrings.success),
+          );
           emitUiEvent(
             NavigateEvent(
               '',
@@ -169,7 +174,9 @@ class EditProfileCubit extends BaseCubit<EditProfileState, BaseUiEvent> {
 
     // Case 3 (First Step): Both image and fields changed -> Upload image first
     if (hasImage && hasFields) {
-      final uploadResult = await _uploadProfilePhotoUseCase(state.selectedImage!);
+      final uploadResult = await _uploadProfilePhotoUseCase(
+        state.selectedImage!,
+      );
       if (uploadResult is ErrorBaseResponse<String>) {
         emitUiEvent(HideLoadingEvent());
         emit(
@@ -227,25 +234,27 @@ class EditProfileCubit extends BaseCubit<EditProfileState, BaseUiEvent> {
     final apiActivityLevel = _mapToApiActivityLevel(state.activityLevel);
 
     return EditProfileRequest(
-      firstName:
-          state.firstName.trim() != (orig?.firstName ?? '').trim()
-              ? state.firstName.trim()
-              : null,
-      lastName:
-          state.lastName.trim() != (orig?.lastName ?? '').trim()
-              ? state.lastName.trim()
-              : null,
-      email:
-          state.email.trim() != (orig?.email ?? '').trim()
-              ? state.email.trim()
-              : null,
+      firstName: state.firstName.trim() != (orig?.firstName ?? '').trim()
+          ? state.firstName.trim()
+          : null,
+      lastName: state.lastName.trim() != (orig?.lastName ?? '').trim()
+          ? state.lastName.trim()
+          : null,
+      email: state.email.trim() != (orig?.email ?? '').trim()
+          ? state.email.trim()
+          : null,
       gender: state.gender != orig?.gender ? state.gender : null,
       age: state.age != (orig?.age ?? 20) ? state.age : null,
-      weight: state.weight != (orig?.weight?.toInt() ?? 70) ? state.weight : null,
-      height: state.height != (orig?.height?.toInt() ?? 170) ? state.height : null,
+      weight: state.weight != (orig?.weight?.toInt() ?? 70)
+          ? state.weight
+          : null,
+      height: state.height != (orig?.height?.toInt() ?? 170)
+          ? state.height
+          : null,
       goal: state.goal != orig?.goal ? state.goal : null,
-      activityLevel:
-          apiActivityLevel != orig?.activityLevel ? apiActivityLevel : null,
+      activityLevel: apiActivityLevel != orig?.activityLevel
+          ? apiActivityLevel
+          : null,
     );
   }
 
