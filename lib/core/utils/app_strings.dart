@@ -190,7 +190,6 @@ abstract class AppStrings {
 
   // Profile
   static const String editProfile = 'editProfile';
-  static const String changePassword = 'changePassword';
   static const String selectLanguage = 'selectLanguage';
   static const String security = 'security';
   static const String privacyPolicy = 'privacyPolicy';
