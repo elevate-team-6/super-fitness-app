@@ -19,10 +19,20 @@ class CatalogLocalDataSource {
 
   CatalogLocalDataSource(this._sqliteHelper);
 
-  bool get _isArabic => Intl.defaultLocale == CatalogDbConstants.localeAr;
-  String get _nameCol => _isArabic
-      ? CatalogDbConstants.columnNameAr
-      : CatalogDbConstants.columnName;
+  bool get _isArabic =>
+      Intl.getCurrentLocale().startsWith(CatalogDbConstants.localeAr);
+
+  String _getNameCol([String? alias]) {
+    const nameAr = CatalogDbConstants.columnNameAr;
+    const nameEn = CatalogDbConstants.columnName;
+    final prefix = alias != null ? '$alias.' : '';
+
+    if (_isArabic) {
+      // Fallback to English 'name' if 'name_ar' is null or empty
+      return 'COALESCE(NULLIF($prefix$nameAr, ""), $prefix$nameEn)';
+    }
+    return '$prefix$nameEn';
+  }
 
   // --- Exercises (Home) ---
 
@@ -31,18 +41,16 @@ class CatalogLocalDataSource {
     String? difficultyLevelId,
     int? limit,
   }) async {
-    final nameCol = _nameCol;
-
     String query =
         '''
       SELECT 
         e.*, 
-        e.$nameCol as ${CatalogDbConstants.aliasExerciseName},
-        l.$nameCol as ${CatalogDbConstants.aliasDifficultyLevel},
-        mg.$nameCol as ${CatalogDbConstants.aliasTargetMuscleGroup},
-        m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle},
-        eq.$nameCol as ${CatalogDbConstants.aliasPrimaryEquipment},
-        seq.$nameCol as ${CatalogDbConstants.columnSecondaryEquipment}
+        ${_getNameCol('e')} as ${CatalogDbConstants.aliasExerciseName},
+        ${_getNameCol('l')} as ${CatalogDbConstants.aliasDifficultyLevel},
+        ${_getNameCol('mg')} as ${CatalogDbConstants.aliasTargetMuscleGroup},
+        ${_getNameCol('m')} as ${CatalogDbConstants.aliasPrimeMoverMuscle},
+        ${_getNameCol('eq')} as ${CatalogDbConstants.aliasPrimaryEquipment},
+        ${_getNameCol('seq')} as ${CatalogDbConstants.columnSecondaryEquipment}
       FROM ${CatalogDbConstants.tableExercise} e
       LEFT JOIN ${CatalogDbConstants.tableDifficultyLevel} l ON e.${CatalogDbConstants.columnDifficultyId} = l.${CatalogDbConstants.columnId}
       LEFT JOIN ${CatalogDbConstants.tableMuscleGroup} mg ON e.${CatalogDbConstants.columnMuscleGroupId} = mg.${CatalogDbConstants.columnId}
@@ -82,12 +90,10 @@ class CatalogLocalDataSource {
   // --- Shared Metadata ---
 
   Future<List<MuscleModel>> getMuscleGroups() async {
-    final nameCol = _nameCol;
-
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
       sql:
-          'SELECT ${CatalogDbConstants.columnId}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName}, $nameCol as ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableMuscleGroup}',
+          'SELECT ${CatalogDbConstants.columnId}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName}, ${_getNameCol()} as ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableMuscleGroup}',
     );
 
     return results.map((e) {
@@ -100,12 +106,10 @@ class CatalogLocalDataSource {
   }
 
   Future<List<MuscleModel>> getRandomMuscles() async {
-    final nameCol = _nameCol;
-
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
       sql:
-          'SELECT ${CatalogDbConstants.columnId}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName}, $nameCol as ${CatalogDbConstants.columnName}, ${CatalogDbConstants.columnImage} FROM ${CatalogDbConstants.tableMuscle} ORDER BY RANDOM() LIMIT 10',
+          'SELECT ${CatalogDbConstants.columnId}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName}, ${_getNameCol()} as ${CatalogDbConstants.columnName}, ${CatalogDbConstants.columnImage} FROM ${CatalogDbConstants.tableMuscle} ORDER BY RANDOM() LIMIT 10',
     );
 
     return results.map((e) {
@@ -118,11 +122,10 @@ class CatalogLocalDataSource {
   }
 
   Future<List<MuscleModel>> getMusclesByGroupId(String id) async {
-    final nameCol = _nameCol;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
       sql:
-          'SELECT ${CatalogDbConstants.columnId}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName}, $nameCol as ${CatalogDbConstants.columnName}, ${CatalogDbConstants.columnImage} FROM ${CatalogDbConstants.tableMuscle} WHERE ${CatalogDbConstants.columnMuscleGroupId} = ?',
+          'SELECT ${CatalogDbConstants.columnId}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName}, ${_getNameCol()} as ${CatalogDbConstants.columnName}, ${CatalogDbConstants.columnImage} FROM ${CatalogDbConstants.tableMuscle} WHERE ${CatalogDbConstants.columnMuscleGroupId} = ?',
       arguments: [id],
     );
 
@@ -136,11 +139,10 @@ class CatalogLocalDataSource {
   }
 
   Future<List<LevelModel>> getLevels() async {
-    final nameCol = _nameCol;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
       sql:
-          'SELECT ${CatalogDbConstants.columnId}, $nameCol as ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableDifficultyLevel} ORDER BY ${CatalogDbConstants.columnRank}',
+          'SELECT ${CatalogDbConstants.columnId}, ${_getNameCol()} as ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableDifficultyLevel} ORDER BY ${CatalogDbConstants.columnRank}',
     );
     return results.map((e) => LevelModel.fromSqlite(e)).toList();
   }
@@ -148,11 +150,10 @@ class CatalogLocalDataSource {
   // --- Meals ---
 
   Future<List<MealCategoryModel>> getMealsCategories() async {
-    final nameCol = _nameCol;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
       sql:
-          'SELECT ${CatalogDbConstants.columnId} as ${CatalogDbConstants.aliasIdCategory}, $nameCol as ${CatalogDbConstants.keyStrCategory}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName} FROM ${CatalogDbConstants.tableMealCategory}',
+          'SELECT ${CatalogDbConstants.columnId} as ${CatalogDbConstants.aliasIdCategory}, ${_getNameCol()} as ${CatalogDbConstants.keyStrCategory}, ${CatalogDbConstants.columnName} as ${CatalogDbConstants.aliasEnglishName} FROM ${CatalogDbConstants.tableMealCategory}',
     );
     return results.map((e) {
       final map = Map<String, dynamic>.from(e);
@@ -163,18 +164,15 @@ class CatalogLocalDataSource {
   }
 
   Future<List<MealModel>> getMealsByCategory(String category) async {
-    final nameCol = _isArabic
-        ? CatalogDbConstants.columnNameAr
-        : CatalogDbConstants.columnName;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
       sql:
           '''
         SELECT 
           m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
-          m.$nameCol as ${CatalogDbConstants.keyStrMeal}, 
+          ${_getNameCol('m')} as ${CatalogDbConstants.keyStrMeal}, 
           m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.keyStrMealThumb},
-          a.$nameCol as ${CatalogDbConstants.keyStrArea}
+          ${_getNameCol('a')} as ${CatalogDbConstants.keyStrArea}
         FROM ${CatalogDbConstants.tableMeal} m
         LEFT JOIN ${CatalogDbConstants.tableMealCategory} c ON m.${CatalogDbConstants.columnCategoryId} = c.${CatalogDbConstants.columnId}
         LEFT JOIN ${CatalogDbConstants.tableMealArea} a ON m.${CatalogDbConstants.columnAreaId} = a.${CatalogDbConstants.columnId}
@@ -186,17 +184,16 @@ class CatalogLocalDataSource {
   }
 
   Future<DetailsFoodModel?> getDetailsFood(String id) async {
-    final nameCol = _nameCol;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
       sql:
           '''
         SELECT 
           m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
-          m.$nameCol as ${CatalogDbConstants.keyStrMeal}, 
+          ${_getNameCol('m')} as ${CatalogDbConstants.keyStrMeal}, 
           m.${CatalogDbConstants.columnThumb} as ${CatalogDbConstants.keyStrMealThumb},
-          c.$nameCol as ${CatalogDbConstants.keyStrCategory},
-          a.$nameCol as ${CatalogDbConstants.keyStrArea},
+          ${_getNameCol('c')} as ${CatalogDbConstants.keyStrCategory},
+          ${_getNameCol('a')} as ${CatalogDbConstants.keyStrArea},
           m.${CatalogDbConstants.columnInstructions} as ${CatalogDbConstants.keyStrInstructions},
           m.${CatalogDbConstants.columnYoutube} as ${CatalogDbConstants.keyStrYoutube}
         FROM ${CatalogDbConstants.tableMeal} m
@@ -213,7 +210,7 @@ class CatalogLocalDataSource {
       dbName: CatalogDbConstants.mealsDb,
       sql:
           '''
-        SELECT i.$nameCol as ${CatalogDbConstants.columnName}, mi.${CatalogDbConstants.columnQty} || ' ' || mi.${CatalogDbConstants.columnUnit} as ${CatalogDbConstants.aliasMeasure}
+        SELECT i.${_getNameCol()} as ${CatalogDbConstants.columnName}, mi.${CatalogDbConstants.columnQty} || ' ' || mi.${CatalogDbConstants.columnUnit} as ${CatalogDbConstants.aliasMeasure}
         FROM ${CatalogDbConstants.tableMealIngredient} mi
         JOIN ${CatalogDbConstants.tableIngredient} i ON mi.${CatalogDbConstants.columnIngredientId} = i.${CatalogDbConstants.columnId}
         WHERE mi.meal_id = ?
@@ -230,12 +227,11 @@ class CatalogLocalDataSource {
   Future<List<LevelModel>> getDifficultyLevelsByPrimeMover(
     String primeMoverMuscleId,
   ) async {
-    final nameCol = _nameCol;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
       sql:
           '''
-        SELECT DISTINCT l.${CatalogDbConstants.columnId}, l.$nameCol as ${CatalogDbConstants.columnName}
+        SELECT DISTINCT l.${CatalogDbConstants.columnId}, ${_getNameCol('l')} as ${CatalogDbConstants.columnName}
         FROM ${CatalogDbConstants.tableDifficultyLevel} l
         JOIN ${CatalogDbConstants.tableExercise} e ON e.${CatalogDbConstants.columnDifficultyId} = l.${CatalogDbConstants.columnId}
         WHERE e.${CatalogDbConstants.columnPrimeMoverId} = ?
@@ -250,19 +246,18 @@ class CatalogLocalDataSource {
     String primeMoverMuscleId,
     String difficultyLevelId,
   ) async {
-    final nameCol = _nameCol;
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
       sql:
           '''
         SELECT 
           e.*, 
-          e.$nameCol as ${CatalogDbConstants.aliasExerciseName},
-          l.$nameCol as ${CatalogDbConstants.aliasDifficultyLevel},
-          mg.$nameCol as ${CatalogDbConstants.aliasTargetMuscleGroup},
-          m.$nameCol as ${CatalogDbConstants.aliasPrimeMoverMuscle},
-          eq.$nameCol as ${CatalogDbConstants.aliasPrimaryEquipment},
-          seq.$nameCol as ${CatalogDbConstants.columnSecondaryEquipment},
+          ${_getNameCol('e')} as ${CatalogDbConstants.aliasExerciseName},
+          ${_getNameCol('l')} as ${CatalogDbConstants.aliasDifficultyLevel},
+          ${_getNameCol('mg')} as ${CatalogDbConstants.aliasTargetMuscleGroup},
+          ${_getNameCol('m')} as ${CatalogDbConstants.aliasPrimeMoverMuscle},
+          ${_getNameCol('eq')} as ${CatalogDbConstants.aliasPrimaryEquipment},
+          ${_getNameCol('seq')} as ${CatalogDbConstants.columnSecondaryEquipment},
           br.${CatalogDbConstants.columnName} as ${CatalogDbConstants.columnBodyRegionName},
           e.${CatalogDbConstants.columnDemoUrl} as ${CatalogDbConstants.aliasShortYoutubeLink},
           e.${CatalogDbConstants.columnExplainUrl} as ${CatalogDbConstants.aliasInDepthYoutubeLink}
