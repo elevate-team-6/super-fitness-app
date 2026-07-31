@@ -13,7 +13,6 @@ import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
-import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/core/widgets/custom_snack_bar.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
@@ -79,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> with UiEventHandler {
       },
       child: AppScaffold(
         backgroundImage: AppImages.authBackground,
-        appBar: CustomAppBar(),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(

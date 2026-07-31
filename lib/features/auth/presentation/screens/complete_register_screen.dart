@@ -241,88 +241,90 @@ class _CompleteRegisterScreenState extends State<CompleteRegisterScreen>
     required String buttonText,
     required VoidCallback onButtonPressed,
   }) {
-    return Column(
-      children: [
-        SizedBox(height: 40.h),
-        MultiStepProgressHeader(
-          currentStep: currentStep,
-          title: _getTitle(currentStep),
-          subtitle: _getSubtitle(currentStep),
-          showProgress: !_isEditMode,
-        ),
-        SizedBox(height: 24.h),
-        CustomGlassContainer(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: ExpandablePageView(
-                  animationDuration: const Duration(milliseconds: 500),
-                  animationCurve: Curves.fastOutSlowIn,
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    GenderSelectionView(
-                      selectedGender: gender,
-                      onGenderSelected: onGenderSelected,
-                    ),
-                    CustomHorizontalWheelPicker(
-                      minValue: 16,
-                      maxValue: 90,
-                      selectedValue: age,
-                      unit: AppStrings.year.tr(),
-                      onValueChanged: onAgeChanged,
-                    ),
-                    CustomHorizontalWheelPicker(
-                      minValue: 30,
-                      maxValue: 250,
-                      selectedValue: weight,
-                      unit: AppStrings.kg.tr(),
-                      onValueChanged: onWeightChanged,
-                    ),
-                    CustomHorizontalWheelPicker(
-                      minValue: 100,
-                      maxValue: 250,
-                      selectedValue: height,
-                      unit: AppStrings.cm.tr(),
-                      onValueChanged: onHeightChanged,
-                    ),
-                    SelectableOptionList(
-                      options: const [
-                        AppStrings.gainWeight,
-                        AppStrings.loseWeight,
-                        AppStrings.getFitter,
-                        AppStrings.gainMoreFlexible,
-                        AppStrings.learnTheBasic,
-                      ],
-                      selectedOption: goal,
-                      onOptionSelected: onGoalSelected,
-                    ),
-                    SelectableOptionList(
-                      options: const [
-                        AppStrings.sedentary,
-                        AppStrings.lightlyActive,
-                        AppStrings.moderatelyActive,
-                        AppStrings.veryActive,
-                        AppStrings.extraActive,
-                      ],
-                      selectedOption: activityLevel,
-                      onOptionSelected: onActivitySelected,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 24.h),
-              ElevatedButton(
-                onPressed: isStepValid ? onButtonPressed : null,
-                child: Text(buttonText, style: AppTextStyles.white20500),
-              ),
-            ],
+    return SafeArea(
+      child: Column(
+        children: [
+          SizedBox(height: 40.h),
+          MultiStepProgressHeader(
+            currentStep: currentStep,
+            title: _getTitle(currentStep),
+            subtitle: _getSubtitle(currentStep),
+            showProgress: !_isEditMode,
           ),
-        ),
-        SizedBox(height: 40.h),
-      ],
+          SizedBox(height: 24.h),
+          CustomGlassContainer(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: ExpandablePageView(
+                    animationDuration: const Duration(milliseconds: 500),
+                    animationCurve: Curves.fastOutSlowIn,
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      GenderSelectionView(
+                        selectedGender: gender,
+                        onGenderSelected: onGenderSelected,
+                      ),
+                      CustomHorizontalWheelPicker(
+                        minValue: 16,
+                        maxValue: 90,
+                        selectedValue: age,
+                        unit: AppStrings.year.tr(),
+                        onValueChanged: onAgeChanged,
+                      ),
+                      CustomHorizontalWheelPicker(
+                        minValue: 30,
+                        maxValue: 250,
+                        selectedValue: weight,
+                        unit: AppStrings.kg.tr(),
+                        onValueChanged: onWeightChanged,
+                      ),
+                      CustomHorizontalWheelPicker(
+                        minValue: 100,
+                        maxValue: 250,
+                        selectedValue: height,
+                        unit: AppStrings.cm.tr(),
+                        onValueChanged: onHeightChanged,
+                      ),
+                      SelectableOptionList(
+                        options: const [
+                          AppStrings.gainWeight,
+                          AppStrings.loseWeight,
+                          AppStrings.getFitter,
+                          AppStrings.gainMoreFlexible,
+                          AppStrings.learnTheBasic,
+                        ],
+                        selectedOption: goal,
+                        onOptionSelected: onGoalSelected,
+                      ),
+                      SelectableOptionList(
+                        options: const [
+                          AppStrings.sedentary,
+                          AppStrings.lightlyActive,
+                          AppStrings.moderatelyActive,
+                          AppStrings.veryActive,
+                          AppStrings.extraActive,
+                        ],
+                        selectedOption: activityLevel,
+                        onOptionSelected: onActivitySelected,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 24.h),
+                ElevatedButton(
+                  onPressed: isStepValid ? onButtonPressed : null,
+                  child: Text(buttonText, style: AppTextStyles.white20500),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 40.h),
+        ],
+      ),
     );
   }
 

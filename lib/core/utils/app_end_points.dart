@@ -31,6 +31,17 @@ abstract class AppEndPoints {
   static const String muscles = "$baseUrl/muscles";
   static const String musclesGroup = "$baseUrl/musclesGroup";
 
+  // Exercises
+  static const String exercises = "$baseUrl/exercises";
+  static const String exercisesByMuscleDifficulty =
+      "$baseUrl/exercises/by-muscle-difficulty";
+
+  // Muscles
+  static const String randomMuscles = "$baseUrl/muscles/random";
+
+  // Levels
+  static const String levels = "$baseUrl/levels";
+
   // ---------------------------------------------------------------------------
   // TO ADD NEW ENDPOINTS:
   // 1. Group them by feature (e.g., // Products, // Cart).
