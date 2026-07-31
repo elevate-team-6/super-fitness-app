@@ -217,5 +217,14 @@
   "Network error": "Network error",
   "Error": "Error",
   "server error": "Server error",
-  "not found": "Not found"
+  "not found": "Not found",
+  "watchVideo": "Watch Video",
+  "changePassword": "Change Password",
+  "oldPassword": "Old Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "changePasswordSuccess": "Password changed successfully",
+  "passwordSameAsOld": "New password must be different from old password",
+  "changeYourPassword": "create new Password",
+  "enterPasswordDetails": "Make sure it's 8 characters or more"
 }

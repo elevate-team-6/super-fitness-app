@@ -103,6 +103,16 @@ abstract class AppStrings {
   static const String passwordResetSuccessfully = 'passwordResetSuccessfully';
   static const String otpCodeInvalid = 'otpCodeInvalid';
 
+  // Change password
+  static const String changePassword = 'changePassword';
+  static const String oldPassword = 'oldPassword';
+  static const String newPassword = 'newPassword';
+  static const String confirmPassword = 'confirmPassword';
+  static const String changePasswordSuccess = 'changePasswordSuccess';
+  static const String passwordSameAsOld = 'passwordSameAsOld';
+  static const String changeYourPassword = 'changeYourPassword';
+  static const String enterPasswordDetails = 'enterPasswordDetails';
+
   // Login screen
   static const String heyThere = 'hey_there';
   static const String welcomeBack = 'welcome_back';
@@ -180,7 +190,6 @@ abstract class AppStrings {
 
   // Profile
   static const String editProfile = 'editProfile';
-  static const String changePassword = 'changePassword';
   static const String selectLanguage = 'selectLanguage';
   static const String security = 'security';
   static const String privacyPolicy = 'privacyPolicy';

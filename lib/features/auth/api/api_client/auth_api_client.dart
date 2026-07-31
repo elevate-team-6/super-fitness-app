@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:super_fitness/core/utils/app_end_points.dart';
+import 'package:super_fitness/features/auth/data/models/request/change_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/forgot_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/reset_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/verify_reset_code_request.dart';
@@ -41,5 +42,10 @@ abstract class AuthApiClient {
   @PUT(AppEndPoints.resetPassword)
   Future<ResetPasswordResponse> resetPassword(
     @Body() ResetPasswordRequest request,
+  );
+
+  @PATCH(AppEndPoints.changePassword)
+  Future<ResetPasswordResponse> changePassword(
+    @Body() ChangePasswordRequest request,
   );
 }

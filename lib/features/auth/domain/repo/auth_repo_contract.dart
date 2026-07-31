@@ -25,6 +25,11 @@ abstract interface class AuthRepoContract {
     required String newPassword,
   });
 
+  Future<BaseResponse<ForgetPasswordEntity>> changePassword({
+    required String password,
+    required String newPassword,
+  });
+
   Future<BaseResponse<SocialAccountEntity>> signInWithGoogle();
 
   Future<BaseResponse<SocialAccountEntity>> signInWithFacebook();
