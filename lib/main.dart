@@ -25,7 +25,6 @@ Future<void> main() async {
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
   ]);
 
-
   // Setup Crashlytics non-blockingly to avoid slowing down startup
   _setupCrashlytics();
 
