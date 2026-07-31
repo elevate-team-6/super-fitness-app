@@ -150,10 +150,16 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                         scale: 0.85,
                         child: Switch(
                           value: !isArabic,
-                          onChanged: (_) => context.setLocale(nextLocale),
+                          onChanged: (_) {
+                            context.setLocale(nextLocale);
+                            Intl.defaultLocale = nextLocale.languageCode;
+                          },
                         ),
                       ),
-                      onTap: () => context.setLocale(nextLocale),
+                      onTap: () {
+                        context.setLocale(nextLocale);
+                        Intl.defaultLocale = nextLocale.languageCode;
+                      },
                     ),
                     divider,
                     ProfileMenuItem(
