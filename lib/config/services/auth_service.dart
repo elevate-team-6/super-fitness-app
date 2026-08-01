@@ -28,5 +28,6 @@ class AuthService {
     final secureCacheHelper = getIt<SecureCacheHelper>();
     await secureCacheHelper.deleteData(key: AppKeys.tokenKey);
     await secureCacheHelper.deleteData(key: AppKeys.userDataKey);
+    await secureCacheHelper.deleteData(key: AppKeys.profileDataKey);
   }
 }

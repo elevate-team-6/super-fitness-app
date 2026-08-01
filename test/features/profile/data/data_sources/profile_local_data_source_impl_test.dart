@@ -5,6 +5,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
+import 'package:super_fitness/features/auth/data/models/response/user_model.dart';
 import 'package:super_fitness/features/profile/api/data_sources/profile_local_data_source_impl.dart';
 
 import 'profile_local_data_source_impl_test.mocks.dart';
@@ -30,7 +31,7 @@ void main() {
 
   void stubCache(String? value) {
     when(
-      cache.readData(key: AppKeys.userDataKey),
+      cache.readData(key: AppKeys.profileDataKey),
     ).thenAnswer((_) async => value);
   }
 
@@ -44,7 +45,7 @@ void main() {
     expect(user?.lastName, 'Emam');
     expect(user?.email, 'ahmed@example.com');
     expect(user?.age, 25);
-    verify(cache.readData(key: AppKeys.userDataKey)).called(1);
+    verify(cache.readData(key: AppKeys.profileDataKey)).called(1);
   });
 
   test('returns null when nothing is stored', () async {
@@ -75,4 +76,25 @@ void main() {
       expect(await dataSource.getCachedUser(), isNull);
     },
   );
+
+  // Written back in the same shape it is read in, so the fallback survives a
+  // fetch-then-restart round trip.
+  // Its own key, not the one sign-in writes — otherwise the first visit to
+  // the tab would find a cache already filled and never fetch.
+  test('stores the user as JSON under the profile key', () async {
+    when(
+      cache.writeData(key: anyNamed('key'), value: anyNamed('value')),
+    ).thenAnswer((_) async {});
+
+    await dataSource.cacheUser(UserModel.fromJson(storedUser));
+
+    final written = verify(
+      cache.writeData(
+        key: AppKeys.profileDataKey,
+        value: captureAnyNamed('value'),
+      ),
+    ).captured.single;
+
+    expect(jsonDecode(written as String), containsPair('_id', 'user_123'));
+  });
 }

@@ -12,7 +12,9 @@ import 'package:super_fitness/features/home/presentation/view_models/home_view_m
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
+import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
@@ -85,6 +87,12 @@ class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
   Future<UserEntity?> call() async => null;
 }
 
+class FakeGetProfileDataUseCase implements GetProfileDataUseCase {
+  @override
+  Future<BaseResponse<UserEntity>> call() async =>
+      const SuccessBaseResponse(null);
+}
+
 void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
   late FakeHomeCubit fakeHomeCubit;
@@ -98,7 +106,8 @@ void main() {
     fakeWorkoutsCubit = FakeWorkoutsCubit();
     fakeHomeCubit = FakeHomeCubit();
     getIt.registerFactory<ProfileCubit>(
-      () => ProfileCubit(FakeGetCachedUserUseCase()),
+      () =>
+          ProfileCubit(FakeGetCachedUserUseCase(), FakeGetProfileDataUseCase()),
     );
   });
 
@@ -170,6 +179,25 @@ void main() {
 
       // Verify that the WorkoutsScreen is now visible
       expect(find.byType(WorkoutsScreen), findsOneWidget);
+
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+    });
+
+    // Each tab's first load has to run when it is opened, not at launch —
+    // otherwise the profile skeleton would be over before anyone saw the tab.
+    testWidgets('does not build a tab until it is opened', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileScreen), findsNothing);
 
       addTearDown(() {
         tester.view.resetPhysicalSize();
