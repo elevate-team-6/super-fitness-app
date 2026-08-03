@@ -15,7 +15,7 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSourceContract {
 
   @override
   Future<UserEntity?> getCachedUser() async {
-    final raw = await _secureCacheHelper.readData(key: AppKeys.userDataKey);
+    final raw = await _secureCacheHelper.readData(key: AppKeys.profileDataKey);
 
     if (raw == null || raw.isEmpty) return null;
 
@@ -26,4 +26,10 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSourceContract {
       return null;
     }
   }
+
+  @override
+  Future<void> cacheUser(UserModel user) => _secureCacheHelper.writeData(
+    key: AppKeys.profileDataKey,
+    value: jsonEncode(user.toJson()),
+  );
 }
