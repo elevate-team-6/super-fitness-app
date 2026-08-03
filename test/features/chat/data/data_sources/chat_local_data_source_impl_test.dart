@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
-import 'package:super_fitness/features/chat/api/data_sources/chat_local_data_source_impl.dart';
+import 'package:super_fitness/features/chat/data/data_sources/local/chat_local_data_source_impl.dart';
 import 'package:super_fitness/features/chat/data/models/hive/chat_hive_models.dart';
 
 import 'chat_local_data_source_impl_test.mocks.dart';
