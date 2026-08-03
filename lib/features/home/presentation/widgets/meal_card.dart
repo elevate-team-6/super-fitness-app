@@ -5,6 +5,7 @@ import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
+import '../../../../core/widgets/pressable.dart';
 
 class MealCard extends StatelessWidget {
   final String name;
@@ -20,7 +21,7 @@ class MealCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Container(
         width: 163.w,

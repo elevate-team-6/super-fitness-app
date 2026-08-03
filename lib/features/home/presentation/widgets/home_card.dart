@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
+import '../../../../core/widgets/pressable.dart';
 
 class HomeCard extends StatelessWidget {
   final String title;
@@ -28,7 +29,7 @@ class HomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveWidth = width ?? 104.w;
     final effectiveHeight = height ?? 104.h;
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Container(
         width: effectiveWidth,

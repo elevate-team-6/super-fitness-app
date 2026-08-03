@@ -121,9 +121,8 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                       //   if (!mounted) return;
                       //   context.read<ProfileCubit>()
                       //       .doIntent(const RefreshProfileEvent());
-                      // That refresh re-reads the cache, so the save has to
-                      // write the updated user there — same as
-                      // AuthRepoImpl._cacheUser does at sign-in.
+                      // That refresh re-reads /auth/profile-data, so it picks
+                      // up whatever the save wrote server-side on its own.
                     ),
                     divider,
                     ProfileMenuItem(

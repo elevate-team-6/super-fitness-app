@@ -12,6 +12,9 @@ abstract class AppEndPoints {
   static const String resetPassword = "$baseUrl/auth/resetPassword";
   static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
 
+  // Profile
+  static const String profileData = "$baseUrl/auth/profile-data";
+
   // Workouts
   static const String getDifficultyLevelsByPrimeMover =
       "$baseUrl/levels/difficulty-levels/by-prime-mover";
