@@ -265,7 +265,7 @@ class CatalogLocalDataSource {
       dbName: CatalogDbConstants.mealsDb,
       sql:
           '''
-        SELECT i.${_getNameCol()} as ${CatalogDbConstants.columnName}, mi.${CatalogDbConstants.columnQty} || ' ' || mi.${CatalogDbConstants.columnUnit} as ${CatalogDbConstants.aliasMeasure}
+        SELECT ${_getNameCol('i')} as ${CatalogDbConstants.columnName}, mi.${CatalogDbConstants.columnQty} || ' ' || mi.${CatalogDbConstants.columnUnit} as ${CatalogDbConstants.aliasMeasure}
         FROM ${CatalogDbConstants.tableMealIngredient} mi
         JOIN ${CatalogDbConstants.tableIngredient} i ON mi.${CatalogDbConstants.columnIngredientId} = i.${CatalogDbConstants.columnId}
         WHERE mi.meal_id = ?
@@ -419,11 +419,11 @@ class CatalogLocalDataSource {
     final List<dynamic> args = [];
 
     if (muscleGroup != null) {
-      conditions.add('mg.${_getNameCol()} = ?');
+      conditions.add('${_getNameCol('mg')} = ?');
       args.add(muscleGroup);
     }
     if (equipment != null) {
-      conditions.add('eq.${_getNameCol()} = ?');
+      conditions.add('${_getNameCol('eq')} = ?');
       args.add(equipment);
     }
     if (maxDifficulty != null) {
@@ -439,7 +439,7 @@ class CatalogLocalDataSource {
       args.add(mechanics);
     }
     if (excludeEquipment != null) {
-      conditions.add('eq.${_getNameCol()} != ?');
+      conditions.add('${_getNameCol('eq')} != ?');
       args.add(excludeEquipment);
     }
     if (movementPattern != null) {
@@ -494,11 +494,11 @@ class CatalogLocalDataSource {
     final List<dynamic> args = [];
 
     if (category != null) {
-      conditions.add('c.${_getNameCol()} = ?');
+      conditions.add('${_getNameCol('c')} = ?');
       args.add(category);
     }
     if (area != null) {
-      conditions.add('a.${_getNameCol()} = ?');
+      conditions.add('${_getNameCol('a')} = ?');
       args.add(area);
     }
     if (minProtein != null) {
@@ -527,7 +527,7 @@ class CatalogLocalDataSource {
       query +=
           ' LEFT JOIN ${CatalogDbConstants.tableIngredient} i ON mi.ingredient_id = i.id';
       conditions.add(
-        'm.id NOT IN (SELECT meal_id FROM ${CatalogDbConstants.tableMealIngredient} mi2 JOIN ${CatalogDbConstants.tableIngredient} i2 ON mi2.ingredient_id = i2.id WHERE i2.${_getNameCol()} = ?)',
+        'm.id NOT IN (SELECT meal_id FROM ${CatalogDbConstants.tableMealIngredient} mi2 JOIN ${CatalogDbConstants.tableIngredient} i2 ON mi2.ingredient_id = i2.id WHERE ${_getNameCol('i2')} = ?)',
       );
       args.add(excludeIngredient);
     }
