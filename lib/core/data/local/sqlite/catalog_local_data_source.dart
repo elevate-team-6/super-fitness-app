@@ -29,7 +29,7 @@ class CatalogLocalDataSource {
 
     if (_isArabic) {
       // Fallback to English 'name' if 'name_ar' is null or empty
-      return 'COALESCE(NULLIF($prefix$nameAr, ""), $prefix$nameEn)';
+      return "COALESCE(NULLIF($prefix$nameAr, ''), $prefix$nameEn)";
     }
     return '$prefix$nameEn';
   }
@@ -330,6 +330,210 @@ class CatalogLocalDataSource {
     return results
         .map((e) => workout_exercise.ExerciseModel.fromSqlite(e))
         .toList();
+  }
+
+  // --- Vocabulary Fetching for AI Coach ---
+
+  Future<List<String>> getDistinctMuscleGroups() async {
+    final results = await _sqliteHelper.rawQuery(
+      dbName: CatalogDbConstants.exercisesDb,
+      sql:
+          "SELECT DISTINCT ${_getNameCol()} FROM ${CatalogDbConstants.tableMuscleGroup} WHERE ${_getNameCol()} IS NOT NULL AND ${_getNameCol()} != '' ORDER BY ${_getNameCol()}",
+    );
+    return results.map((e) => e.values.first.toString()).toList();
+  }
+
+  Future<List<String>> getDistinctEquipment() async {
+    final results = await _sqliteHelper.rawQuery(
+      dbName: CatalogDbConstants.exercisesDb,
+      sql:
+          "SELECT DISTINCT ${_getNameCol()} FROM ${CatalogDbConstants.tableEquipment} WHERE ${_getNameCol()} IS NOT NULL AND ${_getNameCol()} != '' ORDER BY ${_getNameCol()}",
+    );
+    return results.map((e) => e.values.first.toString()).toList();
+  }
+
+  Future<List<String>> getDistinctMovementPatterns() async {
+    final results = await _sqliteHelper.rawQuery(
+      dbName: CatalogDbConstants.exercisesDb,
+      sql: "SELECT DISTINCT ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableMovementPattern} WHERE ${CatalogDbConstants.columnName} IS NOT NULL AND ${CatalogDbConstants.columnName} != '' ORDER BY ${CatalogDbConstants.columnName}",
+    );
+    return results.map((e) => e.values.first.toString()).toList();
+  }
+
+  Future<Map<String, int>> getDifficultyLevelsMap() async {
+    final results = await _sqliteHelper.rawQuery(
+      dbName: CatalogDbConstants.exercisesDb,
+      sql:
+          'SELECT ${_getNameCol()} as name, ${CatalogDbConstants.columnRank} as rank FROM ${CatalogDbConstants.tableDifficultyLevel} ORDER BY ${CatalogDbConstants.columnRank}',
+    );
+    final Map<String, int> levelsMap = {};
+    for (final row in results) {
+      levelsMap[row['name'].toString()] = row['rank'] as int;
+    }
+    return levelsMap;
+  }
+
+  Future<String?> getDatabaseVersion() async {
+    try {
+      final results = await _sqliteHelper.rawQuery(
+        dbName: CatalogDbConstants.exercisesDb,
+        sql: "SELECT value FROM ${CatalogDbConstants.tableMeta} WHERE key = 'data_version'",
+      );
+      if (results.isNotEmpty) {
+        return results.first['value']?.toString();
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  // --- Filtered Search for AI Retrieval ---
+
+  Future<List<Map<String, dynamic>>> searchExercisesRaw({
+    String? muscleGroup,
+    String? equipment,
+    int? maxDifficulty,
+    String? movementPattern,
+    String? bodyRegion,
+    String? mechanics,
+    String? excludeEquipment,
+    int limit = 6,
+  }) async {
+    String query = '''
+      SELECT 
+        e.id, 
+        ${_getNameCol('e')} as name,
+        ${_getNameCol('mg')} as muscle,
+        ${_getNameCol('eq')} as equipment,
+        ${_getNameCol('l')} as difficulty
+      FROM ${CatalogDbConstants.tableExercise} e
+      LEFT JOIN ${CatalogDbConstants.tableMuscleGroup} mg ON e.${CatalogDbConstants.columnMuscleGroupId} = mg.${CatalogDbConstants.columnId}
+      LEFT JOIN ${CatalogDbConstants.tableEquipment} eq ON e.${CatalogDbConstants.columnPrimaryEquipmentId} = eq.${CatalogDbConstants.columnId}
+      LEFT JOIN ${CatalogDbConstants.tableDifficultyLevel} l ON e.${CatalogDbConstants.columnDifficultyId} = l.${CatalogDbConstants.columnId}
+      LEFT JOIN ${CatalogDbConstants.tableBodyRegion} br ON e.${CatalogDbConstants.columnBodyRegionId} = br.${CatalogDbConstants.columnId}
+    ''';
+
+    final List<String> conditions = [];
+    final List<dynamic> args = [];
+
+    if (muscleGroup != null) {
+      conditions.add('mg.${_getNameCol()} = ?');
+      args.add(muscleGroup);
+    }
+    if (equipment != null) {
+      conditions.add('eq.${_getNameCol()} = ?');
+      args.add(equipment);
+    }
+    if (maxDifficulty != null) {
+      conditions.add('l.${CatalogDbConstants.columnRank} <= ?');
+      args.add(maxDifficulty);
+    }
+    if (bodyRegion != null) {
+      conditions.add('br.${CatalogDbConstants.columnName} = ?');
+      args.add(bodyRegion);
+    }
+    if (mechanics != null) {
+      conditions.add('e.${CatalogDbConstants.columnMechanics} = ?');
+      args.add(mechanics);
+    }
+    if (excludeEquipment != null) {
+      conditions.add('eq.${_getNameCol()} != ?');
+      args.add(excludeEquipment);
+    }
+    if (movementPattern != null) {
+      query += ' JOIN ${CatalogDbConstants.tableExerciseMovementPattern} emp ON e.id = emp.exercise_id';
+      query += ' JOIN ${CatalogDbConstants.tableMovementPattern} mp ON emp.pattern_id = mp.id';
+      conditions.add('mp.${CatalogDbConstants.columnName} = ?');
+      args.add(movementPattern);
+    }
+
+    if (conditions.isNotEmpty) {
+      query += ' WHERE ${conditions.join(' AND ')}';
+    }
+
+    query += ' ORDER BY RANDOM() LIMIT ?';
+    args.add(limit);
+
+    return await _sqliteHelper.rawQuery(
+      dbName: CatalogDbConstants.exercisesDb,
+      sql: query,
+      arguments: args,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> searchMealsRaw({
+    String? category,
+    String? area,
+    double? minProtein,
+    double? maxKcal,
+    bool? vegetarian,
+    bool? vegan,
+    bool? glutenFree,
+    String? excludeIngredient,
+    int limit = 6,
+  }) async {
+    String query = '''
+      SELECT 
+        m.id, 
+        ${_getNameCol('m')} as name,
+        ${_getNameCol('c')} as category,
+        ${_getNameCol('a')} as area,
+        m.kcal,
+        m.protein_g as protein
+      FROM ${CatalogDbConstants.tableMeal} m
+      LEFT JOIN ${CatalogDbConstants.tableMealCategory} c ON m.category_id = c.id
+      LEFT JOIN ${CatalogDbConstants.tableMealArea} a ON m.area_id = a.id
+    ''';
+
+    final List<String> conditions = [];
+    final List<dynamic> args = [];
+
+    if (category != null) {
+      conditions.add('c.${_getNameCol()} = ?');
+      args.add(category);
+    }
+    if (area != null) {
+      conditions.add('a.${_getNameCol()} = ?');
+      args.add(area);
+    }
+    if (minProtein != null) {
+      conditions.add('m.protein_g >= ?');
+      args.add(minProtein);
+    }
+    if (maxKcal != null) {
+      conditions.add('m.kcal <= ?');
+      args.add(maxKcal);
+    }
+    if (vegetarian == true) {
+      conditions.add('m.vegetarian = 1');
+    }
+    if (vegan == true) {
+      conditions.add('m.vegan = 1');
+    }
+    if (glutenFree == true) {
+      conditions.add('m.contains_gluten = 0');
+    }
+    if (excludeIngredient != null) {
+      // Simple check in instructions or we need a proper join. 
+      // For now, let's use a subquery if we had an ingredient search, 
+      // but the prompt says 'exclude_ingredient'.
+      query += ' LEFT JOIN ${CatalogDbConstants.tableMealIngredient} mi ON m.id = mi.meal_id';
+      query += ' LEFT JOIN ${CatalogDbConstants.tableIngredient} i ON mi.ingredient_id = i.id';
+      conditions.add('m.id NOT IN (SELECT meal_id FROM ${CatalogDbConstants.tableMealIngredient} mi2 JOIN ${CatalogDbConstants.tableIngredient} i2 ON mi2.ingredient_id = i2.id WHERE i2.${_getNameCol()} = ?)');
+      args.add(excludeIngredient);
+    }
+
+    if (conditions.isNotEmpty) {
+      query += ' WHERE ${conditions.join(' AND ')}';
+    }
+
+    query += ' GROUP BY m.id ORDER BY RANDOM() LIMIT ?';
+    args.add(limit);
+
+    return await _sqliteHelper.rawQuery(
+      dbName: CatalogDbConstants.mealsDb,
+      sql: query,
+      arguments: args,
+    );
   }
 
   String? _getMuscleImageUrl(dynamic name) {
