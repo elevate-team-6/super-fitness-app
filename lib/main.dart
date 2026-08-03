@@ -12,6 +12,7 @@ import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
 import 'config/services/google_auth_service.dart';
 import 'core/data/local/sqlite/asset_installer.dart';
+import 'core/network/ollama_config.dart';
 import 'core/utils/app_constants.dart';
 import 'core/utils/app_routes.dart';
 import 'core/utils/app_theme.dart';
@@ -35,6 +36,9 @@ Future<void> main() async {
   );
 
   configureDependencies();
+
+  // Validate Ollama Configuration
+  getIt<OllamaConfig>().validateConfig();
 
   await getIt<AssetInstaller>().initialize();
 

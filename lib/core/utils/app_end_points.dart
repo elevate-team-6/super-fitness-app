@@ -4,11 +4,6 @@ abstract class AppEndPoints {
 
   // API EndPoints:-
 
-  // Gateway
-  // static const String chatGatewayUrl = "http://10.0.2.2:8001/v1/chat"; // local
-  static const String chatGatewayUrl =
-      "https://superfitnessgateway-7oev1bfs.b4a.run/v1/chat";
-
   // Auth
   static const String signin = "$baseUrl/auth/signin";
   static const String signup = "$baseUrl/auth/signup";

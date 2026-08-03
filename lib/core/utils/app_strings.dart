@@ -129,6 +129,7 @@ abstract class AppStrings {
   static const String chatConnectionError = 'chatConnectionError';
   static const String chatUnexpectedError = 'chatUnexpectedError';
   static const String chatSessionError = 'chatSessionError';
+  static const String chatDegradedMessage = 'chatDegradedMessage';
 
   // Signup
   static const String registerFailed = 'registerFailed';
