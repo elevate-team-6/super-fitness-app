@@ -4,14 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../config/base_response/base_response.dart';
-import '../../../../config/cache/secure_cache_helper.dart';
-import '../../../../config/error_handler/error_handler.dart';
-import '../../../../core/utils/app_keys.dart';
-import '../../../auth/data/models/response/user_model.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../../data/data_sources/chat_local_data_source_contract.dart';
-import '../../data/models/hive/chat_hive_models.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/error_handler/error_handler.dart';
+import 'package:super_fitness/core/utils/app_keys.dart';
+import 'package:super_fitness/features/auth/data/models/response/user_model.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import '../contracts/chat_local_data_source_contract.dart';
+import '../../models/hive/chat_hive_models.dart';
 
 /// Implementation of [ChatLocalDataSourceContract] using the [Hive] database.
 @LazySingleton(as: ChatLocalDataSourceContract)

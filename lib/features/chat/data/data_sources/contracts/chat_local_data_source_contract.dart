@@ -1,6 +1,6 @@
-import '../../../../config/base_response/base_response.dart';
-import '../../../auth/domain/entities/user_entity.dart';
-import '../models/hive/chat_hive_models.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import '../../models/hive/chat_hive_models.dart';
 
 /// Contract for the Local Data Source of the Chat feature.
 ///

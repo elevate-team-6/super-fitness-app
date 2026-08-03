@@ -1,5 +1,5 @@
-import '../../../../config/base_response/base_response.dart';
-import '../models/chat_event_model.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
+import '../../models/chat_event_model.dart';
 
 /// Contract for the Remote Data Source of the Chat feature.
 ///
@@ -8,12 +8,10 @@ import '../models/chat_event_model.dart';
 abstract interface class ChatRemoteDataSourceContract {
   /// Streams chat events from the remote server.
   ///
-  /// [message] The message sent by the user.
-  /// [token] Valid JWT token for authentication.
+  /// [history] The conversation history as a list of maps (role and content).
   /// [userContext] Personalized data for the AI model.
   Stream<BaseResponse<ChatEventModel>> getChatResponseStream({
-    required String message,
-    required String token,
+    required List<Map<String, String>> history,
     Map<String, dynamic>? userContext,
   });
 }
