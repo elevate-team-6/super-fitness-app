@@ -7,6 +7,7 @@ abstract class AppEndPoints {
   // Auth
   static const String signin = "$baseUrl/auth/signin";
   static const String signup = "$baseUrl/auth/signup";
+  static const String logout = "$baseUrl/auth/logout";
   static const String forgetPassword = "$baseUrl/auth/forgotPassword";
   static const String resetPassword = "$baseUrl/auth/resetPassword";
   static const String verifyOtp = "$baseUrl/auth/verifyResetCode";
