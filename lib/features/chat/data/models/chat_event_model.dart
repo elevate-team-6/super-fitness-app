@@ -13,10 +13,11 @@ class ChatEventModel {
   final List<String>? exerciseRefs;
   @JsonKey(name: 'meal_refs')
   final List<String>? mealRefs;
-  final List<ChatSnapshotModel>? snapshots;
   @JsonKey(name: 'reply_chars')
   final int? replyChars;
   final bool? degraded;
+  @JsonKey(name: 'safety_flag')
+  final String? safetyFlag;
   final String? code;
   final String? message;
   final bool? retryable;
@@ -27,9 +28,9 @@ class ChatEventModel {
     this.action,
     this.exerciseRefs,
     this.mealRefs,
-    this.snapshots,
     this.replyChars,
     this.degraded,
+    this.safetyFlag,
     this.code,
     this.message,
     this.retryable,
@@ -52,34 +53,10 @@ class ChatEventModel {
 class ChatActionModel {
   final String type;
   final String? label;
+  final Map<String, dynamic>? payload;
 
-  ChatActionModel({required this.type, this.label});
+  ChatActionModel({required this.type, this.label, this.payload});
 
   factory ChatActionModel.fromJson(Map<String, dynamic> json) =>
       _$ChatActionModelFromJson(json);
-}
-
-@JsonSerializable(createToJson: false)
-class ChatSnapshotModel {
-  final String id;
-  final String name;
-  @JsonKey(name: 'demo_url')
-  final String? image;
-  @JsonKey(name: 'muscle_group')
-  final String? muscleGroup;
-  final String? difficulty;
-  @JsonKey(defaultValue: true)
-  final bool isSnapshot;
-
-  ChatSnapshotModel({
-    required this.id,
-    required this.name,
-    this.image,
-    this.muscleGroup,
-    this.difficulty,
-    this.isSnapshot = true,
-  });
-
-  factory ChatSnapshotModel.fromJson(Map<String, dynamic> json) =>
-      _$ChatSnapshotModelFromJson(json);
 }

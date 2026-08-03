@@ -3,16 +3,22 @@ import '../../../auth/domain/entities/user_entity.dart';
 extension UserContextMapper on UserEntity {
   Map<String, dynamic> toUserContextJson() {
     return {
-      "user_context": {
-        "name": "${firstName ?? ''} ${lastName ?? ''}".trim(),
-        "age": age ?? 0,
-        "weight": weight ?? 0,
-        "height": height ?? 0,
-        "gender": gender ?? 'male',
-        "activity_level": _mapActivityLevel(activityLevel),
-        "goal": _mapGoal(goal),
-      },
+      "name": "${firstName ?? ''} ${lastName ?? ''}".trim(),
+      "age": age ?? 0,
+      "weight": weight ?? 0,
+      "height": height ?? 0,
+      "gender": gender ?? 'male',
+      "activity_level": _mapActivityLevel(activityLevel),
+      "goal": _mapGoal(goal),
+      "level": _mapLevel(activityLevel), // Using activity level as a proxy for experience level
     };
+  }
+
+  String _mapLevel(String? level) {
+    if (level == null) return 'Beginner';
+    if (level == 'level4' || level == 'level5') return 'Advanced';
+    if (level == 'level3') return 'Intermediate';
+    return 'Beginner';
   }
 
   String _mapActivityLevel(String? level) {

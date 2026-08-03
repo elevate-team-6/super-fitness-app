@@ -64,9 +64,11 @@ class ActiveChatView extends StatelessWidget {
             controller: messageController,
             status: state.status,
             onSend: () {
-              final text = messageController.text;
-              messageController.clear();
-              context.read<ChatCubit>().doEvent(SendMessageEvent(text));
+              final text = messageController.text.trim();
+              if (text.isNotEmpty) {
+                messageController.clear();
+                context.read<ChatCubit>().doEvent(SendMessageEvent(text));
+              }
             },
           ),
         ],

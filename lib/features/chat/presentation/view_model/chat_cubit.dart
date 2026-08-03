@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
 
@@ -175,9 +176,11 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
       bool hasError = false;
 
       await for (final result in stream) {
+        debugPrint('ChatCubit: Received result from stream: $result');
         switch (result) {
           case SuccessBaseResponse<ChatMessageEntity>():
             final updatedMessage = result.data!;
+            debugPrint('ChatCubit: Success message received. Text length: ${updatedMessage.text.length}');
             if (assistantMessage == null) {
               assistantMessage = updatedMessage;
               emit(

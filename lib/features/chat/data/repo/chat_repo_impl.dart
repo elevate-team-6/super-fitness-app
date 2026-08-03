@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../config/base_response/base_response.dart';
-import '../../../../config/cache/secure_cache_helper.dart';
 import '../../../../config/services/crashlytics_service.dart';
 import '../../../../core/data/local/sqlite/catalog_local_data_source.dart';
-import '../../../../core/utils/app_keys.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/youtube_url.dart';
 import '../../../../features/auth/domain/entities/user_entity.dart';
@@ -16,8 +15,8 @@ import '../../../workouts/domain/entities/exercise_entity.dart' as workout;
 import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/entities/chat_ref_entity.dart';
 import '../../domain/repo/chat_repo_contract.dart';
-import '../data_sources/chat_local_data_source_contract.dart';
-import '../data_sources/chat_remote_data_source_contract.dart';
+import '../data_sources/contracts/chat_local_data_source_contract.dart';
+import '../data_sources/contracts/chat_remote_data_source_contract.dart';
 import '../mappers/user_context_mapper.dart';
 import '../models/chat_event_model.dart';
 import '../models/hive/chat_hive_models.dart';
@@ -26,14 +25,12 @@ import '../models/hive/chat_hive_models.dart';
 class ChatRepoImpl implements ChatRepoContract {
   final ChatRemoteDataSourceContract _remoteDataSource;
   final CatalogLocalDataSource _localDataSource;
-  final SecureCacheHelper _secureCacheHelper;
   final ChatLocalDataSourceContract _chatLocalDataSource;
   final CrashlyticsService _crashlyticsService;
 
   ChatRepoImpl(
     this._remoteDataSource,
     this._localDataSource,
-    this._secureCacheHelper,
     this._chatLocalDataSource,
     this._crashlyticsService,
   );
@@ -48,9 +45,6 @@ class ChatRepoImpl implements ChatRepoContract {
     required String sessionId,
     required String message,
   }) async* {
-    final token =
-        await _secureCacheHelper.readData(key: AppKeys.tokenKey) ?? "";
-
     // 1. Save User Message Locally
     final userMessage = ChatMessageEntity(
       id: const Uuid().v4(),
@@ -91,15 +85,38 @@ class ChatRepoImpl implements ChatRepoContract {
     bool isDegraded = false;
     String? action;
 
-    final userResult = await getCachedUser();
+    // Senior Optimization: Parallel IO
+    final results = await Future.wait([
+      getCachedUser(),
+      _chatLocalDataSource.getSession(sessionId),
+    ]);
+
+    final userResult = results[0] as BaseResponse<UserEntity?>;
+    final sessionQueryResult = results[1] as BaseResponse<ChatSessionHiveModel?>;
+
     final Map<String, dynamic>? userContext =
         (userResult is SuccessBaseResponse<UserEntity?>)
-        ? userResult.data?.toUserContextJson()
-        : null;
+            ? userResult.data?.toUserContextJson()
+            : null;
+            
+    if (kDebugMode) {
+      debugPrint('ChatRepoImpl: User Context for Ollama: $userContext');
+    }
+
+    // Build History Map for Ollama
+    List<Map<String, String>> history = [];
+    if (sessionQueryResult is SuccessBaseResponse<ChatSessionHiveModel?>) {
+      final sessionData = sessionQueryResult.data;
+      if (sessionData != null) {
+        history = sessionData.messages.map((m) => {
+          "role": m.sender == MessageSender.user.name ? "user" : "assistant",
+          "content": m.text,
+        }).toList();
+      }
+    }
 
     final eventStream = _remoteDataSource.getChatResponseStream(
-      message: message,
-      token: token,
+      history: history,
       userContext: userContext,
     );
 
@@ -107,28 +124,34 @@ class ChatRepoImpl implements ChatRepoContract {
       switch (result) {
         case SuccessBaseResponse<ChatEventModel>():
           final event = result.data!;
-          if (event.type == "token" && event.content != null) {
-            currentText += event.content!;
-          } else if (event.type == "refs") {
+          if (kDebugMode) {
+            debugPrint('ChatRepoImpl: Received SuccessBaseResponse with event type: ${event.type}');
+          }
+          
+          // Handle text content: append if token-based, replace if consolidated
+          if (event.content != null) {
+            if (event.type == "token") {
+              currentText += event.content!;
+            } else {
+              currentText = event.content!;
+            }
+            if (kDebugMode) {
+              debugPrint('ChatRepoImpl: Updated currentText (length: ${currentText.length})');
+            }
+          }
+
+          // Handle references: triggered on 'refs' or consolidated 'done'
+          if (event.type == "refs" || event.type == "done") {
             action =
                 event.action?.label ??
                 (event.action?.type != "none" ? event.action?.type : null);
 
-            currentRefs = _getSnapshotsOnly(event);
-            yield SuccessBaseResponse(
-              ChatMessageEntity(
-                id: messageId,
-                text: currentText,
-                sender: MessageSender.assistant,
-                timestamp: DateTime.now(),
-                refs: currentRefs,
-                isDegraded: isDegraded,
-                action: action,
-              ),
-            );
+            if (event.exerciseRefs != null || event.mealRefs != null) {
+              currentRefs = await _hydrateRefs(event);
+            }
+          }
 
-            currentRefs = await _hydrateRefs(event);
-          } else if (event.type == "done") {
+          if (event.type == "done") {
             isDegraded = event.degraded ?? false;
           } else if (event.type == "error") {
             yield ErrorBaseResponse(
@@ -299,47 +322,6 @@ class ChatRepoImpl implements ChatRepoContract {
               ),
             ),
           );
-        } else {
-          // Fallback to snapshots
-          final snapshot = event.snapshots
-              ?.where((s) => s.id == id)
-              .firstOrNull;
-          if (snapshot != null) {
-            hydratedRefs.add(
-              ChatRefEntity(
-                id: snapshot.id,
-                name: snapshot.name,
-                image:
-                    YoutubeUrl.thumbnailUrlOf(snapshot.image) ?? snapshot.image,
-                videoUrl: snapshot.image,
-                // Gateway puts YouTube URL in image/demo_url
-                muscleGroup: snapshot.muscleGroup,
-                difficulty: snapshot.difficulty,
-                type: ChatRefType.exercise,
-                isSnapshot: true,
-                exerciseInfo: workout.ExerciseEntity(
-                  id: snapshot.id,
-                  exercise: snapshot.name,
-                  difficultyLevel: snapshot.difficulty ?? 'Beginner',
-                  targetMuscleGroup: snapshot.muscleGroup ?? '',
-                  primeMoverMuscle: '',
-                  primaryEquipment: '',
-                  secondaryEquipment: '',
-                  posture: '',
-                  grip: '',
-                  forceType: '',
-                  secondaryMuscles: '',
-                  tertiaryMuscles: '',
-                  bodyRegion: '',
-                  mechanics: '',
-                  laterality: '',
-                  primaryExerciseClassification: '',
-                  shortYoutubeDemonstrationLink: snapshot.image ?? '',
-                  inDepthYoutubeExplanationLink: '',
-                ),
-              ),
-            );
-          }
         }
       }
     }
@@ -360,52 +342,10 @@ class ChatRepoImpl implements ChatRepoContract {
               isSnapshot: false,
             ),
           );
-        } else {
-          // Fallback to snapshots
-          final snapshot = event.snapshots
-              ?.where((s) => s.id == id)
-              .firstOrNull;
-          if (snapshot != null) {
-            hydratedRefs.add(
-              ChatRefEntity(
-                id: snapshot.id,
-                name: snapshot.name,
-                image: snapshot.image,
-                type: ChatRefType.meal,
-                isSnapshot: true,
-              ),
-            );
-          }
         }
       }
     }
 
     return hydratedRefs;
-  }
-
-  List<ChatRefEntity> _getSnapshotsOnly(ChatEventModel event) {
-    final List<ChatRefEntity> snapshots = [];
-
-    if (event.snapshots != null) {
-      for (final s in event.snapshots!) {
-        // Simple heuristic: if it's in exercise_refs, it's an exercise
-        final isExercise = event.exerciseRefs?.contains(s.id) ?? true;
-
-        snapshots.add(
-          ChatRefEntity(
-            id: s.id,
-            name: s.name,
-            image: YoutubeUrl.thumbnailUrlOf(s.image) ?? s.image,
-            videoUrl: isExercise ? s.image : null,
-            muscleGroup: s.muscleGroup,
-            difficulty: s.difficulty,
-            type: isExercise ? ChatRefType.exercise : ChatRefType.meal,
-            isSnapshot: true,
-          ),
-        );
-      }
-    }
-
-    return snapshots;
   }
 }
