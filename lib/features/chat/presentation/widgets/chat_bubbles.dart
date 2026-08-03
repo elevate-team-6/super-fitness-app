@@ -106,10 +106,10 @@ class UserBubble extends StatelessWidget {
           CircleAvatar(
             radius: 18.r,
             backgroundColor: AppColors.black80,
-            backgroundImage: userImage != null && userImage!.isNotEmpty
+            backgroundImage: userImage != null && userImage!.startsWith('http')
                 ? NetworkImage(userImage!)
                 : null,
-            child: userImage == null || userImage!.isEmpty
+            child: userImage == null || !userImage!.startsWith('http')
                 ? Icon(Icons.person, color: AppColors.white, size: 20.sp)
                 : null,
           ),
