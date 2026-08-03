@@ -13,12 +13,15 @@ class ChatDegradedModeService {
   ChatDegradedModeService(this._classifier, this._retrievalService);
 
   /// Returns a helpful response when the LLM is unavailable.
-  Future<ChatEventModel> getDegradedResponse(String message, String locale) async {
+  Future<ChatEventModel> getDegradedResponse(
+    String message,
+    String locale,
+  ) async {
     List<Map<String, dynamic>> results = [];
-    
+
     try {
       final filters = _classifier.classify(message);
-      
+
       if (filters != null) {
         results = await _retrievalService.searchExercisesByFilters(
           muscleGroup: filters['muscle_group'],

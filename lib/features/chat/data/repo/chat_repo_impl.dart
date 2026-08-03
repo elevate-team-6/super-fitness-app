@@ -92,13 +92,14 @@ class ChatRepoImpl implements ChatRepoContract {
     ]);
 
     final userResult = results[0] as BaseResponse<UserEntity?>;
-    final sessionQueryResult = results[1] as BaseResponse<ChatSessionHiveModel?>;
+    final sessionQueryResult =
+        results[1] as BaseResponse<ChatSessionHiveModel?>;
 
     final Map<String, dynamic>? userContext =
         (userResult is SuccessBaseResponse<UserEntity?>)
-            ? userResult.data?.toUserContextJson()
-            : null;
-            
+        ? userResult.data?.toUserContextJson()
+        : null;
+
     if (kDebugMode) {
       debugPrint('ChatRepoImpl: User Context for Ollama: $userContext');
     }
@@ -108,10 +109,16 @@ class ChatRepoImpl implements ChatRepoContract {
     if (sessionQueryResult is SuccessBaseResponse<ChatSessionHiveModel?>) {
       final sessionData = sessionQueryResult.data;
       if (sessionData != null) {
-        history = sessionData.messages.map((m) => {
-          "role": m.sender == MessageSender.user.name ? "user" : "assistant",
-          "content": m.text,
-        }).toList();
+        history = sessionData.messages
+            .map(
+              (m) => {
+                "role": m.sender == MessageSender.user.name
+                    ? "user"
+                    : "assistant",
+                "content": m.text,
+              },
+            )
+            .toList();
       }
     }
 
@@ -125,9 +132,11 @@ class ChatRepoImpl implements ChatRepoContract {
         case SuccessBaseResponse<ChatEventModel>():
           final event = result.data!;
           if (kDebugMode) {
-            debugPrint('ChatRepoImpl: Received SuccessBaseResponse with event type: ${event.type}');
+            debugPrint(
+              'ChatRepoImpl: Received SuccessBaseResponse with event type: ${event.type}',
+            );
           }
-          
+
           // Handle text content: append if token-based, replace if consolidated
           if (event.content != null) {
             if (event.type == "token") {
@@ -136,7 +145,9 @@ class ChatRepoImpl implements ChatRepoContract {
               currentText = event.content!;
             }
             if (kDebugMode) {
-              debugPrint('ChatRepoImpl: Updated currentText (length: ${currentText.length})');
+              debugPrint(
+                'ChatRepoImpl: Updated currentText (length: ${currentText.length})',
+              );
             }
           }
 

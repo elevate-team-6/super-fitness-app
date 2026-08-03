@@ -10,7 +10,9 @@ extension UserContextMapper on UserEntity {
       "gender": gender ?? 'male',
       "activity_level": _mapActivityLevel(activityLevel),
       "goal": _mapGoal(goal),
-      "level": _mapLevel(activityLevel), // Using activity level as a proxy for experience level
+      "level": _mapLevel(
+        activityLevel,
+      ), // Using activity level as a proxy for experience level
     };
   }
 

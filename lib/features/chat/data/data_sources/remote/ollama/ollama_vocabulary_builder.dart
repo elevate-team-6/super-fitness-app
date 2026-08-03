@@ -21,8 +21,8 @@ class OllamaVocabularyBuilder {
 
     final muscleGroups = await _catalogDataSource.getDistinctMuscleGroups();
     final equipment = await _catalogDataSource.getDistinctEquipment();
-    final movementPatterns =
-        await _catalogDataSource.getDistinctMovementPatterns();
+    final movementPatterns = await _catalogDataSource
+        .getDistinctMovementPatterns();
     final difficultyLevels = await _catalogDataSource.getDifficultyLevelsMap();
 
     final buffer = StringBuffer();
@@ -34,8 +34,9 @@ class OllamaVocabularyBuilder {
     buffer.writeln('equipment: ${equipment.join(' | ')}');
     buffer.writeln('movement_pattern: ${movementPatterns.join(' | ')}');
 
-    final difficultyStr =
-        difficultyLevels.entries.map((e) => '${e.key}=${e.value}').join(' | ');
+    final difficultyStr = difficultyLevels.entries
+        .map((e) => '${e.key}=${e.value}')
+        .join(' | ');
     buffer.writeln('max_difficulty (integer): $difficultyStr');
 
     buffer.writeln(

@@ -94,16 +94,23 @@ class CatalogRetrievalService {
     final Set<String> selectedIds = {};
 
     final bodyweightItems = results
-        .where((e) => EquipmentCategories.categories['bodyweight']!
-            .contains(e['equipment']))
+        .where(
+          (e) => EquipmentCategories.categories['bodyweight']!.contains(
+            e['equipment'],
+          ),
+        )
         .toList();
     final homeItems = results
-        .where((e) =>
-            EquipmentCategories.categories['home']!.contains(e['equipment']))
+        .where(
+          (e) =>
+              EquipmentCategories.categories['home']!.contains(e['equipment']),
+        )
         .toList();
     final gymItems = results
-        .where((e) =>
-            EquipmentCategories.categories['gym']!.contains(e['equipment']))
+        .where(
+          (e) =>
+              EquipmentCategories.categories['gym']!.contains(e['equipment']),
+        )
         .toList();
 
     // 1. Pick 2 from each category
@@ -162,7 +169,7 @@ class CatalogRetrievalService {
   /// Serializes exercise results to pipe-delimited format (Section 3.7).
   String serializeExerciseCards(List<Map<String, dynamic>> exercises) {
     if (exercises.isEmpty) return "NO_MATCHES_FOUND";
-    
+
     final buffer = StringBuffer();
     buffer.writeln("CANDIDATE EXERCISES:");
     for (final e in exercises) {
@@ -189,7 +196,9 @@ class CatalogRetrievalService {
       final area = m['area'] ?? 'N/A';
       final kcal = m['kcal'] ?? 'N/A';
       final protein = m['protein'] ?? 'N/A';
-      buffer.writeln("$id | $name | $category | $area | ${kcal}kcal | ${protein}g protein");
+      buffer.writeln(
+        "$id | $name | $category | $area | ${kcal}kcal | ${protein}g protein",
+      );
     }
     return buffer.toString().trim();
   }

@@ -16,7 +16,8 @@ abstract class CatalogDbConstants {
   static const String tableMealArea = 'meal_area';
   static const String tableIngredient = 'ingredient';
   static const String tableMealIngredient = 'meal_ingredient';
-  static const String tableExerciseMovementPattern = 'exercise_movement_pattern';
+  static const String tableExerciseMovementPattern =
+      'exercise_movement_pattern';
   static const String tableMeta = 'meta';
 
   // --- Real Database Column Names ---

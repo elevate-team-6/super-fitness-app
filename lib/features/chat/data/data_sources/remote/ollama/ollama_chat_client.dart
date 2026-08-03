@@ -113,9 +113,11 @@ class OllamaChatClient {
               "think": false,
             }),
           )
-          .timeout(turn == 0
-              ? ChatConstants.ollamaFirstTurnTimeout
-              : ChatConstants.ollamaSubsequentTurnTimeout);
+          .timeout(
+            turn == 0
+                ? ChatConstants.ollamaFirstTurnTimeout
+                : ChatConstants.ollamaSubsequentTurnTimeout,
+          );
 
       if (response.statusCode != 200) {
         if (kDebugMode) {

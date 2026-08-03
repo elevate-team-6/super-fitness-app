@@ -180,7 +180,9 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
         switch (result) {
           case SuccessBaseResponse<ChatMessageEntity>():
             final updatedMessage = result.data!;
-            debugPrint('ChatCubit: Success message received. Text length: ${updatedMessage.text.length}');
+            debugPrint(
+              'ChatCubit: Success message received. Text length: ${updatedMessage.text.length}',
+            );
             if (assistantMessage == null) {
               assistantMessage = updatedMessage;
               emit(

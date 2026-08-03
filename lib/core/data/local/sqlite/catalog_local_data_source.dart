@@ -355,7 +355,8 @@ class CatalogLocalDataSource {
   Future<List<String>> getDistinctMovementPatterns() async {
     final results = await _sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
-      sql: "SELECT DISTINCT ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableMovementPattern} WHERE ${CatalogDbConstants.columnName} IS NOT NULL AND ${CatalogDbConstants.columnName} != '' ORDER BY ${CatalogDbConstants.columnName}",
+      sql:
+          "SELECT DISTINCT ${CatalogDbConstants.columnName} FROM ${CatalogDbConstants.tableMovementPattern} WHERE ${CatalogDbConstants.columnName} IS NOT NULL AND ${CatalogDbConstants.columnName} != '' ORDER BY ${CatalogDbConstants.columnName}",
     );
     return results.map((e) => e.values.first.toString()).toList();
   }
@@ -377,7 +378,8 @@ class CatalogLocalDataSource {
     try {
       final results = await _sqliteHelper.rawQuery(
         dbName: CatalogDbConstants.exercisesDb,
-        sql: "SELECT value FROM ${CatalogDbConstants.tableMeta} WHERE key = 'data_version'",
+        sql:
+            "SELECT value FROM ${CatalogDbConstants.tableMeta} WHERE key = 'data_version'",
       );
       if (results.isNotEmpty) {
         return results.first['value']?.toString();
@@ -398,7 +400,8 @@ class CatalogLocalDataSource {
     String? excludeEquipment,
     int limit = 6,
   }) async {
-    String query = '''
+    String query =
+        '''
       SELECT 
         e.id, 
         ${_getNameCol('e')} as name,
@@ -440,8 +443,10 @@ class CatalogLocalDataSource {
       args.add(excludeEquipment);
     }
     if (movementPattern != null) {
-      query += ' JOIN ${CatalogDbConstants.tableExerciseMovementPattern} emp ON e.id = emp.exercise_id';
-      query += ' JOIN ${CatalogDbConstants.tableMovementPattern} mp ON emp.pattern_id = mp.id';
+      query +=
+          ' JOIN ${CatalogDbConstants.tableExerciseMovementPattern} emp ON e.id = emp.exercise_id';
+      query +=
+          ' JOIN ${CatalogDbConstants.tableMovementPattern} mp ON emp.pattern_id = mp.id';
       conditions.add('mp.${CatalogDbConstants.columnName} = ?');
       args.add(movementPattern);
     }
@@ -471,7 +476,8 @@ class CatalogLocalDataSource {
     String? excludeIngredient,
     int limit = 6,
   }) async {
-    String query = '''
+    String query =
+        '''
       SELECT 
         m.id, 
         ${_getNameCol('m')} as name,
@@ -513,12 +519,16 @@ class CatalogLocalDataSource {
       conditions.add('m.contains_gluten = 0');
     }
     if (excludeIngredient != null) {
-      // Simple check in instructions or we need a proper join. 
-      // For now, let's use a subquery if we had an ingredient search, 
+      // Simple check in instructions or we need a proper join.
+      // For now, let's use a subquery if we had an ingredient search,
       // but the prompt says 'exclude_ingredient'.
-      query += ' LEFT JOIN ${CatalogDbConstants.tableMealIngredient} mi ON m.id = mi.meal_id';
-      query += ' LEFT JOIN ${CatalogDbConstants.tableIngredient} i ON mi.ingredient_id = i.id';
-      conditions.add('m.id NOT IN (SELECT meal_id FROM ${CatalogDbConstants.tableMealIngredient} mi2 JOIN ${CatalogDbConstants.tableIngredient} i2 ON mi2.ingredient_id = i2.id WHERE i2.${_getNameCol()} = ?)');
+      query +=
+          ' LEFT JOIN ${CatalogDbConstants.tableMealIngredient} mi ON m.id = mi.meal_id';
+      query +=
+          ' LEFT JOIN ${CatalogDbConstants.tableIngredient} i ON mi.ingredient_id = i.id';
+      conditions.add(
+        'm.id NOT IN (SELECT meal_id FROM ${CatalogDbConstants.tableMealIngredient} mi2 JOIN ${CatalogDbConstants.tableIngredient} i2 ON mi2.ingredient_id = i2.id WHERE i2.${_getNameCol()} = ?)',
+      );
       args.add(excludeIngredient);
     }
 

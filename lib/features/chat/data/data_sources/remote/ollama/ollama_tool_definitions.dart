@@ -14,20 +14,23 @@ const Map<String, dynamic> searchExercisesTool = {
           "minimum": 1,
           "maximum": 8,
           "description":
-              "1=Beginner .. 8=Legendary. Returns everything at or below this level."
+              "1=Beginner .. 8=Legendary. Returns everything at or below this level.",
         },
         "movement_pattern": {"type": "string"},
         "body_region": {
           "type": "string",
-          "enum": ["Upper Body", "Lower Body", "Midsection", "Full Body"]
+          "enum": ["Upper Body", "Lower Body", "Midsection", "Full Body"],
         },
-        "mechanics": {"type": "string", "enum": ["Compound", "Isolation"]},
+        "mechanics": {
+          "type": "string",
+          "enum": ["Compound", "Isolation"],
+        },
         "exclude_equipment": {"type": "string"},
-        "limit": {"type": "integer", "default": 6, "maximum": 8}
+        "limit": {"type": "integer", "default": 6, "maximum": 8},
       },
-      "required": []
-    }
-  }
+      "required": [],
+    },
+  },
 };
 
 const Map<String, dynamic> searchMealsTool = {
@@ -47,11 +50,11 @@ const Map<String, dynamic> searchMealsTool = {
         "vegan": {"type": "boolean"},
         "gluten_free": {"type": "boolean"},
         "exclude_ingredient": {"type": "string"},
-        "limit": {"type": "integer", "default": 6, "maximum": 8}
+        "limit": {"type": "integer", "default": 6, "maximum": 8},
       },
-      "required": []
-    }
-  }
+      "required": [],
+    },
+  },
 };
 
 const Map<String, dynamic> searchByTextTool = {
@@ -66,10 +69,10 @@ const Map<String, dynamic> searchByTextTool = {
         "query": {"type": "string"},
         "domain": {
           "type": "string",
-          "enum": ["exercise", "meal", "both"]
-        }
+          "enum": ["exercise", "meal", "both"],
+        },
       },
-      "required": ["query"]
-    }
-  }
+      "required": ["query"],
+    },
+  },
 };

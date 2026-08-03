@@ -29,29 +29,39 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
   }) async* {
     final lastMessage = history.isNotEmpty ? history.last['content'] ?? '' : '';
     if (kDebugMode) {
-      debugPrint('ChatRemoteDataSourceImpl: Starting response stream for message: $lastMessage');
+      debugPrint(
+        'ChatRemoteDataSourceImpl: Starting response stream for message: $lastMessage',
+      );
     }
     try {
-      final response = await _ollamaRepo.getOllamaResponse(
-        history: history,
-        userContext: userContext ?? {},
-        locale: Intl.getCurrentLocale(),
-      ).timeout(const Duration(minutes: 2));
+      final response = await _ollamaRepo
+          .getOllamaResponse(
+            history: history,
+            userContext: userContext ?? {},
+            locale: Intl.getCurrentLocale(),
+          )
+          .timeout(const Duration(minutes: 2));
 
       if (kDebugMode) {
-        debugPrint('ChatRemoteDataSourceImpl: Received response from Ollama client');
+        debugPrint(
+          'ChatRemoteDataSourceImpl: Received response from Ollama client',
+        );
       }
 
       final String reply = response['reply'] ?? '';
-      final List<String> exerciseRefs =
-          List<String>.from(response['exercise_refs'] ?? []);
-      final List<String> mealRefs =
-          List<String>.from(response['meal_refs'] ?? []);
+      final List<String> exerciseRefs = List<String>.from(
+        response['exercise_refs'] ?? [],
+      );
+      final List<String> mealRefs = List<String>.from(
+        response['meal_refs'] ?? [],
+      );
       final String? safetyFlag = response['safety_flag'];
       final Map<String, dynamic>? action = response['action'];
 
       if (kDebugMode) {
-        debugPrint('ChatRemoteDataSourceImpl: Yielding success response with ${reply.length} chars');
+        debugPrint(
+          'ChatRemoteDataSourceImpl: Yielding success response with ${reply.length} chars',
+        );
       }
 
       yield SuccessBaseResponse(
@@ -81,7 +91,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
         if (kDebugMode) {
           debugPrint('ChatRemoteDataSourceImpl: Entering Degraded Mode...');
         }
-        final lastUserMessage = history.isNotEmpty ? history.last['content'] ?? '' : '';
+        final lastUserMessage = history.isNotEmpty
+            ? history.last['content'] ?? ''
+            : '';
         final degradedResponse = await _degradedService.getDegradedResponse(
           lastUserMessage,
           Intl.getCurrentLocale(),
@@ -92,7 +104,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
         yield SuccessBaseResponse(degradedResponse);
       } catch (degradedError) {
         if (kDebugMode) {
-          debugPrint('ChatRemoteDataSourceImpl: Critical Failure - Degraded Mode failed: $degradedError');
+          debugPrint(
+            'ChatRemoteDataSourceImpl: Critical Failure - Degraded Mode failed: $degradedError',
+          );
         }
         yield ErrorBaseResponse(e.toString());
       }
