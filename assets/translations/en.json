@@ -85,6 +85,7 @@
   "chatConnectionError": "I'm having trouble connecting to your coach. Please check your internet connection.",
   "chatUnexpectedError": "Oops! Something unexpected happened while chatting. Let's try sending that again.",
   "chatSessionError": "We couldn't load your conversation history. Please try again.",
+  "chatDegradedMessage": "I'm having some technical trouble connecting to my brain right now, but here are some exercises that should help you out based on your request:",
   "profile": "Profile",
   "selectMuscleGroup": "Select Muscle Group",
   "doIt": "Do IT",
