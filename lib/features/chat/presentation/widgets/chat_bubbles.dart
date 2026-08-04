@@ -1,16 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+part of 'active_chat_view.dart';
 
-import '../../../../core/utils/app_assets.dart';
-import '../../../../core/utils/app_colors.dart';
-import '../../../../core/utils/app_text_styles.dart';
-import '../../domain/entities/chat_message_entity.dart';
-import 'ref_carousel.dart';
-
-class AssistantBubble extends StatelessWidget {
+class _AssistantBubble extends StatelessWidget {
   final ChatMessageEntity message;
 
-  const AssistantBubble({super.key, required this.message});
+  const _AssistantBubble({required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +47,7 @@ class AssistantBubble extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(width: 30.w), // Space on the right
+                SizedBox(width: 30.w),
               ],
             ),
           ),
@@ -68,11 +61,11 @@ class AssistantBubble extends StatelessWidget {
   }
 }
 
-class UserBubble extends StatelessWidget {
+class _UserBubble extends StatelessWidget {
   final ChatMessageEntity message;
   final String? userImage;
 
-  const UserBubble({super.key, required this.message, this.userImage});
+  const _UserBubble({required this.message, this.userImage});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +75,7 @@ class UserBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SizedBox(width: 30.w), // Space on the left
+          SizedBox(width: 30.w),
           Expanded(
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),

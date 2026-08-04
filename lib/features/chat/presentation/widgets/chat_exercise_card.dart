@@ -1,6 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/custom_cached_image.dart';
 import '../../domain/entities/chat_ref_entity.dart';
@@ -17,7 +20,8 @@ class ChatExerciseCard extends StatelessWidget {
       onTap: ref.isSnapshot ? null : onTap,
       child: Container(
         width: 160.w,
-        height: 240.h, // Reverted to original height
+        height: 240.h,
+        // Reverted to original height
         decoration: BoxDecoration(
           color: AppColors.black90.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(20.r),
@@ -98,7 +102,7 @@ class ChatExerciseCard extends StatelessWidget {
                 color: AppColors.black.withValues(alpha: 0.5),
                 child: Center(
                   child: Text(
-                    'PREVIEW',
+                    AppStrings.preview.tr(),
                     style: AppTextStyles.white8500.copyWith(letterSpacing: 1.2),
                   ),
                 ),

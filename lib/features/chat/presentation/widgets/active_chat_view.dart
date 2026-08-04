@@ -4,13 +4,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../../core/utils/app_assets.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_text_styles.dart';
 import '../../domain/entities/chat_message_entity.dart';
 import '../view_model/chat_cubit.dart';
 import '../view_model/chat_event.dart';
 import '../view_model/chat_state.dart';
-import 'chat_bubbles.dart';
 import 'chat_input_field.dart';
+import 'ref_carousel.dart';
 import 'typing_indicator.dart';
+
+part 'chat_bubbles.dart';
 
 class ActiveChatView extends StatelessWidget {
   final ChatState state;
@@ -52,8 +56,8 @@ class ActiveChatView extends StatelessWidget {
                       }
                       final message = state.messages[index];
                       return message.sender == MessageSender.assistant
-                          ? AssistantBubble(message: message)
-                          : UserBubble(
+                          ? _AssistantBubble(message: message)
+                          : _UserBubble(
                               message: message,
                               userImage: state.user?.photo,
                             );

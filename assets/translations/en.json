@@ -103,7 +103,7 @@
   "verificationCodeIsCorrect": "Verification code is correct",
   "passwordResetSuccessfully": "Password reset successfully",
   "otpCodeInvalid": "Invalid OTP code",
-  "registerFailed ": "Register Failed",
+  "registerFailed": "Register Failed",
   "registerSuccess": "Register Success",
   "loginWelcome": "Hey There,\nWELCOME BACK",
   "login": "Login",
@@ -206,5 +206,6 @@
   "Network error": "Network error",
   "Error": "Error",
   "server error": "Server error",
-  "not found": "Not found"
+  "not found": "Not found",
+  "preview": "PREVIEW"
 }

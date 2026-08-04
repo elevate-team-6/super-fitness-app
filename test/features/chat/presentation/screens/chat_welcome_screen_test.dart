@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
@@ -19,12 +19,13 @@ import 'package:super_fitness/features/chat/presentation/screens/chat_welcome_sc
 import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
-import 'package:super_fitness/features/chat/presentation/widgets/welcome_view.dart';
+import 'package:super_fitness/features/chat/presentation/widgets/chat_welcome_view.dart';
 
 import 'chat_welcome_screen_test.mocks.dart';
 
 class _InMemoryAssetLoader extends AssetLoader {
   const _InMemoryAssetLoader(this._data);
+
   final Map<String, Map<String, dynamic>> _data;
 
   @override
@@ -107,7 +108,7 @@ void main() {
     testWidgets('should render WelcomeView and core elements', (tester) async {
       await pumpWelcomeScreen(tester);
 
-      expect(find.byType(WelcomeView), findsOneWidget);
+      expect(find.byType(ChatWelcomeView), findsOneWidget);
       expect(find.text(AppStrings.smartCoach.tr()), findsOneWidget);
       expect(
         find.widgetWithText(ElevatedButton, AppStrings.getStarted.tr()),

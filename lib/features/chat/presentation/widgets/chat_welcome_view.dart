@@ -10,10 +10,10 @@ import '../../../../core/widgets/custom_glass_container.dart';
 import '../../presentation/view_model/chat_cubit.dart';
 import '../../presentation/view_model/chat_state.dart';
 
-class WelcomeView extends StatelessWidget {
+class ChatWelcomeView extends StatelessWidget {
   final VoidCallback onGetStarted;
 
-  const WelcomeView({super.key, required this.onGetStarted});
+  const ChatWelcomeView({super.key, required this.onGetStarted});
 
   @override
   Widget build(BuildContext context) {

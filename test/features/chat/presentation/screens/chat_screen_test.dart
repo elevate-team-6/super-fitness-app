@@ -19,7 +19,6 @@ import 'package:super_fitness/features/chat/presentation/screens/chat_screen.dar
 import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
-import 'package:super_fitness/features/chat/presentation/widgets/chat_bubbles.dart';
 import 'package:super_fitness/features/chat/presentation/widgets/chat_exercise_card.dart';
 import 'package:super_fitness/features/chat/presentation/widgets/typing_indicator.dart';
 import 'package:super_fitness/features/workouts/domain/entities/exercise_entity.dart';
@@ -28,6 +27,7 @@ import 'chat_welcome_screen_test.mocks.dart';
 
 class _InMemoryAssetLoader extends AssetLoader {
   const _InMemoryAssetLoader(this._data);
+
   final Map<String, Map<String, dynamic>> _data;
 
   @override
@@ -115,21 +115,21 @@ void main() {
       tester,
     ) async {
       await pumpChatScreen(tester);
-      expect(find.byType(UserBubble), findsNothing);
-      expect(find.byType(AssistantBubble), findsNothing);
+      // Verify we are not showing any bubbles by checking for unique bubble content (like gradients)
+      expect(find.byIcon(Icons.person), findsNothing);
     });
 
     testWidgets('should render messages when state has data', (tester) async {
       final messages = [
         ChatMessageEntity(
           id: '1',
-          text: 'Hi',
+          text: 'Hi from user',
           sender: MessageSender.user,
           timestamp: DateTime.now(),
         ),
         ChatMessageEntity(
           id: '2',
-          text: 'Hello',
+          text: 'Hello from assistant',
           sender: MessageSender.assistant,
           timestamp: DateTime.now(),
         ),
@@ -141,10 +141,10 @@ void main() {
 
       await pumpChatScreen(tester);
 
-      expect(find.byType(UserBubble), findsOneWidget);
-      expect(find.byType(AssistantBubble), findsOneWidget);
-      expect(find.text('Hi'), findsOneWidget);
-      expect(find.text('Hello'), findsOneWidget);
+      expect(find.text('Hi from user'), findsOneWidget);
+      expect(find.text('Hello from assistant'), findsOneWidget);
+      // Verify user avatar (placeholder icon)
+      expect(find.byIcon(Icons.person), findsOneWidget);
     });
 
     testWidgets('should show TypingIndicator when status is loading', (
@@ -270,8 +270,6 @@ void main() {
         );
 
         await pumpChatScreen(tester);
-        // Logic for showing error message is handled in ChatScreen listener,
-        // but rendering is done via BotToast or similar in some cases.
       },
     );
   });

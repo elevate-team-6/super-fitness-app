@@ -11,7 +11,7 @@ import 'package:super_fitness/core/widgets/custom_app_bar.dart';
 import '../view_model/chat_cubit.dart';
 import '../view_model/chat_event.dart';
 import '../widgets/chat_drawer.dart';
-import '../widgets/welcome_view.dart';
+import '../widgets/chat_welcome_view.dart';
 
 class ChatWelcomeScreen extends StatefulWidget {
   const ChatWelcomeScreen({super.key});
@@ -46,7 +46,7 @@ class _ChatWelcomeScreenState extends State<ChatWelcomeScreen> {
             ),
           ],
         ),
-        body: WelcomeView(
+        body: ChatWelcomeView(
           onGetStarted: () {
             context.read<ChatCubit>().doEvent(const StartNewSessionEvent());
             Navigator.pushNamed(context, AppRoutes.chat);
