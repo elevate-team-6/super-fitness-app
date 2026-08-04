@@ -8,12 +8,14 @@ class MultiStepProgressHeader extends StatelessWidget {
   final int currentStep;
   final String title;
   final String? subtitle;
+  final bool showProgress;
 
   const MultiStepProgressHeader({
     super.key,
     required this.currentStep,
     required this.title,
     this.subtitle,
+    this.showProgress = true,
   });
 
   @override
@@ -21,26 +23,27 @@ class MultiStepProgressHeader extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            SizedBox(
-              width: 50.w,
-              height: 50.w,
-              child: CircularProgressIndicator(
-                value: currentStep / 6,
-                backgroundColor: AppColors.white.withValues(alpha: 0.1),
-                color: AppColors.primary,
-                strokeWidth: 5.w,
+        if (showProgress)
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 50.w,
+                height: 50.w,
+                child: CircularProgressIndicator(
+                  value: currentStep / 6,
+                  backgroundColor: AppColors.white.withValues(alpha: 0.1),
+                  color: AppColors.primary,
+                  strokeWidth: 5.w,
+                ),
               ),
-            ),
-            Text(
-              '$currentStep/6',
-              style: AppTextStyles.white13500.copyWith(fontSize: 12.sp),
-            ),
-          ],
-        ),
-        SizedBox(height: 16.h),
+              Text(
+                '$currentStep/6',
+                style: AppTextStyles.white13500.copyWith(fontSize: 12.sp),
+              ),
+            ],
+          ),
+        if (showProgress) SizedBox(height: 16.h),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

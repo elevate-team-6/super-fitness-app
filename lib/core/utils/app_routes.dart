@@ -3,14 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/features/auth/domain/entities/social_signup_entity.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:super_fitness/features/auth/presentation/screens/login_screen.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/login_view_model/login_cubit.dart';
 import 'package:super_fitness/features/auth/presentation/view_model/register_view_model/register_event.dart';
+import 'package:super_fitness/features/profile/domain/entities/complete_register_mode.dart';
+import 'package:super_fitness/features/profile/domain/entities/edit_profile_section.dart';
+import 'package:super_fitness/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:super_fitness/features/profile/presentation/view_model/edit_profile_view_model/edit_profile_cubit.dart';
+import 'package:super_fitness/features/profile/presentation/view_model/edit_profile_view_model/edit_profile_event.dart';
+import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 
 import '../../features/auth/presentation/screens/complete_register_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
-import '../../features/auth/presentation/view_model/forget_password_view_model/forgot_password_cubit.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/home/presentation/screens/details_food_screen.dart';
 import '../../features/home/presentation/screens/food_screen.dart';
@@ -48,6 +54,7 @@ abstract class AppRoutes {
   static const String exerciseDetails = 'exerciseDetails';
   static const String chat = 'chat';
   static const String webView = 'webView';
+  static const String editProfile = 'editProfile';
 
   static MaterialPageRoute<dynamic> onGenerateRoute(RouteSettings settings) {
     try {
@@ -70,23 +77,50 @@ abstract class AppRoutes {
               child: const RegisterScreen(),
             ),
           );
+
         case completeRegister:
           final args = settings.arguments as CompleteRegisterArgs;
-          final RegisterCubit cubit;
 
-          if (args.socialData != null) {
-            cubit = getIt<RegisterCubit>();
-            cubit.doEvent(InitializeFromSocialEvent(args.socialData!));
+          if (args.mode == CompleteRegisterMode.edit) {
+            return MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                value: args.editProfileCubit!,
+                child: CompleteRegisterScreen(
+                  mode: args.mode,
+                  section: args.section,
+                ),
+              ),
+            );
           } else {
-            cubit = args.cubit!;
+            final RegisterCubit cubit;
+            if (args.socialData != null) {
+              cubit = getIt<RegisterCubit>();
+              cubit.doEvent(InitializeFromSocialEvent(args.socialData!));
+            } else {
+              cubit = args.registerCubit!;
+            }
+
+            return MaterialPageRoute(
+              builder: (_) => BlocProvider.value(
+                value: cubit,
+                child: const CompleteRegisterScreen(
+                  mode: CompleteRegisterMode.register,
+                ),
+              ),
+            );
           }
 
+        case editProfile:
+          final args = settings.arguments as EditProfileArgs;
           return MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: cubit,
-              child: const CompleteRegisterScreen(),
+            builder: (_) => BlocProvider(
+              create: (_) =>
+                  getIt<EditProfileCubit>()
+                    ..doEvent(InitializeProfileEvent(args.user)),
+              child: EditProfileScreen(user: args.user),
             ),
           );
+
         case forgetPassword:
           return MaterialPageRoute(
             builder: (_) => BlocProvider(
@@ -230,10 +264,27 @@ class DetailsFoodArgs {
 }
 
 class CompleteRegisterArgs {
-  final RegisterCubit? cubit;
+  final RegisterCubit? registerCubit;
+  final EditProfileCubit? editProfileCubit;
   final SocialSignupEntity? socialData;
+  final CompleteRegisterMode mode;
+  final EditProfileSection? section;
 
-  CompleteRegisterArgs({this.cubit, this.socialData});
+  const CompleteRegisterArgs({
+    RegisterCubit? cubit,
+    RegisterCubit? registerCubit,
+    this.editProfileCubit,
+    this.socialData,
+    this.mode = CompleteRegisterMode.register,
+    this.section,
+  }) : registerCubit = registerCubit ?? cubit;
+
+  RegisterCubit? get cubit => registerCubit;
+}
+
+class EditProfileArgs {
+  final UserEntity user;
+  const EditProfileArgs({required this.user});
 }
 
 class WebViewArgs {
