@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🏋️ Super Fitness
+# 🏋️🤖 Super Fitness
 
 **An AI-powered fitness companion built with Flutter — workouts, nutrition, and a coach that actually knows your catalog.**
 
