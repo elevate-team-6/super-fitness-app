@@ -32,11 +32,7 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([
-  GetCachedUserUseCase,
-  GetProfileDataUseCase,
-  LogoutUseCase,
-])
+@GenerateMocks([GetCachedUserUseCase, GetProfileDataUseCase, LogoutUseCase])
 void main() {
   late MockGetCachedUserUseCase getCachedUser;
   late MockGetProfileDataUseCase getProfileData;
@@ -69,12 +65,12 @@ void main() {
     translations = {
       for (final code in [AppConstants.englishCode, AppConstants.arabicCode])
         code:
-        json.decode(
-          await rootBundle.loadString(
-            '${AppConstants.translationsPath}/$code.json',
-          ),
-        )
-        as Map<String, dynamic>,
+            json.decode(
+                  await rootBundle.loadString(
+                    '${AppConstants.translationsPath}/$code.json',
+                  ),
+                )
+                as Map<String, dynamic>,
     };
   });
 
@@ -90,7 +86,7 @@ void main() {
     // The screen pulls its cubit from the container rather than a route, so
     // the test has to stand one up.
     getIt.registerFactory<ProfileCubit>(
-          () => ProfileCubit(getCachedUser, getProfileData, logoutUseCase),
+      () => ProfileCubit(getCachedUser, getProfileData, logoutUseCase),
     );
   });
 
@@ -128,9 +124,9 @@ void main() {
   }
 
   Future<void> pumpProfile(
-      WidgetTester tester, {
-        Locale locale = const Locale('en'),
-      }) async {
+    WidgetTester tester, {
+    Locale locale = const Locale('en'),
+  }) async {
     tester.view.physicalSize = surfaceSize;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -182,8 +178,8 @@ void main() {
     });
 
     testWidgets('shows the cached user in the header when available', (
-        tester,
-        ) async {
+      tester,
+    ) async {
       when(getCachedUser()).thenAnswer((_) async => user);
 
       await pumpProfile(tester);
@@ -206,8 +202,8 @@ void main() {
     });
 
     testWidgets('marks the language row with the active language', (
-        tester,
-        ) async {
+      tester,
+    ) async {
       when(
         getProfileData(),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
@@ -219,8 +215,8 @@ void main() {
     });
 
     testWidgets('starts in Arabic when the app locale is Arabic', (
-        tester,
-        ) async {
+      tester,
+    ) async {
       when(
         getProfileData(),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
@@ -290,7 +286,7 @@ void main() {
 
     testWidgets(
       'Logout shows confirmation dialog and calls cubit when confirmed',
-          (tester) async {
+      (tester) async {
         when(
           getProfileData(),
         ).thenAnswer((_) async => const SuccessBaseResponse(null));
@@ -316,8 +312,8 @@ void main() {
     );
 
     testWidgets('leaves the unimplemented rows without an action', (
-        tester,
-        ) async {
+      tester,
+    ) async {
       when(
         getProfileData(),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));

@@ -18,10 +18,10 @@ class ProfileCubit extends BaseCubit<ProfileState, BaseUiEvent> {
   final LogoutUseCase _logoutUseCase;
 
   ProfileCubit(
-      this._getCachedUserUseCase,
-      this._getProfileDataUseCase,
-      this._logoutUseCase,
-      ) : super(const ProfileState());
+    this._getCachedUserUseCase,
+    this._getProfileDataUseCase,
+    this._logoutUseCase,
+  ) : super(const ProfileState());
 
   void doIntent(ProfileEvents event) {
     switch (event) {
@@ -63,8 +63,8 @@ class ProfileCubit extends BaseCubit<ProfileState, BaseUiEvent> {
         emit(state.copyWith(profileState: BaseState(data: response.data)));
 
       case ErrorBaseResponse<UserEntity>():
-      // The header keeps whatever it was already showing; the failure is a
-      // one-off message rather than a permanent empty state.
+        // The header keeps whatever it was already showing; the failure is a
+        // one-off message rather than a permanent empty state.
         emit(
           state.copyWith(
             profileState: BaseState(

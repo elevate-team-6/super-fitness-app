@@ -164,10 +164,9 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     if (state.currentSessionId != null) return state.currentSessionId;
 
     final newId = const Uuid().v4();
-    final title =
-        firstMessage.length > 30
-            ? "${firstMessage.substring(0, 30)}..."
-            : firstMessage;
+    final title = firstMessage.length > 30
+        ? "${firstMessage.substring(0, 30)}..."
+        : firstMessage;
 
     final result = await _createSessionUseCase(newId, title);
     if (result is ErrorBaseResponse) {
@@ -209,7 +208,10 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
 
       switch (result) {
         case SuccessBaseResponse<ChatMessageEntity>():
-          assistantMessage = _handleStreamResult(result.data!, assistantMessage);
+          assistantMessage = _handleStreamResult(
+            result.data!,
+            assistantMessage,
+          );
         case ErrorBaseResponse<ChatMessageEntity>():
           hasError = true;
           emit(

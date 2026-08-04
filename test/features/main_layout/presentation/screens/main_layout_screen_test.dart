@@ -164,7 +164,7 @@ void main() {
     fakeHomeCubit = FakeHomeCubit();
     fakeChatCubit = FakeChatCubit();
     getIt.registerFactory<ProfileCubit>(
-          () => ProfileCubit(
+      () => ProfileCubit(
         FakeGetCachedUserUseCase(),
         FakeGetProfileDataUseCase(),
         FakeLogoutUseCase(),
@@ -207,7 +207,7 @@ void main() {
   group('MainLayoutScreen Widget Tests', () {
     testWidgets(
       'Initial State: Should render Custom Navigation Items and initial HomeScreen',
-          (WidgetTester tester) async {
+      (WidgetTester tester) async {
         // Set larger surface size to avoid overflow in test environment
         tester.view.physicalSize = const Size(800, 1200);
         tester.view.devicePixelRatio = 1.0;
@@ -227,8 +227,8 @@ void main() {
     );
 
     testWidgets('Interaction: Tapping on Workout tab should update UI', (
-        WidgetTester tester,
-        ) async {
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 
@@ -251,8 +251,8 @@ void main() {
     // Each tab's first load has to run when it is opened, not at launch —
     // otherwise the profile skeleton would be over before anyone saw the tab.
     testWidgets('does not build a tab until it is opened', (
-        WidgetTester tester,
-        ) async {
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 
@@ -268,8 +268,8 @@ void main() {
     });
 
     testWidgets('Interaction: Tapping on Profile tab should update UI', (
-        WidgetTester tester,
-        ) async {
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 

@@ -15,7 +15,8 @@ mixin ExerciseCatalogMixin {
     String? difficultyLevelId,
     int? limit,
   }) async {
-    String query = '''
+    String query =
+        '''
       SELECT 
         e.*, 
         ${getNameCol('e')} as ${CatalogDbConstants.aliasExerciseName},
@@ -66,7 +67,8 @@ mixin ExerciseCatalogMixin {
     if (ids.isEmpty) return [];
 
     final placeholders = List.filled(ids.length, '?').join(', ');
-    final query = '''
+    final query =
+        '''
       SELECT 
         e.*, 
         ${getNameCol('e')} as ${CatalogDbConstants.aliasExerciseName},
@@ -96,7 +98,8 @@ mixin ExerciseCatalogMixin {
   ) async {
     final results = await sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
-      sql: '''
+      sql:
+          '''
         SELECT DISTINCT l.${CatalogDbConstants.columnId}, ${getNameCol('l')} as ${CatalogDbConstants.columnName}
         FROM ${CatalogDbConstants.tableDifficultyLevel} l
         JOIN ${CatalogDbConstants.tableExercise} e ON e.${CatalogDbConstants.columnDifficultyId} = l.${CatalogDbConstants.columnId}
@@ -114,7 +117,8 @@ mixin ExerciseCatalogMixin {
   ) async {
     final results = await sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.exercisesDb,
-      sql: '''
+      sql:
+          '''
         SELECT 
           e.*, 
           ${getNameCol('e')} as ${CatalogDbConstants.aliasExerciseName},
@@ -152,7 +156,8 @@ mixin ExerciseCatalogMixin {
     String? excludeEquipment,
     int limit = 6,
   }) async {
-    String query = '''
+    String query =
+        '''
       SELECT 
         e.id, 
         ${getNameCol('e')} as name,

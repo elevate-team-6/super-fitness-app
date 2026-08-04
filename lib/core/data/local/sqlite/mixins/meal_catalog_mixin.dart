@@ -25,7 +25,8 @@ mixin MealCatalogMixin {
   Future<List<MealModel>> getMealsByCategory(String category) async {
     final results = await sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
-      sql: '''
+      sql:
+          '''
         SELECT 
           m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
           ${getNameCol('m')} as ${CatalogDbConstants.keyStrMeal}, 
@@ -47,7 +48,8 @@ mixin MealCatalogMixin {
     final placeholders = List.filled(ids.length, '?').join(', ');
     final results = await sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
-      sql: '''
+      sql:
+          '''
         SELECT 
           m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
           ${getNameCol('m')} as ${CatalogDbConstants.keyStrMeal}, 
@@ -66,7 +68,8 @@ mixin MealCatalogMixin {
   Future<DetailsFoodModel?> getDetailsFood(String id) async {
     final results = await sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
-      sql: '''
+      sql:
+          '''
         SELECT 
           m.${CatalogDbConstants.columnId} as ${CatalogDbConstants.keyIdMeal}, 
           ${getNameCol('m')} as ${CatalogDbConstants.keyStrMeal}, 
@@ -87,7 +90,8 @@ mixin MealCatalogMixin {
     final mealMap = Map<String, dynamic>.from(results.first);
     final ingredients = await sqliteHelper.rawQuery(
       dbName: CatalogDbConstants.mealsDb,
-      sql: '''
+      sql:
+          '''
         SELECT ${getNameCol('i')} as ${CatalogDbConstants.columnName}, mi.${CatalogDbConstants.columnQty} || ' ' || mi.${CatalogDbConstants.columnUnit} as ${CatalogDbConstants.aliasMeasure}
         FROM ${CatalogDbConstants.tableMealIngredient} mi
         JOIN ${CatalogDbConstants.tableIngredient} i ON mi.${CatalogDbConstants.columnIngredientId} = i.${CatalogDbConstants.columnId}
@@ -111,7 +115,8 @@ mixin MealCatalogMixin {
     String? excludeIngredient,
     int limit = 6,
   }) async {
-    String query = '''
+    String query =
+        '''
       SELECT 
         m.id, 
         ${getNameCol('m')} as name,

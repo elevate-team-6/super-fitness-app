@@ -107,14 +107,14 @@ class OllamaChatClient {
     final String lastUserMessage = history.isNotEmpty
         ? history.last['content'] ?? ''
         : '';
-    
+
     final fastPathFilters = _classifier.classify(lastUserMessage);
     if (fastPathFilters != null) {
       final results = await _retrievalService.searchExercisesByFilters(
         muscleGroup: fastPathFilters['muscle_group'],
         equipment: fastPathFilters['equipment'],
       );
-      
+
       candidateIds.addAll(results.map((e) => e['id'].toString()));
 
       messages.add({
@@ -223,7 +223,7 @@ class OllamaChatClient {
 
     try {
       final finalJson = jsonDecode(cleanedContent) as Map<String, dynamic>;
-      
+
       // Filter references to ensure only "candidate" (actually found) items are returned
       final List<String> exerciseRefs =
           (finalJson['exercise_refs'] as List? ?? [])

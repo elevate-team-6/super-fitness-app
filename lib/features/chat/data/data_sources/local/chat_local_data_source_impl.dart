@@ -63,7 +63,7 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSourceContract {
       if (sessionData == null) {
         throw Exception('Cannot update messages: Session $sessionId not found');
       }
-      
+
       final session = ChatSessionHiveModel.fromJson(sessionData);
       final updatedSession = ChatSessionHiveModel(
         id: session.id,
