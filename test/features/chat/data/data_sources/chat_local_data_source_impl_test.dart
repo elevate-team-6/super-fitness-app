@@ -102,12 +102,12 @@ void main() {
       verify(mockBox.put('session_1', any)).called(1);
     });
 
-    test('should do nothing if session does not exist', () async {
+    test('should return error if session does not exist', () async {
       when(mockBox.get(any)).thenReturn(null);
 
       final result = await dataSource.updateSessionMessages('none', []);
 
-      expect(result, isA<SuccessBaseResponse<void>>());
+      expect(result, isA<ErrorBaseResponse<void>>());
       verifyNever(mockBox.put(any, any));
     });
   });

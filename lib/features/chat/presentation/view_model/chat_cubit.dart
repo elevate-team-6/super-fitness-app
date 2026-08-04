@@ -136,25 +136,51 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     }
   }
 
+  // --- Send Message Flow (Refactored) ---
+
   Future<void> _sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
+    final cleanText = text.trim();
+    if (cleanText.isEmpty) return;
 
-    String? activeSessionId = state.currentSessionId;
+    // 1. Ensure we have an active session
+    final sessionId = await _ensureActiveSession(cleanText);
+    if (sessionId == null) return;
 
-    // Handle session creation if this is the first message
-    if (activeSessionId == null) {
-      activeSessionId = const Uuid().v4();
-      final title = text.length > 30 ? "${text.substring(0, 30)}..." : text;
-      final result = await _createSessionUseCase(activeSessionId, title);
-      if (result is ErrorBaseResponse) {
-        emitUiEvent(DisplayErrorEvent(result.errorMessage));
-        return;
-      }
-      emit(state.copyWith(currentSessionId: activeSessionId));
-      await _loadHistory();
+    // 2. Emit user message immediately for UX
+    _emitUserMessageState(cleanText);
+
+    // 3. Listen to the assistant stream and wait for it (Await this)
+    try {
+      await _listenToAssistantStream(sessionId, cleanText);
+    } catch (e) {
+      emit(
+        state.copyWith(status: ChatStatus.failure, errorMessage: e.toString()),
+      );
+      emitUiEvent(DisplayErrorEvent(e.toString()));
+    }
+  }
+
+  Future<String?> _ensureActiveSession(String firstMessage) async {
+    if (state.currentSessionId != null) return state.currentSessionId;
+
+    final newId = const Uuid().v4();
+    final title =
+        firstMessage.length > 30
+            ? "${firstMessage.substring(0, 30)}..."
+            : firstMessage;
+
+    final result = await _createSessionUseCase(newId, title);
+    if (result is ErrorBaseResponse) {
+      emitUiEvent(DisplayErrorEvent(result.errorMessage));
+      return null;
     }
 
-    final sessionId = activeSessionId;
+    emit(state.copyWith(currentSessionId: newId));
+    await _loadHistory();
+    return newId;
+  }
+
+  void _emitUserMessageState(String text) {
     final userMessage = ChatMessageEntity(
       id: const Uuid().v4(),
       text: text,
@@ -169,83 +195,81 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
         lastPendingMessage: text,
       ),
     );
+  }
 
-    try {
-      final stream = _sendMessageUseCase(sessionId: sessionId, message: text);
-      ChatMessageEntity? assistantMessage;
-      bool hasError = false;
+  Future<void> _listenToAssistantStream(String sessionId, String text) async {
+    final stream = _sendMessageUseCase(sessionId: sessionId, message: text);
+    ChatMessageEntity? assistantMessage;
+    bool hasError = false;
 
-      await for (final result in stream) {
+    await for (final result in stream) {
+      if (kDebugMode) {
         debugPrint('ChatCubit: Received result from stream: $result');
-        switch (result) {
-          case SuccessBaseResponse<ChatMessageEntity>():
-            final updatedMessage = result.data!;
-            debugPrint(
-              'ChatCubit: Success message received. Text length: ${updatedMessage.text.length}',
-            );
-            if (assistantMessage == null) {
-              assistantMessage = updatedMessage;
-              emit(
-                state.copyWith(
-                  messagesStatus: BaseState(
-                    data: [...state.messages, assistantMessage],
-                  ),
-                  status: ChatStatus.streaming,
-                ),
-              );
-            } else {
-              assistantMessage = updatedMessage;
-              final updatedMessages = List<ChatMessageEntity>.from(
-                state.messages,
-              );
-              final index = updatedMessages.indexWhere(
-                (m) => m.id == assistantMessage!.id,
-              );
-              if (index != -1) {
-                updatedMessages[index] = assistantMessage;
-              }
-              emit(
-                state.copyWith(
-                  messagesStatus: BaseState(data: updatedMessages),
-                ),
-              );
-            }
-          case ErrorBaseResponse<ChatMessageEntity>():
-            hasError = true;
-            emit(
-              state.copyWith(
-                status: ChatStatus.failure,
-                errorMessage: result.errorMessage,
-              ),
-            );
-            emitUiEvent(DisplayErrorEvent(result.errorMessage));
-            return;
-        }
       }
 
-      if (!hasError &&
-          (assistantMessage == null || assistantMessage.text.trim().isEmpty)) {
-        emit(
-          state.copyWith(
-            status: ChatStatus.failure,
-            errorMessage: AppStrings.chatUnexpectedError.tr(),
-          ),
-        );
-        emitUiEvent(DisplayErrorEvent(AppStrings.chatUnexpectedError.tr()));
-      } else {
-        emit(
-          state.copyWith(status: ChatStatus.success, lastPendingMessage: null),
-        );
+      switch (result) {
+        case SuccessBaseResponse<ChatMessageEntity>():
+          assistantMessage = _handleStreamResult(result.data!, assistantMessage);
+        case ErrorBaseResponse<ChatMessageEntity>():
+          hasError = true;
+          emit(
+            state.copyWith(
+              status: ChatStatus.failure,
+              errorMessage: result.errorMessage,
+            ),
+          );
+          emitUiEvent(DisplayErrorEvent(result.errorMessage));
+          return;
       }
-    } catch (e) {
+    }
+
+    _finalizeStream(hasError, assistantMessage);
+  }
+
+  ChatMessageEntity _handleStreamResult(
+    ChatMessageEntity updatedMessage,
+    ChatMessageEntity? currentAssistantMessage,
+  ) {
+    if (currentAssistantMessage == null) {
+      final message = updatedMessage;
       emit(
-        state.copyWith(status: ChatStatus.failure, errorMessage: e.toString()),
+        state.copyWith(
+          messagesStatus: BaseState(data: [...state.messages, message]),
+          status: ChatStatus.streaming,
+        ),
       );
-      emitUiEvent(DisplayErrorEvent(e.toString()));
+      return message;
+    } else {
+      final message = updatedMessage;
+      final updatedMessages = List<ChatMessageEntity>.from(state.messages);
+      final index = updatedMessages.indexWhere((m) => m.id == message.id);
+      if (index != -1) {
+        updatedMessages[index] = message;
+      }
+      emit(state.copyWith(messagesStatus: BaseState(data: updatedMessages)));
+      return message;
+    }
+  }
+
+  void _finalizeStream(bool hasError, ChatMessageEntity? assistantMessage) {
+    if (hasError) return;
+
+    if (assistantMessage == null || assistantMessage.text.trim().isEmpty) {
+      emit(
+        state.copyWith(
+          status: ChatStatus.failure,
+          errorMessage: AppStrings.chatUnexpectedError.tr(),
+        ),
+      );
+      emitUiEvent(DisplayErrorEvent(AppStrings.chatUnexpectedError.tr()));
+    } else {
+      emit(
+        state.copyWith(status: ChatStatus.success, lastPendingMessage: null),
+      );
     }
   }
 
   void _clearError() {
-    emit(state.copyWith(status: ChatStatus.initial, errorMessage: null));
+    emit(state.copyWith(status: ChatStatus.initial, clearError: true));
   }
 }

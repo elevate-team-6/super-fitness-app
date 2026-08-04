@@ -60,16 +60,18 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSourceContract {
     return ErrorHandler.handleApiCall(() async {
       final box = await _getBox();
       final sessionData = box.get(sessionId);
-      if (sessionData != null) {
-        final session = ChatSessionHiveModel.fromJson(sessionData);
-        final updatedSession = ChatSessionHiveModel(
-          id: session.id,
-          title: session.title,
-          messages: messages,
-          lastUpdatedAt: DateTime.now(),
-        );
-        await box.put(sessionId, updatedSession.toJson());
+      if (sessionData == null) {
+        throw Exception('Cannot update messages: Session $sessionId not found');
       }
+      
+      final session = ChatSessionHiveModel.fromJson(sessionData);
+      final updatedSession = ChatSessionHiveModel(
+        id: session.id,
+        title: session.title,
+        messages: messages,
+        lastUpdatedAt: DateTime.now(),
+      );
+      await box.put(sessionId, updatedSession.toJson());
     });
   }
 
@@ -81,16 +83,18 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSourceContract {
     return ErrorHandler.handleApiCall(() async {
       final box = await _getBox();
       final sessionData = box.get(sessionId);
-      if (sessionData != null) {
-        final session = ChatSessionHiveModel.fromJson(sessionData);
-        final updatedSession = ChatSessionHiveModel(
-          id: session.id,
-          title: title,
-          messages: session.messages,
-          lastUpdatedAt: DateTime.now(),
-        );
-        await box.put(sessionId, updatedSession.toJson());
+      if (sessionData == null) {
+        throw Exception('Cannot update title: Session $sessionId not found');
       }
+
+      final session = ChatSessionHiveModel.fromJson(sessionData);
+      final updatedSession = ChatSessionHiveModel(
+        id: session.id,
+        title: title,
+        messages: session.messages,
+        lastUpdatedAt: DateTime.now(),
+      );
+      await box.put(sessionId, updatedSession.toJson());
     });
   }
 

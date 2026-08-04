@@ -39,6 +39,7 @@ class ChatState extends Equatable {
     BaseState<ChatMessageEntity>? sendMessageStatus,
     ChatStatus? status,
     String? errorMessage,
+    bool clearError = false,
     String? lastPendingMessage,
     String? currentSessionId,
     bool forceNullSession = false,
@@ -49,7 +50,7 @@ class ChatState extends Equatable {
       messagesStatus: messagesStatus ?? this.messagesStatus,
       sendMessageStatus: sendMessageStatus ?? this.sendMessageStatus,
       status: status ?? this.status,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       lastPendingMessage: lastPendingMessage ?? this.lastPendingMessage,
       currentSessionId: forceNullSession
           ? null

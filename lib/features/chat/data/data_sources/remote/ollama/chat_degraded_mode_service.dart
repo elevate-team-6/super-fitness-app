@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:injectable/injectable.dart';
+import 'package:super_fitness/config/services/crashlytics_service.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import '../../../models/chat_event_model.dart';
 import 'ollama_fast_path_classifier.dart';
@@ -9,8 +10,13 @@ import '../../../retrieval/catalog_retrieval_service.dart';
 class ChatDegradedModeService {
   final OllamaFastPathClassifier _classifier;
   final CatalogRetrievalService _retrievalService;
+  final CrashlyticsService _crashlyticsService;
 
-  ChatDegradedModeService(this._classifier, this._retrievalService);
+  ChatDegradedModeService(
+    this._classifier,
+    this._retrievalService,
+    this._crashlyticsService,
+  );
 
   /// Returns a helpful response when the LLM is unavailable.
   Future<ChatEventModel> getDegradedResponse(
@@ -33,8 +39,13 @@ class ChatDegradedModeService {
       if (results.isEmpty) {
         results = await _retrievalService.searchExercisesByFilters(limit: 4);
       }
-    } catch (_) {
-      // Keep results empty if DB fails
+    } catch (e, stack) {
+      // Senior Observation: Even degraded mode needs logging to find why DB/Classification fails
+      await _crashlyticsService.recordError(
+        e,
+        stack,
+        reason: "Degraded Mode Retrieval Failure",
+      );
     }
 
     return ChatEventModel(
