@@ -5,6 +5,8 @@ import 'package:injectable/injectable.dart';
 
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/services/crashlytics_service.dart';
+import 'package:super_fitness/core/network/ollama_exception.dart';
+import 'package:super_fitness/core/utils/app_strings.dart';
 import '../contracts/chat_remote_data_source_contract.dart';
 import 'ollama/chat_degraded_mode_service.dart';
 import '../../models/chat_event_model.dart';
@@ -76,6 +78,9 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSourceContract {
           replyChars: reply.length,
         ),
       );
+    } on OllamaConfigurationException {
+      // Senior UI/UX: Specifically handle configuration errors without entering degraded mode
+      yield ErrorBaseResponse(AppStrings.chatSessionError.tr());
     } catch (e, stack) {
       if (kDebugMode) {
         debugPrint('ChatRemoteDataSourceImpl: Error caught in stream: $e');
