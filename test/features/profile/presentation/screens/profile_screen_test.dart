@@ -8,11 +8,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
-import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
@@ -31,10 +32,15 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([GetCachedUserUseCase, GetProfileDataUseCase])
+@GenerateMocks([
+  GetCachedUserUseCase,
+  GetProfileDataUseCase,
+  LogoutUseCase,
+])
 void main() {
   late MockGetCachedUserUseCase getCachedUser;
   late MockGetProfileDataUseCase getProfileData;
+  late MockLogoutUseCase logoutUseCase;
   late Map<String, Map<String, dynamic>> translations;
 
   /// Set by the test navigator so a tap can be checked without building the
@@ -53,6 +59,8 @@ void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     provideDummy<BaseResponse<UserEntity>>(const ErrorBaseResponse('dummy'));
+    provideDummy<BaseResponse<void>>(const SuccessBaseResponse(null));
+
     // EasyLocalization persists the chosen locale through SharedPreferences,
     // which has no implementation in a widget test.
     SharedPreferences.setMockInitialValues({});
@@ -61,27 +69,28 @@ void main() {
     translations = {
       for (final code in [AppConstants.englishCode, AppConstants.arabicCode])
         code:
-            json.decode(
-                  await rootBundle.loadString(
-                    '${AppConstants.translationsPath}/$code.json',
-                  ),
-                )
-                as Map<String, dynamic>,
+        json.decode(
+          await rootBundle.loadString(
+            '${AppConstants.translationsPath}/$code.json',
+          ),
+        )
+        as Map<String, dynamic>,
     };
   });
 
   setUp(() {
     getCachedUser = MockGetCachedUserUseCase();
     getProfileData = MockGetProfileDataUseCase();
+    logoutUseCase = MockLogoutUseCase();
     pushedRoute = null;
 
-    // Nothing cached, so the screen takes its first-visit path and fetches.
+    // Nothing cached by default, so the screen takes its first-visit path and fetches.
     when(getCachedUser()).thenAnswer((_) async => null);
 
     // The screen pulls its cubit from the container rather than a route, so
     // the test has to stand one up.
     getIt.registerFactory<ProfileCubit>(
-      () => ProfileCubit(getCachedUser, getProfileData),
+          () => ProfileCubit(getCachedUser, getProfileData, logoutUseCase),
     );
   });
 
@@ -119,9 +128,9 @@ void main() {
   }
 
   Future<void> pumpProfile(
-    WidgetTester tester, {
-    Locale locale = const Locale('en'),
-  }) async {
+      WidgetTester tester, {
+        Locale locale = const Locale('en'),
+      }) async {
     tester.view.physicalSize = surfaceSize;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -172,6 +181,17 @@ void main() {
       expect(header.name, 'Ahmed Emam');
     });
 
+    testWidgets('shows the cached user in the header when available', (
+        tester,
+        ) async {
+      when(getCachedUser()).thenAnswer((_) async => user);
+
+      await pumpProfile(tester);
+
+      final header = tester.widget<ProfileHeader>(find.byType(ProfileHeader));
+      expect(header.name, 'Ahmed Emam');
+    });
+
     // A response with no user has to degrade to just the avatar instead of an
     // error or a blank line.
     testWidgets('leaves the name empty when there is no user', (tester) async {
@@ -186,8 +206,8 @@ void main() {
     });
 
     testWidgets('marks the language row with the active language', (
-      tester,
-    ) async {
+        tester,
+        ) async {
       when(
         getProfileData(),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
@@ -199,8 +219,8 @@ void main() {
     });
 
     testWidgets('starts in Arabic when the app locale is Arabic', (
-      tester,
-    ) async {
+        tester,
+        ) async {
       when(
         getProfileData(),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
@@ -268,11 +288,36 @@ void main() {
       expect((pushedRoute?.arguments as WebViewArgs).url, AppConstants.helpUrl);
     });
 
-    // These three belong to other tickets — the rows are laid out but must not
-    // look tappable until someone wires them.
+    testWidgets(
+      'Logout shows confirmation dialog and calls cubit when confirmed',
+          (tester) async {
+        when(
+          getProfileData(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+        when(
+          logoutUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+
+        await pumpProfile(tester);
+
+        await tester.tap(find.text('Logout'));
+        await tester.pumpAndSettle();
+
+        // Verify dialog is shown
+        expect(find.text('Logout'), findsNWidgets(2)); // Title and Menu Item
+        expect(find.text('Are you sure you want to log out?'), findsOneWidget);
+
+        // Confirm logout
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        verify(logoutUseCase()).called(1);
+      },
+    );
+
     testWidgets('leaves the unimplemented rows without an action', (
-      tester,
-    ) async {
+        tester,
+        ) async {
       when(
         getProfileData(),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
@@ -281,7 +326,6 @@ void main() {
 
       expect(itemLabelled(tester, 'Edit Profile').onTap, isNull);
       expect(itemLabelled(tester, 'Change Password').onTap, isNull);
-      expect(itemLabelled(tester, 'Logout').onTap, isNull);
     });
   });
 }

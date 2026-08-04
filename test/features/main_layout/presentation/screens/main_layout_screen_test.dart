@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
@@ -15,7 +17,6 @@ import 'package:super_fitness/features/home/presentation/view_models/home_view_m
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
-import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
@@ -84,7 +85,7 @@ class _InMemoryAssetLoader extends AssetLoader {
     'seeAll': 'See All',
     'recommendationForYou': 'Recommendation for you',
     'popular_training': 'Popular training',
-    'editProfile': 'Explore',
+    'editProfile': 'Edit Profile',
     'changePassword': 'Change Password',
     'selectLanguage': 'Select Language',
     'english': 'English',
@@ -140,6 +141,14 @@ class FakeGetProfileDataUseCase implements GetProfileDataUseCase {
       const SuccessBaseResponse(null);
 }
 
+class FakeLogoutUseCase implements LogoutUseCase {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<BaseResponse<void>> call() async => const SuccessBaseResponse(null);
+}
+
 void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
   late FakeHomeCubit fakeHomeCubit;
@@ -155,8 +164,11 @@ void main() {
     fakeHomeCubit = FakeHomeCubit();
     fakeChatCubit = FakeChatCubit();
     getIt.registerFactory<ProfileCubit>(
-      () =>
-          ProfileCubit(FakeGetCachedUserUseCase(), FakeGetProfileDataUseCase()),
+          () => ProfileCubit(
+        FakeGetCachedUserUseCase(),
+        FakeGetProfileDataUseCase(),
+        FakeLogoutUseCase(),
+      ),
     );
   });
 
@@ -195,7 +207,7 @@ void main() {
   group('MainLayoutScreen Widget Tests', () {
     testWidgets(
       'Initial State: Should render Custom Navigation Items and initial HomeScreen',
-      (WidgetTester tester) async {
+          (WidgetTester tester) async {
         // Set larger surface size to avoid overflow in test environment
         tester.view.physicalSize = const Size(800, 1200);
         tester.view.devicePixelRatio = 1.0;
@@ -215,8 +227,8 @@ void main() {
     );
 
     testWidgets('Interaction: Tapping on Workout tab should update UI', (
-      WidgetTester tester,
-    ) async {
+        WidgetTester tester,
+        ) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 
@@ -239,8 +251,8 @@ void main() {
     // Each tab's first load has to run when it is opened, not at launch —
     // otherwise the profile skeleton would be over before anyone saw the tab.
     testWidgets('does not build a tab until it is opened', (
-      WidgetTester tester,
-    ) async {
+        WidgetTester tester,
+        ) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 
@@ -256,8 +268,8 @@ void main() {
     });
 
     testWidgets('Interaction: Tapping on Profile tab should update UI', (
-      WidgetTester tester,
-    ) async {
+        WidgetTester tester,
+        ) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
 

@@ -197,6 +197,8 @@
   "privacyPolicy": "سياسة الخصوصية",
   "help": "المساعدة",
   "logout": "تسجيل الخروج",
+  "logoutConfirmationTitle": "تسجيل الخروج",
+  "logoutConfirmationMessage": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
   "english": "الإنجليزية",
   "arabic": "العربية",
   "pageFailedToLoad": "لم نتمكن من تحميل هذه الصفحة",

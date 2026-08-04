@@ -6,6 +6,7 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
@@ -14,10 +15,15 @@ import 'package:super_fitness/features/profile/presentation/view_model/profile_v
 
 import 'profile_cubit_test.mocks.dart';
 
-@GenerateMocks([GetCachedUserUseCase, GetProfileDataUseCase])
+@GenerateMocks([
+  GetCachedUserUseCase,
+  GetProfileDataUseCase,
+  LogoutUseCase,
+])
 void main() {
   late MockGetCachedUserUseCase getCachedUser;
   late MockGetProfileDataUseCase getProfileData;
+  late MockLogoutUseCase logoutUseCase;
 
   const user = UserEntity(
     id: 'user_123',
@@ -30,11 +36,13 @@ void main() {
 
   setUpAll(() {
     provideDummy<BaseResponse<UserEntity>>(const ErrorBaseResponse('dummy'));
+    provideDummy<BaseResponse<void>>(const SuccessBaseResponse(null));
   });
 
   setUp(() {
     getCachedUser = MockGetCachedUserUseCase();
     getProfileData = MockGetProfileDataUseCase();
+    logoutUseCase = MockLogoutUseCase();
   });
 
   void stubCache(UserEntity? cached) {
@@ -45,7 +53,8 @@ void main() {
     when(getProfileData()).thenAnswer((_) async => response);
   }
 
-  ProfileCubit buildCubit() => ProfileCubit(getCachedUser, getProfileData);
+  ProfileCubit buildCubit() =>
+      ProfileCubit(getCachedUser, getProfileData, logoutUseCase);
 
   group('ProfileCubit', () {
     // First visit: nothing cached yet, so the fetch is worth a shimmer.
@@ -121,7 +130,7 @@ void main() {
         cubit.eventStream,
         emits(
           isA<DisplayErrorEvent>().having(
-            (event) => event.errorMessage,
+                (event) => event.errorMessage,
             'errorMessage',
             'no internet',
           ),
@@ -194,6 +203,18 @@ void main() {
         verify(getCachedUser()).called(1);
         verify(getProfileData()).called(2);
       },
+    );
+
+    blocTest<ProfileCubit, ProfileState>(
+      'LogoutEvent calls LogoutUseCase',
+      build: () {
+        when(
+          logoutUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+        return buildCubit();
+      },
+      act: (cubit) => cubit.doIntent(const LogoutEvent()),
+      verify: (_) => verify(logoutUseCase()).called(1),
     );
   });
 
