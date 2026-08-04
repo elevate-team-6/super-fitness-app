@@ -89,8 +89,9 @@ class AuthRepoImpl implements AuthRepoContract {
     }
   }
 
-  /// Keeps the signed-in user next to the token so screens that only need to
-  /// show who is logged in (the profile tab) don't have to hit the network.
+  /// Keeps the signed-in user next to the token so the home tab can greet them
+  /// without hitting the network. The profile tab keeps its own copy under
+  /// [AppKeys.profileDataKey], since it fetches the full record itself.
   /// Cleared by [AuthService.logout] alongside the token.
   Future<void> _cacheUser(UserModel? user) async {
     if (user == null) return;
@@ -209,5 +210,19 @@ class AuthRepoImpl implements AuthRepoContract {
     } catch (e) {
       return ErrorBaseResponse(e.toString());
     }
+  }
+
+  @override
+  Future<BaseResponse<void>> logout() async {
+    await _authRemoteDataSource.logout();
+
+    // Clear authentication related data but keep onboarding status
+    await _secureCacheHelper.deleteData(key: AppKeys.tokenKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.userDataKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.userIdKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.emailKey);
+    await _secureCacheHelper.deleteData(key: AppKeys.rememberMeKey);
+
+    return const SuccessBaseResponse(null);
   }
 }

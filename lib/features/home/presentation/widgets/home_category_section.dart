@@ -9,6 +9,7 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/app_text_styles.dart';
 import '../../../../core/widgets/custom_snack_bar.dart';
+import '../../../../core/widgets/pressable.dart';
 import '../../../main_layout/presentation/cubit/main_layout_cubit.dart';
 
 class HomeCategorySection extends StatelessWidget {
@@ -93,7 +94,7 @@ class _CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Pressable(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,

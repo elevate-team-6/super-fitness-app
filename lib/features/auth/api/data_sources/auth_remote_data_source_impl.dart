@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/error_handler/error_handler.dart';
+import 'package:super_fitness/features/auth/data/models/response/logout_response_model.dart';
 import 'package:super_fitness/features/auth/api/api_client/auth_api_client.dart';
 import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/models/request/change_password_request.dart';
@@ -34,5 +35,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSourceContract {
     ChangePasswordRequest request,
   ) {
     return ErrorHandler.handleApiCall(() => _apiClient.changePassword(request));
+  }
+
+  @override
+  Future<BaseResponse<LogoutResponseModel>> logout() {
+    return ErrorHandler.handleApiCall(() => _apiClient.logout());
   }
 }

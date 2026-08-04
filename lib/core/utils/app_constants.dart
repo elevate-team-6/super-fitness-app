@@ -1,4 +1,5 @@
 abstract class AppConstants {
+  static const String appName = 'Super Fitness';
   static const String translationsPath = 'assets/translations';
   static const String arabicCode = 'ar';
   static const String englishCode = 'en';
@@ -16,4 +17,12 @@ abstract class AppConstants {
   static const String imageBaseUrl = 'https://flower.elevateegy.com/uploads/';
   static const String googleServerClientId =
       '448039353489-bkp3ljjv378kqh8mgv3he22lcjtj08bp.apps.googleusercontent.com';
+}
+
+// --- Ollama Chat Configuration ---
+class ChatConstants {
+  static const int maxOllamaTurns = 5;
+  static const Duration ollamaFirstTurnTimeout = Duration(seconds: 30);
+  static const Duration ollamaSubsequentTurnTimeout = Duration(seconds: 60);
+  static const int chatHistoryWindowSize = 10;
 }

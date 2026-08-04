@@ -19,6 +19,7 @@ import 'package:super_fitness/core/widgets/custom_glass_container.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_event.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_state.dart';
+import 'package:super_fitness/features/profile/presentation/widgets/logout_dialog.dart';
 import 'package:super_fitness/features/profile/presentation/widgets/profile_header.dart';
 import 'package:super_fitness/features/profile/presentation/widgets/profile_menu_item.dart';
 
@@ -113,16 +114,23 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                     ProfileMenuItem(
                       icon: Icons.person_outline,
                       label: AppStrings.editProfile.tr(),
-                      // TODO(team): point this at the edit profile route and
-                      // refresh on the way back, so the header picks up the
-                      // saved values:
-                      //   await Navigator.pushNamed(context, AppRoutes.editProfile);
-                      //   if (!mounted) return;
-                      //   context.read<ProfileCubit>()
-                      //       .doIntent(const RefreshProfileEvent());
-                      // That refresh re-reads the cache, so the save has to
-                      // write the updated user there — same as
-                      // AuthRepoImpl._cacheUser does at sign-in.
+                      onTap: () async {
+                        final user = context
+                            .read<ProfileCubit>()
+                            .state
+                            .profileState
+                            .data;
+                        if (user == null) return;
+                        await Navigator.pushNamed(
+                          context,
+                          AppRoutes.editProfile,
+                          arguments: EditProfileArgs(user: user),
+                        );
+                        if (!context.mounted) return;
+                        context.read<ProfileCubit>().doIntent(
+                          const RefreshProfileEvent(),
+                        );
+                      },
                     ),
                     divider,
                     ProfileMenuItem(
@@ -143,10 +151,16 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                         scale: 0.85,
                         child: Switch(
                           value: !isArabic,
-                          onChanged: (_) => context.setLocale(nextLocale),
+                          onChanged: (_) {
+                            context.setLocale(nextLocale);
+                            Intl.defaultLocale = nextLocale.languageCode;
+                          },
                         ),
                       ),
-                      onTap: () => context.setLocale(nextLocale),
+                      onTap: () {
+                        context.setLocale(nextLocale);
+                        Intl.defaultLocale = nextLocale.languageCode;
+                      },
                     ),
                     divider,
                     ProfileMenuItem(
@@ -192,7 +206,14 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                       icon: Icons.logout,
                       label: AppStrings.logout.tr(),
                       isHighlighted: true,
-                      // TODO(team): wire to AuthService.logout + back to login.
+                      onTap: () async {
+                        final shouldLogout = await LogoutDialog.show(context);
+                        if (shouldLogout == true && context.mounted) {
+                          context.read<ProfileCubit>().doIntent(
+                            const LogoutEvent(),
+                          );
+                        }
+                      },
                     ),
                   ],
                 ),
