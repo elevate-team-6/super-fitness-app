@@ -4,21 +4,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
+import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
+import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
+import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
 import 'package:super_fitness/features/home/presentation/screens/home_screen.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
+import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_events.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_state.dart';
+
+class FakeChatCubit extends Cubit<ChatState> implements ChatCubit {
+  FakeChatCubit() : super(const ChatState());
+
+  @override
+  Stream<BaseUiEvent> get eventStream => const Stream.empty();
+
+  @override
+  void doEvent(ChatEvent event) {}
+
+  @override
+  void emitUiEvent(BaseUiEvent event) {}
+}
 
 class FakeWorkoutsCubit extends Cubit<WorkoutsState> implements WorkoutsCubit {
   FakeWorkoutsCubit() : super(const WorkoutsState());
@@ -75,6 +94,37 @@ class _InMemoryAssetLoader extends AssetLoader {
     'help': 'Help',
     'logout': 'Logout',
     'selectMuscleGroup': 'Select Muscle Group',
+    'connectionTimeout': 'Connection Timeout',
+    'unknownError': 'Unknown Error',
+    'noInternetConnection': 'No Internet Connection',
+    'authFailed': 'Auth Failed',
+    'serverError': 'Server Error',
+    'requestCancelled': 'Request Cancelled',
+    'sendTimeout': 'Send Timeout',
+    'receiveTimeout': 'Receive Timeout',
+    'unexpectedError': 'Unexpected Error',
+    'verificationCodeSentToYourEmail': 'Verification code sent to your email',
+    'verificationCodeIsCorrect': 'Verification code is correct',
+    'passwordResetSuccessfully': 'Password reset successfully',
+    'login_success': 'Login Success',
+    'invalid credentials': 'Invalid Credentials',
+    'failed': 'Failed',
+    'registerSuccess': 'Register Success',
+    'Email already exists': 'Email already exists',
+    'Network error': 'Network error',
+    'Error': 'Error',
+    'ingredients': 'Ingredients',
+    'description': 'Description',
+    'retry': 'Retry',
+    'foodRecommendation': 'Food Recommendation',
+    'noMealsFound': 'No Meals Found',
+    'oops': 'Oops',
+    'server error': 'Server Error',
+    'not found': 'Not Found',
+    'athlete': 'Athlete',
+    'smartCoach': 'Smart Coach',
+    'howCanIAssistYouToday': 'How can I assist you today?',
+    'getStarted': 'Get Started',
   };
 }
 
@@ -85,9 +135,24 @@ class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
   Future<UserEntity?> call() async => null;
 }
 
+class FakeGetProfileDataUseCase implements GetProfileDataUseCase {
+  @override
+  Future<BaseResponse<UserEntity>> call() async =>
+      const SuccessBaseResponse(null);
+}
+
+class FakeLogoutUseCase implements LogoutUseCase {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+
+  @override
+  Future<BaseResponse<void>> call() async => const SuccessBaseResponse(null);
+}
+
 void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
   late FakeHomeCubit fakeHomeCubit;
+  late FakeChatCubit fakeChatCubit;
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
@@ -97,8 +162,13 @@ void main() {
   setUp(() {
     fakeWorkoutsCubit = FakeWorkoutsCubit();
     fakeHomeCubit = FakeHomeCubit();
+    fakeChatCubit = FakeChatCubit();
     getIt.registerFactory<ProfileCubit>(
-      () => ProfileCubit(FakeGetCachedUserUseCase()),
+      () => ProfileCubit(
+        FakeGetCachedUserUseCase(),
+        FakeGetProfileDataUseCase(),
+        FakeLogoutUseCase(),
+      ),
     );
   });
 
@@ -123,6 +193,7 @@ void main() {
                 providers: [
                   BlocProvider<WorkoutsCubit>.value(value: fakeWorkoutsCubit),
                   BlocProvider<HomeCubit>.value(value: fakeHomeCubit),
+                  BlocProvider<ChatCubit>.value(value: fakeChatCubit),
                 ],
                 child: const MainLayoutScreen(),
               ),
@@ -170,6 +241,25 @@ void main() {
 
       // Verify that the WorkoutsScreen is now visible
       expect(find.byType(WorkoutsScreen), findsOneWidget);
+
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+    });
+
+    // Each tab's first load has to run when it is opened, not at launch —
+    // otherwise the profile skeleton would be over before anyone saw the tab.
+    testWidgets('does not build a tab until it is opened', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileScreen), findsNothing);
 
       addTearDown(() {
         tester.view.resetPhysicalSize();

@@ -9,7 +9,7 @@ import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_strings.dart';
 import '../../../../core/utils/app_text_styles.dart';
-import '../../../chat/presentation/screens/chat_screen.dart';
+import '../../../chat/presentation/screens/chat_welcome_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 import '../../../workouts/presentation/screens/workouts_screen.dart';
@@ -23,11 +23,11 @@ class MainLayoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Localizations.localeOf(context);
 
-    final screens = [
-      HomeScreen(),
-      ChatScreen(),
-      WorkoutsScreen(),
-      ProfileScreen(),
+    final screens = <WidgetBuilder>[
+      (_) => HomeScreen(),
+      (_) => ChatWelcomeScreen(),
+      (_) => WorkoutsScreen(),
+      (_) => ProfileScreen(),
     ];
 
     return BlocProvider(
@@ -35,7 +35,10 @@ class MainLayoutScreen extends StatelessWidget {
       child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
         builder: (context, state) {
           return Scaffold(
-            body: IndexedStack(index: state.currentIndex, children: screens),
+            body: _LazyIndexedStack(
+              index: state.currentIndex,
+              builders: screens,
+            ),
             extendBody: true,
             bottomNavigationBar: Padding(
               padding: EdgeInsets.fromLTRB(32.w, 0, 32.w, 32.h),
@@ -106,6 +109,36 @@ class MainLayoutScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+/// Builds a tab the first time it is opened, then keeps it alive like a plain
+/// [IndexedStack] would. Building all four up front would run each screen's
+/// first load at launch, so a tab's loading state would be over before anyone
+/// switched to it.
+class _LazyIndexedStack extends StatefulWidget {
+  final int index;
+  final List<WidgetBuilder> builders;
+
+  const _LazyIndexedStack({required this.index, required this.builders});
+
+  @override
+  State<_LazyIndexedStack> createState() => _LazyIndexedStackState();
+}
+
+class _LazyIndexedStackState extends State<_LazyIndexedStack> {
+  late final List<Widget?> _screens = List.filled(widget.builders.length, null);
+
+  @override
+  Widget build(BuildContext context) {
+    _screens[widget.index] ??= widget.builders[widget.index](context);
+
+    return IndexedStack(
+      index: widget.index,
+      children: [
+        for (final screen in _screens) screen ?? const SizedBox.shrink(),
+      ],
     );
   }
 }

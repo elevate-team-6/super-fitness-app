@@ -7,6 +7,7 @@ import 'package:super_fitness/core/utils/app_end_points.dart';
 import 'package:super_fitness/features/profile/data/models/request/edit_profile_request.dart';
 import 'package:super_fitness/features/profile/data/models/response/edit_profile_response.dart';
 import 'package:super_fitness/features/profile/data/models/response/upload_photo_response.dart';
+import 'package:super_fitness/features/profile/data/models/response/profile_data_response.dart';
 
 part 'profile_api_client.g.dart';
 
@@ -22,4 +23,8 @@ abstract class ProfileApiClient {
   @PUT(AppEndPoints.uploadPhoto)
   @MultiPart()
   Future<UploadPhotoResponse> uploadPhoto(@Part(name: 'photo') File photo);
+
+  /// The bearer token is attached by AuthInterceptor, so this takes no args.
+  @GET(AppEndPoints.profileData)
+  Future<ProfileDataResponse> getProfileData();
 }

@@ -8,11 +8,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/di/di.dart';
 import 'package:super_fitness/core/utils/app_constants.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/auth/domain/use_cases/logout_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
+import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
 import 'package:super_fitness/features/profile/presentation/widgets/profile_header.dart';
@@ -29,9 +32,11 @@ class _InMemoryAssetLoader extends AssetLoader {
       _data[locale.languageCode] ?? const {};
 }
 
-@GenerateMocks([GetCachedUserUseCase])
+@GenerateMocks([GetCachedUserUseCase, GetProfileDataUseCase, LogoutUseCase])
 void main() {
-  late MockGetCachedUserUseCase useCase;
+  late MockGetCachedUserUseCase getCachedUser;
+  late MockGetProfileDataUseCase getProfileData;
+  late MockLogoutUseCase logoutUseCase;
   late Map<String, Map<String, dynamic>> translations;
 
   /// Set by the test navigator so a tap can be checked without building the
@@ -49,6 +54,9 @@ void main() {
 
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
+    provideDummy<BaseResponse<UserEntity>>(const ErrorBaseResponse('dummy'));
+    provideDummy<BaseResponse<void>>(const SuccessBaseResponse(null));
+
     // EasyLocalization persists the chosen locale through SharedPreferences,
     // which has no implementation in a widget test.
     SharedPreferences.setMockInitialValues({});
@@ -67,12 +75,19 @@ void main() {
   });
 
   setUp(() {
-    useCase = MockGetCachedUserUseCase();
+    getCachedUser = MockGetCachedUserUseCase();
+    getProfileData = MockGetProfileDataUseCase();
+    logoutUseCase = MockLogoutUseCase();
     pushedRoute = null;
+
+    // Nothing cached by default, so the screen takes its first-visit path and fetches.
+    when(getCachedUser()).thenAnswer((_) async => null);
 
     // The screen pulls its cubit from the container rather than a route, so
     // the test has to stand one up.
-    getIt.registerFactory<ProfileCubit>(() => ProfileCubit(useCase));
+    getIt.registerFactory<ProfileCubit>(
+      () => ProfileCubit(getCachedUser, getProfileData, logoutUseCase),
+    );
   });
 
   tearDown(() => getIt.reset());
@@ -129,7 +144,9 @@ void main() {
 
   group('ProfileScreen', () {
     testWidgets('lays out all seven menu rows', (tester) async {
-      when(useCase()).thenAnswer((_) async => user);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(user));
 
       await pumpProfile(tester);
 
@@ -149,8 +166,10 @@ void main() {
       ]);
     });
 
-    testWidgets('shows the cached user in the header', (tester) async {
-      when(useCase()).thenAnswer((_) async => user);
+    testWidgets('shows the fetched user in the header', (tester) async {
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(user));
 
       await pumpProfile(tester);
 
@@ -158,10 +177,23 @@ void main() {
       expect(header.name, 'Ahmed Emam');
     });
 
-    // Sessions that predate the user cache read back null; the header has to
-    // degrade to just the avatar instead of an error or a blank line.
-    testWidgets('leaves the name empty when nothing is cached', (tester) async {
-      when(useCase()).thenAnswer((_) async => null);
+    testWidgets('shows the cached user in the header when available', (
+      tester,
+    ) async {
+      when(getCachedUser()).thenAnswer((_) async => user);
+
+      await pumpProfile(tester);
+
+      final header = tester.widget<ProfileHeader>(find.byType(ProfileHeader));
+      expect(header.name, 'Ahmed Emam');
+    });
+
+    // A response with no user has to degrade to just the avatar instead of an
+    // error or a blank line.
+    testWidgets('leaves the name empty when there is no user', (tester) async {
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
 
@@ -172,7 +204,9 @@ void main() {
     testWidgets('marks the language row with the active language', (
       tester,
     ) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
 
@@ -183,7 +217,9 @@ void main() {
     testWidgets('starts in Arabic when the app locale is Arabic', (
       tester,
     ) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester, locale: const Locale('ar'));
 
@@ -192,7 +228,9 @@ void main() {
     });
 
     testWidgets('the switch flips the app language', (tester) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
       await tester.tap(find.byType(Switch));
@@ -203,7 +241,9 @@ void main() {
     });
 
     testWidgets('Security opens its page in the web view', (tester) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
       await tester.tap(find.text('Security'));
@@ -216,7 +256,9 @@ void main() {
     });
 
     testWidgets('Privacy Policy opens its own page', (tester) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
       await tester.tap(find.text('Privacy Policy'));
@@ -230,7 +272,9 @@ void main() {
     });
 
     testWidgets('Help opens its own page', (tester) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
       await tester.tap(find.text('Help'));
@@ -240,18 +284,44 @@ void main() {
       expect((pushedRoute?.arguments as WebViewArgs).url, AppConstants.helpUrl);
     });
 
-    // These three belong to other tickets — the rows are laid out but must not
-    // look tappable until someone wires them.
+    testWidgets(
+      'Logout shows confirmation dialog and calls cubit when confirmed',
+      (tester) async {
+        when(
+          getProfileData(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+        when(
+          logoutUseCase(),
+        ).thenAnswer((_) async => const SuccessBaseResponse(null));
+
+        await pumpProfile(tester);
+
+        await tester.tap(find.text('Logout'));
+        await tester.pumpAndSettle();
+
+        // Verify dialog is shown
+        expect(find.text('Logout'), findsNWidgets(2)); // Title and Menu Item
+        expect(find.text('Are you sure you want to log out?'), findsOneWidget);
+
+        // Confirm logout
+        await tester.tap(find.text('Yes'));
+        await tester.pumpAndSettle();
+
+        verify(logoutUseCase()).called(1);
+      },
+    );
+
     testWidgets('leaves the unimplemented rows without an action', (
       tester,
     ) async {
-      when(useCase()).thenAnswer((_) async => null);
+      when(
+        getProfileData(),
+      ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
       await pumpProfile(tester);
 
       expect(itemLabelled(tester, 'Edit Profile').onTap, isNotNull);
       expect(itemLabelled(tester, 'Change Password').onTap, isNull);
-      expect(itemLabelled(tester, 'Logout').onTap, isNull);
     });
   });
 }

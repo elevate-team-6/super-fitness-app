@@ -20,6 +20,8 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/view_model/register_view_model/register_cubit.dart';
 import '../../features/home/presentation/screens/details_food_screen.dart';
 import '../../features/home/presentation/screens/food_screen.dart';
+import '../../features/chat/presentation/screens/chat_screen.dart';
+import '../../features/chat/presentation/view_model/chat_cubit.dart';
 import '../../features/home/presentation/view_models/details_food_view_model/details_food_cubit.dart';
 import '../../features/home/presentation/view_models/details_food_view_model/details_food_event.dart';
 import '../../features/home/presentation/view_models/food_view_model/food_cubit.dart';
@@ -50,6 +52,7 @@ abstract class AppRoutes {
   static const String food = 'food';
   static const String detailsFood = 'detailsFood';
   static const String exerciseDetails = 'exerciseDetails';
+  static const String chat = 'chat';
   static const String webView = 'webView';
   static const String editProfile = 'editProfile';
 
@@ -137,6 +140,7 @@ abstract class AppRoutes {
                         ..doEvent(const FetchAllHomeDataEvent()),
                 ),
                 BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
+                BlocProvider.value(value: getIt<ChatCubit>()),
               ],
               child: const MainLayoutScreen(),
             ),
@@ -190,6 +194,14 @@ abstract class AppRoutes {
           final exercise = settings.arguments as ExerciseEntity;
           return MaterialPageRoute(
             builder: (_) => ExerciseDetailsScreen(exercise: exercise),
+          );
+
+        case chat:
+          return MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: getIt<ChatCubit>(),
+              child: const ChatScreen(),
+            ),
           );
 
         default:
