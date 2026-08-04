@@ -240,34 +240,50 @@ During active development you can keep it watching:
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-### 4. Run
+### 4. Environment variables
 
-The AI coach reads its API key from a compile-time environment variable, so pass it via `--dart-define`:
+The AI coach reads its API key from a **compile-time** environment variable. Copy the template and fill it in:
 
 ```bash
-flutter run --dart-define=OLLAMA_API_KEY=your_key_here
+cp env.example.json env.json
 ```
 
-The app runs fine without it — the chat feature simply reports that it isn't configured.
+```json
+{
+  "OLLAMA_API_KEY": "your_key_here"
+}
+```
 
-### 5. Build a release
+`env.json` is gitignored. CI restores it from the `ENV_JSON_BASE64` repository secret.
+
+### 5. Run
+
+```bash
+flutter run --dart-define-from-file=env.json
+```
+
+The app runs fine without a key — the chat feature simply reports that it isn't configured.
+
+### 6. Build a release
 
 ```bash
 # Android
-flutter build apk --release --dart-define=OLLAMA_API_KEY=your_key_here
-flutter build appbundle --release --dart-define=OLLAMA_API_KEY=your_key_here
+flutter build apk --release --dart-define-from-file=env.json
+flutter build appbundle --release --dart-define-from-file=env.json
 
 # iOS
-flutter build ipa --release --dart-define=OLLAMA_API_KEY=your_key_here
+flutter build ipa --release --dart-define-from-file=env.json
 ```
+
+> The `distribution.yml` workflow builds through Shorebird with the same flag, so anything you add to `env.json` must also be added to the `ENV_JSON_BASE64` secret.
 
 ### 🔑 Secrets
 
 | Secret | Where it lives | Committed? |
 |---|---|---|
-| `OLLAMA_API_KEY` | `--dart-define` at build time | ❌ |
-| Firebase configs | `google-services.json`, `firebase_options.dart` | ❌ (restored from base64 GitHub secrets in CI) |
-| `env.json` | Local only | ❌ (gitignored) |
+| `OLLAMA_API_KEY` | `env.json`, injected via `--dart-define-from-file` | ❌ (gitignored; CI secret `ENV_JSON_BASE64`) |
+| Firebase configs | `google-services.json`, `firebase_options.dart` | ❌ (CI secrets `GOOGLE_SERVICES_JSON_BASE64`, `FIREBASE_OPTIONS_BASE64`) |
+| Android keystore | `android/app/upload-keystore.jks`, `android/key.properties` | ❌ (CI secret `ANDROID_KEYSTORE_BASE64`) |
 
 Never commit any of the above. CI restores them from repository secrets at build time.
 
