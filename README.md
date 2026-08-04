@@ -364,7 +364,12 @@ flutter test
 
 Built by **Elevate Team 6** — 329 commits and counting.
 
-Abdelmalek Mokhtar · Ahmed Menshawy · Abanoub Al-Abani · Youssef Singer · Ahmed Emam · Youssef Abdelghfar
+| Name | GitHub |
+|---|---|
+| Ahmed Emam | [@ahmedemam55](https://github.com/ahmedemam55) |
+| Abanoub | [@abanoub6](https://github.com/abanoub6) |
+| Abdelmalek Mokhtar | [@abdalmlk5](https://github.com/abdalmlk5) |
+| Yousef Abdelghdar | [@yousefsinger](https://github.com/yousefsinger) |
 
 ---
 
