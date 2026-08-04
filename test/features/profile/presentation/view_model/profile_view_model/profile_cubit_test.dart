@@ -15,11 +15,7 @@ import 'package:super_fitness/features/profile/presentation/view_model/profile_v
 
 import 'profile_cubit_test.mocks.dart';
 
-@GenerateMocks([
-  GetCachedUserUseCase,
-  GetProfileDataUseCase,
-  LogoutUseCase,
-])
+@GenerateMocks([GetCachedUserUseCase, GetProfileDataUseCase, LogoutUseCase])
 void main() {
   late MockGetCachedUserUseCase getCachedUser;
   late MockGetProfileDataUseCase getProfileData;
@@ -130,7 +126,7 @@ void main() {
         cubit.eventStream,
         emits(
           isA<DisplayErrorEvent>().having(
-                (event) => event.errorMessage,
+            (event) => event.errorMessage,
             'errorMessage',
             'no internet',
           ),

@@ -13,6 +13,13 @@ abstract class AppTheme {
       useMaterial3: true,
       canvasColor: AppColors.white,
 
+      // text selection theme
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: AppColors.primary,
+        selectionColor: AppColors.primary,
+        selectionHandleColor: AppColors.primary,
+      ),
+
       // app bar  theme
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,

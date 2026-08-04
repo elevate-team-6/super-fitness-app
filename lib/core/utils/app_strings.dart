@@ -120,6 +120,16 @@ abstract class AppStrings {
   static const String selectMuscleGroup = 'selectMuscleGroup';
   static const String noMusclesFound = 'noMusclesFound';
   static const String exitConfirmation = 'exit_confirmation';
+  static const String smartCoach = 'smartCoach';
+  static const String howCanIAssistYouToday = 'howCanIAssistYouToday';
+  static const String getStarted = 'getStarted';
+  static const String previousConversations = 'previousConversations';
+  static const String typeAMessage = 'typeAMessage';
+  static const String coachIsBusy = 'coachIsBusy';
+  static const String chatConnectionError = 'chatConnectionError';
+  static const String chatUnexpectedError = 'chatUnexpectedError';
+  static const String chatSessionError = 'chatSessionError';
+  static const String chatDegradedMessage = 'chatDegradedMessage';
 
   // Signup
   static const String registerFailed = 'registerFailed';
@@ -227,9 +237,11 @@ abstract class AppStrings {
   static const String beginner = 'beginner';
   static const String intermediate = 'intermediate';
   static const String advanced = 'advanced';
+  static const String preview = 'preview';
 
   // Error/Fallback
   static const String failedToFetchLevelsOrMuscles =
       'failedToFetchLevelsOrMuscles';
   static const String athlete = 'athlete';
+  static const String newChat = 'newChat';
 }

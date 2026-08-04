@@ -86,6 +86,7 @@ ios/fastlane/README.md
 .env
 .env.local
 *.env.local
+env.json
 
 # Service Account Files (Contains credentials!)
 **/service-account*.json

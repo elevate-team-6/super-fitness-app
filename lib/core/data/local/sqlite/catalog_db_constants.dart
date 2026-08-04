@@ -9,12 +9,15 @@ abstract class CatalogDbConstants {
   static const String tableMuscleGroup = 'muscle_group';
   static const String tableDifficultyLevel = 'difficulty_level';
   static const String tableEquipment = 'equipment';
+  static const String tableMovementPattern = 'movement_pattern';
   static const String tableBodyRegion = 'body_region';
   static const String tableMeal = 'meal';
   static const String tableMealCategory = 'meal_category';
   static const String tableMealArea = 'meal_area';
   static const String tableIngredient = 'ingredient';
   static const String tableMealIngredient = 'meal_ingredient';
+  static const String tableExerciseMovementPattern =
+      'exercise_movement_pattern';
   static const String tableMeta = 'meta';
 
   // --- Real Database Column Names ---
