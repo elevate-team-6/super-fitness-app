@@ -7,6 +7,7 @@ import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/data_sources/forget_password_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/data_sources/social_auth_data_source_contract.dart';
+import 'package:super_fitness/features/auth/data/models/request/change_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/forgot_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/reset_password_request.dart';
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
@@ -156,6 +157,29 @@ class AuthRepoImpl implements AuthRepoContract {
     switch (response) {
       case SuccessBaseResponse<ResetPasswordResponse>():
         return SuccessBaseResponse(response.data?.toEntity());
+
+      case ErrorBaseResponse<ResetPasswordResponse>():
+        return ErrorBaseResponse(response.errorMessage);
+    }
+  }
+
+  @override
+  Future<BaseResponse<ForgetPasswordEntity>> changePassword({
+    required String password,
+    required String newPassword,
+  }) async {
+    final response = await _authRemoteDataSource.changePassword(
+      ChangePasswordRequest(password: password, newPassword: newPassword),
+    );
+
+    switch (response) {
+      case SuccessBaseResponse<ResetPasswordResponse>():
+        final model = response.data;
+        await _secureCacheHelper.writeData(
+          key: AppKeys.tokenKey,
+          value: model?.token,
+        );
+        return SuccessBaseResponse(model?.toEntity());
 
       case ErrorBaseResponse<ResetPasswordResponse>():
         return ErrorBaseResponse(response.errorMessage);

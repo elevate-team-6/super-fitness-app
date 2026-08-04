@@ -136,8 +136,9 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                     ProfileMenuItem(
                       icon: Icons.lock_outline,
                       label: AppStrings.changePassword.tr(),
-                      // TODO(team): wire to the change password screen — same
-                      // await-then-refresh shape as Edit Profile above.
+                      onTap: () => Navigator.of(
+                        context,
+                      ).pushNamed(AppRoutes.changePassword),
                     ),
                     divider,
                     ProfileMenuItem(

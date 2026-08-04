@@ -233,5 +233,13 @@
   "Error": "خطأ",
   "server error": "خطأ في الخادم",
   "not found": "غير موجود",
-  "preview": "معاينة"
+  "preview": "معاينة",
+  "changePassword": "تغيير كلمة المرور",
+  "oldPassword": "كلمة المرور القديمة",
+  "newPassword": "كلمة المرور الجديدة",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "changePasswordSuccess": "تم تغيير كلمة المرور بنجاح",
+  "passwordSameAsOld": "يجب أن تكون كلمة المرور الجديدة مختلفة عن القديمة",
+  "changeYourPassword": "غيّر كلمة مرورك",
+  "enterPasswordDetails": "تأكد أن كلمة السر 8 أحرف أو أكثر"
 }

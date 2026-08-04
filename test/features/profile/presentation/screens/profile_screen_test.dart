@@ -321,7 +321,7 @@ void main() {
       await pumpProfile(tester);
 
       expect(itemLabelled(tester, 'Edit Profile').onTap, isNotNull);
-      expect(itemLabelled(tester, 'Change Password').onTap, isNull);
+      expect(itemLabelled(tester, 'Change Password').onTap, isNotNull);
     });
   });
 }

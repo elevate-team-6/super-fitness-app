@@ -8,6 +8,8 @@ import 'package:super_fitness/features/auth/api/data_sources/auth_remote_data_so
 import 'package:super_fitness/features/auth/data/models/request/sign_in_request_model.dart';
 import 'package:super_fitness/features/auth/data/models/response/sign_in_response_model.dart';
 import 'package:super_fitness/features/auth/data/models/request/signup_request.dart';
+import 'package:super_fitness/features/auth/data/models/request/change_password_request.dart';
+import 'package:super_fitness/features/auth/data/models/response/reset_password_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/signup_response.dart';
 import 'package:super_fitness/features/auth/data/models/response/user_model.dart'
     as auth;
@@ -328,6 +330,89 @@ void main() {
         ).captured.single;
         expect(captured, equals(tSignupRequest));
       });
+    });
+  });
+
+  group('changePassword', () {
+    const tChangePasswordRequest = ChangePasswordRequest(
+      password: 'OldPassword@123',
+      newPassword: 'NewPassword@123',
+    );
+
+    const tResetPasswordResponse = ResetPasswordResponse(
+      message: 'Password changed successfully',
+      token: 'new_token_123',
+    );
+
+    test(
+      'should return SuccessBaseResponse when changePassword is successful',
+      () async {
+        // arrange
+        when(
+          mockApiClient.changePassword(any),
+        ).thenAnswer((_) async => tResetPasswordResponse);
+
+        // act
+        final result = await dataSource.changePassword(tChangePasswordRequest);
+
+        // assert
+        expect(result, isA<SuccessBaseResponse<ResetPasswordResponse>>());
+        final data =
+            (result as SuccessBaseResponse<ResetPasswordResponse>).data;
+        expect(data, equals(tResetPasswordResponse));
+        verify(mockApiClient.changePassword(tChangePasswordRequest)).called(1);
+        verifyNoMoreInteractions(mockApiClient);
+      },
+    );
+
+    test('should return ErrorBaseResponse when DioException occurs', () async {
+      // arrange
+      final dioError = DioException(
+        requestOptions: RequestOptions(path: '/auth/changePassword'),
+        type: DioExceptionType.connectionTimeout,
+      );
+      when(mockApiClient.changePassword(any)).thenThrow(dioError);
+
+      // act
+      final result = await dataSource.changePassword(tChangePasswordRequest);
+
+      // assert
+      expect(result, isA<ErrorBaseResponse<ResetPasswordResponse>>());
+      verify(mockApiClient.changePassword(tChangePasswordRequest)).called(1);
+    });
+
+    test(
+      'should return ErrorBaseResponse when non-Dio exception occurs',
+      () async {
+        // arrange
+        when(
+          mockApiClient.changePassword(any),
+        ).thenThrow(Exception('Server error'));
+
+        // act
+        final result = await dataSource.changePassword(tChangePasswordRequest);
+
+        // assert
+        expect(result, isA<ErrorBaseResponse<ResetPasswordResponse>>());
+        verify(mockApiClient.changePassword(tChangePasswordRequest)).called(1);
+      },
+    );
+
+    test('should pass the correct request to apiClient', () async {
+      // arrange
+      when(
+        mockApiClient.changePassword(any),
+      ).thenAnswer((_) async => tResetPasswordResponse);
+
+      // act
+      await dataSource.changePassword(tChangePasswordRequest);
+
+      // assert
+      final captured =
+          verify(mockApiClient.changePassword(captureAny)).captured.single
+              as ChangePasswordRequest;
+      expect(captured.password, equals(tChangePasswordRequest.password));
+      expect(captured.newPassword, equals(tChangePasswordRequest.newPassword));
     });
   });
 }
