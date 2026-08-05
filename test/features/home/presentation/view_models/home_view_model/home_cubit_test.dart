@@ -53,6 +53,15 @@ void main() {
   late MockGetCachedUserDataUseCase mockGetCachedUserData;
   late MockProfileRepoContract mockProfileRepo;
 
+  const initialState = HomeState(
+    homeUserStatus: BaseState(isLoading: true),
+    recommendationTodayStatus: BaseState(isLoading: true),
+    upcomingWorkoutsTabsStatus: BaseState(isLoading: true),
+    upcomingWorkoutsStatus: BaseState(isLoading: true),
+    recommendationForYouTabsStatus: BaseState(isLoading: true),
+    popularTrainingStatus: BaseState(isLoading: true),
+  );
+
   setUp(() {
     mockGetRandomMuscles = MockGetRandomMusclesUseCase();
     mockGetMuscleGroups = MockGetMuscleGroupsUseCase();
@@ -117,8 +126,8 @@ void main() {
       },
       act: (cubit) => cubit.doEvent(FetchHomeUserEvent()),
       expect: () => [
-        const HomeState(homeUserStatus: BaseState(isLoading: true)),
-        const HomeState(homeUserStatus: BaseState(data: tUser)),
+        initialState.copyWith(homeUserStatus: const BaseState(isLoading: true)),
+        initialState.copyWith(homeUserStatus: const BaseState(data: tUser)),
       ],
     );
   });
@@ -143,8 +152,10 @@ void main() {
         cubit.doEvent(const FetchRandomExercisesEvent());
       },
       expect: () => [
-        const HomeState(recommendationTodayStatus: BaseState(isLoading: true)),
-        const HomeState(
+        initialState.copyWith(
+          recommendationTodayStatus: const BaseState(isLoading: true),
+        ),
+        initialState.copyWith(
           recommendationTodayStatus: BaseState(errorMessage: tErrorMessage),
         ),
       ],

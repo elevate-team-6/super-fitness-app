@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
+import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/chat/domain/entities/chat_message_entity.dart';
@@ -107,6 +108,7 @@ void main() {
   group('StartNewSessionEvent', () {
     blocTest<ChatCubit, ChatState>(
       'should clear session and messages in state',
+      seed: () => const ChatState(currentSessionId: 'old-session'),
       build: () => cubit,
       act: (cubit) => cubit.doEvent(const StartNewSessionEvent()),
       expect: () => [
@@ -126,6 +128,7 @@ void main() {
 
     blocTest<ChatCubit, ChatState>(
       'should load history and update state',
+      seed: () => const ChatState(historyStatus: BaseState(isLoading: false)),
       build: () => cubit,
       act: (cubit) {
         when(
@@ -177,11 +180,7 @@ void main() {
           'currentSessionId',
           isNotNull,
         ),
-        isA<ChatState>().having(
-          (s) => s.historyStatus.isLoading,
-          'history loading',
-          true,
-        ),
+        // historyStatus.isLoading: true is already the case, so it's not emitted again.
         isA<ChatState>().having(
           (s) => s.historyStatus.isLoading,
           'history loaded',
@@ -203,6 +202,7 @@ void main() {
 
     blocTest<ChatCubit, ChatState>(
       'should call use case and reload history',
+      seed: () => const ChatState(historyStatus: BaseState(isLoading: false)),
       build: () => cubit,
       act: (cubit) {
         when(

@@ -51,7 +51,10 @@ class MainLayoutScreen extends StatelessWidget {
                   end: Offset.zero,
                 ).animate(animation),
                 child: ScaleTransition(
-                  scale: Tween<double>(begin: 0.96, end: 1.0).animate(animation),
+                  scale: Tween<double>(
+                    begin: 0.96,
+                    end: 1.0,
+                  ).animate(animation),
                   child: child,
                 ),
               ),

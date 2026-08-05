@@ -13,7 +13,6 @@ import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_group_entity.dart';
 import 'package:super_fitness/core/widgets/app_shimmer.dart';
-import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_events.dart';
@@ -105,7 +104,9 @@ void main() {
     ) async {
       when(mockCubit.state).thenReturn(
         const WorkoutsState(
-          muscleGroupsState: BaseState<List<MuscleGroupEntity>>(isLoading: true),
+          muscleGroupsState: BaseState<List<MuscleGroupEntity>>(
+            isLoading: true,
+          ),
         ),
       );
 

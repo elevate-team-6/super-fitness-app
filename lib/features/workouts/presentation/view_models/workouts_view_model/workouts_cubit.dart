@@ -23,7 +23,9 @@ class WorkoutsCubit extends BaseCubit<WorkoutsState, BaseUiEvent> {
        _getMusclesByGroupIdUseCase = getMusclesByGroupIdUseCase,
        super(
          const WorkoutsState(
-           muscleGroupsState: BaseState<List<MuscleGroupEntity>>(isLoading: true),
+           muscleGroupsState: BaseState<List<MuscleGroupEntity>>(
+             isLoading: true,
+           ),
            musclesState: BaseState<List<MuscleEntity>>(isLoading: true),
          ),
        );

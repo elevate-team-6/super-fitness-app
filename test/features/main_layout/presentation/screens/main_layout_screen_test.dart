@@ -16,6 +16,7 @@ import 'package:super_fitness/features/home/presentation/screens/home_screen.dar
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_cubit.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
+import 'package:super_fitness/features/main_layout/presentation/cubit/main_layout_cubit.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
 import 'package:super_fitness/features/profile/domain/repo/profile_repo_contract.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
@@ -63,6 +64,16 @@ class FakeHomeCubit extends Cubit<HomeState> implements HomeCubit {
 
   @override
   void emitUiEvent(BaseUiEvent event) {}
+}
+
+class FakeMainLayoutCubit extends Cubit<MainLayoutState>
+    implements MainLayoutCubit {
+  FakeMainLayoutCubit() : super(const MainLayoutState(currentIndex: 0));
+
+  @override
+  void changeTab(int index) {
+    emit(state.copyWith(currentIndex: index));
+  }
 }
 
 class _InMemoryAssetLoader extends AssetLoader {
@@ -154,6 +165,7 @@ void main() {
   late FakeWorkoutsCubit fakeWorkoutsCubit;
   late FakeHomeCubit fakeHomeCubit;
   late FakeChatCubit fakeChatCubit;
+  late FakeMainLayoutCubit fakeMainLayoutCubit;
 
   setUpAll(() async {
     SharedPreferences.setMockInitialValues({});
@@ -164,6 +176,7 @@ void main() {
     fakeWorkoutsCubit = FakeWorkoutsCubit();
     fakeHomeCubit = FakeHomeCubit();
     fakeChatCubit = FakeChatCubit();
+    fakeMainLayoutCubit = FakeMainLayoutCubit();
     getIt.registerFactory<ProfileCubit>(
       () => ProfileCubit(FakeGetProfileDataUseCase(), FakeLogoutUseCase()),
     );
@@ -191,6 +204,9 @@ void main() {
                   BlocProvider<WorkoutsCubit>.value(value: fakeWorkoutsCubit),
                   BlocProvider<HomeCubit>.value(value: fakeHomeCubit),
                   BlocProvider<ChatCubit>.value(value: fakeChatCubit),
+                  BlocProvider<MainLayoutCubit>.value(
+                    value: fakeMainLayoutCubit,
+                  ),
                 ],
                 child: const MainLayoutScreen(),
               ),

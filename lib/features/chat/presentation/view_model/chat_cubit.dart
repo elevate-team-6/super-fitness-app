@@ -41,7 +41,12 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     this._deleteSessionUseCase,
     this._getChatUserUseCase,
     this._profileRepo,
-  ) : super(const ChatState()) {
+  ) : super(
+        const ChatState(
+          historyStatus: BaseState(isLoading: true),
+          messagesStatus: BaseState(data: []),
+        ),
+      ) {
     _loadUserData();
     _subscribeToUserChanges();
   }

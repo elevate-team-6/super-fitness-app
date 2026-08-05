@@ -40,7 +40,16 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
     this._getPopularTrainingExercisesUseCase,
     this._getCachedUserDataUseCase,
     this._profileRepo,
-  ) : super(const HomeState()) {
+  ) : super(
+        const HomeState(
+          homeUserStatus: BaseState(isLoading: true),
+          recommendationTodayStatus: BaseState(isLoading: true),
+          upcomingWorkoutsTabsStatus: BaseState(isLoading: true),
+          upcomingWorkoutsStatus: BaseState(isLoading: true),
+          recommendationForYouTabsStatus: BaseState(isLoading: true),
+          popularTrainingStatus: BaseState(isLoading: true),
+        ),
+      ) {
     _subscribeToUserChanges();
   }
 
