@@ -21,7 +21,12 @@ class WorkoutsCubit extends BaseCubit<WorkoutsState, BaseUiEvent> {
     required GetMusclesByGroupIdUseCase getMusclesByGroupIdUseCase,
   }) : _getMuscleGroupsUseCase = getMuscleGroupsUseCase,
        _getMusclesByGroupIdUseCase = getMusclesByGroupIdUseCase,
-       super(const WorkoutsState());
+       super(
+         const WorkoutsState(
+           muscleGroupsState: BaseState<List<MuscleGroupEntity>>(isLoading: true),
+           musclesState: BaseState<List<MuscleEntity>>(isLoading: true),
+         ),
+       );
 
   void doEvent(WorkoutsEvents event) {
     switch (event) {
@@ -33,7 +38,13 @@ class WorkoutsCubit extends BaseCubit<WorkoutsState, BaseUiEvent> {
   }
 
   Future<void> _getMuscleGroups() async {
-    emit(state.copyWith(muscleGroupsState: const BaseState(isLoading: true)));
+    emit(
+      state.copyWith(
+        muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+          isLoading: true,
+        ),
+      ),
+    );
 
     final response = await _getMuscleGroupsUseCase();
 
@@ -57,7 +68,7 @@ class WorkoutsCubit extends BaseCubit<WorkoutsState, BaseUiEvent> {
   Future<void> _getMusclesByGroupId(String id) async {
     emit(
       state.copyWith(
-        musclesState: const BaseState(isLoading: true),
+        musclesState: const BaseState<List<MuscleEntity>>(isLoading: true),
         selectedMuscleGroupId: id,
       ),
     );

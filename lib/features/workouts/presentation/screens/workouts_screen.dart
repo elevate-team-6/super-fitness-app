@@ -10,17 +10,17 @@ import 'package:super_fitness/core/utils/app_assets.dart';
 import 'package:super_fitness/core/utils/app_routes.dart';
 import 'package:super_fitness/core/utils/app_strings.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:super_fitness/core/widgets/animated_state_switcher.dart';
 import 'package:super_fitness/core/widgets/app_scaffold.dart';
 import 'package:super_fitness/core/widgets/custom_grid_view.dart';
 import 'package:super_fitness/core/widgets/custom_tab_bar.dart';
+import 'package:super_fitness/features/home/presentation/widgets/home_error_widget.dart';
+import 'package:super_fitness/features/home/presentation/widgets/home_sections_shimmer.dart';
 
 import '../view_models/workouts_view_model/workouts_cubit.dart';
 import '../view_models/workouts_view_model/workouts_events.dart';
 import '../view_models/workouts_view_model/workouts_state.dart';
 import '../widgets/muscle_grid_item.dart';
-import '../widgets/muscle_skeleton_placeholders.dart';
 
 class WorkoutsScreen extends StatefulWidget {
   const WorkoutsScreen({super.key});
@@ -55,13 +55,14 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> with UiEventHandler {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 8.h),
               child: Text(
                 AppStrings.workouts.tr(),
                 style: AppTextStyles.white24500,
               ),
             ),
             const _MuscleGroupsTabs(),
+            SizedBox(height: 16.h),
             const Expanded(child: _MusclesGrid()),
           ],
         ),
@@ -70,9 +71,8 @@ class _WorkoutsScreenState extends State<WorkoutsScreen> with UiEventHandler {
   }
 }
 
-// The grid's three message states are all a Center around a Text, so the
-// switcher can't tell them apart on type alone the way it can with the rest.
-enum _MusclesMessage { error, noGroupSelected, empty }
+// The grid's message states need keys to help AnimatedSwitcher
+enum _MusclesContent { loading, error, empty, data }
 
 class _MuscleGroupsTabs extends StatelessWidget {
   const _MuscleGroupsTabs();
@@ -81,25 +81,31 @@ class _MuscleGroupsTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WorkoutsCubit, WorkoutsState>(
       buildWhen: (previous, current) =>
-          previous.muscleGroupsState != current.muscleGroupsState,
+          previous.muscleGroupsState != current.muscleGroupsState ||
+          previous.selectedMuscleGroupId != current.selectedMuscleGroupId,
       builder: (context, state) {
         final groups = state.muscleGroupsState.data ?? [];
 
         final Widget content;
 
         if (state.muscleGroupsState.isLoading) {
-          content = Skeletonizer(
-            child: DefaultTabController(
-              length: kSkeletonMuscleGroups.length,
-              child: const CustomTabBar(tabs: kSkeletonMuscleGroups),
-            ),
+          content = Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: HomeSectionsShimmer.upcomingWorkoutsTabs(),
           );
-        } else if (groups.isEmpty) {
+        } else if (state.muscleGroupsState.errorMessage != null ||
+            groups.isEmpty) {
           content = const SizedBox.shrink();
         } else {
+          final selectedIndex = groups.indexWhere(
+            (g) => g.id == state.selectedMuscleGroupId,
+          );
+
           content = DefaultTabController(
             length: groups.length,
+            initialIndex: selectedIndex != -1 ? selectedIndex : 0,
             child: CustomTabBar(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               tabs: groups.map((group) => group.name).toList(),
               onTap: (index) {
                 context.read<WorkoutsCubit>().doEvent(
@@ -132,32 +138,31 @@ class _MusclesGrid extends StatelessWidget {
         final Widget content;
 
         if (musclesState.isLoading) {
-          content = Skeletonizer(
-            child: CustomGridView(
-              itemCount: skeletonMuscles.length,
-              itemBuilder: (context, index) =>
-                  MuscleGridItem(muscle: skeletonMuscles[index]),
-            ),
+          content = CustomGridView(
+            key: const ValueKey(_MusclesContent.loading),
+            itemCount: 6,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            itemBuilder: (context, index) =>
+                HomeSectionsShimmer.muscleGridItemShimmer(),
           );
-        } else if (musclesState.errorMessage != null && muscles.isEmpty) {
-          content = Center(
-            key: const ValueKey(_MusclesMessage.error),
-            child: Text(
-              musclesState.errorMessage!,
-              style: AppTextStyles.white16500,
-            ),
-          );
-        } else if (muscles.isEmpty && state.selectedMuscleGroupId == null) {
-          content = Center(
-            key: const ValueKey(_MusclesMessage.noGroupSelected),
-            child: Text(
-              AppStrings.selectMuscleGroup.tr(),
-              style: AppTextStyles.white16500,
-            ),
+        } else if (musclesState.errorMessage != null) {
+          content = HomeErrorWidget(
+            key: const ValueKey(_MusclesContent.error),
+            message: musclesState.errorMessage!,
+            onRetry: () {
+              final cubit = context.read<WorkoutsCubit>();
+              if (state.muscleGroupsState.errorMessage != null) {
+                cubit.doEvent(GetMuscleGroupsEvent());
+              } else {
+                cubit.doEvent(
+                  GetMusclesByGroupIdEvent(state.selectedMuscleGroupId ?? ''),
+                );
+              }
+            },
           );
         } else if (muscles.isEmpty) {
           content = Center(
-            key: const ValueKey(_MusclesMessage.empty),
+            key: const ValueKey(_MusclesContent.empty),
             child: Text(
               AppStrings.noMusclesFound.tr(),
               style: AppTextStyles.white16500,
@@ -165,7 +170,9 @@ class _MusclesGrid extends StatelessWidget {
           );
         } else {
           content = CustomGridView(
+            key: const ValueKey(_MusclesContent.data),
             itemCount: muscles.length,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             itemBuilder: (context, index) {
               final muscle = muscles[index];
               return MuscleGridItem(
