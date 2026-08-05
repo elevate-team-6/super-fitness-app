@@ -17,7 +17,6 @@ import 'package:super_fitness/features/home/presentation/view_models/home_view_m
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
-import 'package:super_fitness/features/profile/domain/use_cases/get_cached_user_use_case.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
@@ -130,21 +129,14 @@ class _InMemoryAssetLoader extends AssetLoader {
 
 /// The profile tab pulls its cubit straight from `getIt`, so the layout can't
 /// render that tab without one registered.
-class FakeGetCachedUserUseCase implements GetCachedUserUseCase {
-  @override
-  Future<UserEntity?> call() async => null;
-}
 
 class FakeGetProfileDataUseCase implements GetProfileDataUseCase {
   @override
-  Future<BaseResponse<UserEntity>> call() async =>
+  Future<BaseResponse<UserEntity>> call(bool isFromRemote) async =>
       const SuccessBaseResponse(null);
 }
 
 class FakeLogoutUseCase implements LogoutUseCase {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-
   @override
   Future<BaseResponse<void>> call() async => const SuccessBaseResponse(null);
 }
@@ -164,11 +156,7 @@ void main() {
     fakeHomeCubit = FakeHomeCubit();
     fakeChatCubit = FakeChatCubit();
     getIt.registerFactory<ProfileCubit>(
-      () => ProfileCubit(
-        FakeGetCachedUserUseCase(),
-        FakeGetProfileDataUseCase(),
-        FakeLogoutUseCase(),
-      ),
+      () => ProfileCubit(FakeGetProfileDataUseCase(), FakeLogoutUseCase()),
     );
   });
 

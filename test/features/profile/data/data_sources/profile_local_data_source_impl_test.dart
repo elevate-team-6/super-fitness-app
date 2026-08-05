@@ -31,7 +31,7 @@ void main() {
 
   void stubCache(String? value) {
     when(
-      cache.readData(key: AppKeys.profileDataKey),
+      cache.readData(key: AppKeys.userDataKey),
     ).thenAnswer((_) async => value);
   }
 
@@ -45,7 +45,7 @@ void main() {
     expect(user?.lastName, 'Emam');
     expect(user?.email, 'ahmed@example.com');
     expect(user?.age, 25);
-    verify(cache.readData(key: AppKeys.profileDataKey)).called(1);
+    verify(cache.readData(key: AppKeys.userDataKey)).called(1);
   });
 
   test('returns null when nothing is stored', () async {
@@ -90,7 +90,7 @@ void main() {
 
     final written = verify(
       cache.writeData(
-        key: AppKeys.profileDataKey,
+        key: AppKeys.userDataKey,
         value: captureAnyNamed('value'),
       ),
     ).captured.single;

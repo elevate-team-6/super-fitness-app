@@ -121,15 +121,17 @@ class _ProfileViewState extends State<_ProfileView> with UiEventHandler {
                             .profileState
                             .data;
                         if (user == null) return;
-                        await Navigator.pushNamed(
+                        final isUpdated = await Navigator.pushNamed(
                           context,
                           AppRoutes.editProfile,
                           arguments: EditProfileArgs(user: user),
                         );
                         if (!context.mounted) return;
-                        context.read<ProfileCubit>().doIntent(
-                          const RefreshProfileEvent(),
-                        );
+                        if (isUpdated == true) {
+                          context.read<ProfileCubit>().doIntent(
+                            const LoadProfileEvent(isFromRemote: true),
+                          );
+                        }
                       },
                     ),
                     divider,

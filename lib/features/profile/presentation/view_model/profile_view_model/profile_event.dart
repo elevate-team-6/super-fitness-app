@@ -8,11 +8,11 @@ sealed class ProfileEvents extends Equatable {
 }
 
 class LoadProfileEvent extends ProfileEvents {
-  const LoadProfileEvent();
-}
+  final bool isFromRemote;
+  const LoadProfileEvent({this.isFromRemote = false});
 
-class RefreshProfileEvent extends ProfileEvents {
-  const RefreshProfileEvent();
+  @override
+  List<Object?> get props => [isFromRemote];
 }
 
 class LogoutEvent extends ProfileEvents {

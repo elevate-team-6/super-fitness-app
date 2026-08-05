@@ -9,5 +9,10 @@ class GetProfileDataUseCase {
 
   const GetProfileDataUseCase(this._repo);
 
-  Future<BaseResponse<UserEntity>> call() => _repo.getProfileData();
+  Future<BaseResponse<UserEntity>> call(bool isFromRemote) {
+    if (isFromRemote) {
+      return _repo.getRemoteProfileData();
+    }
+    return _repo.getLocalProfileData();
+  }
 }

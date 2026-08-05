@@ -156,7 +156,7 @@ class EditProfileCubit extends BaseCubit<EditProfileState, BaseUiEvent> {
             NavigateEvent(
               '',
               navigationType: NavigationType.pop,
-              arguments: null,
+              arguments: true,
             ),
           );
         case ErrorBaseResponse<String>():
@@ -214,7 +214,7 @@ class EditProfileCubit extends BaseCubit<EditProfileState, BaseUiEvent> {
           NavigateEvent(
             '',
             navigationType: NavigationType.pop,
-            arguments: updatedUser,
+            arguments: true,
           ),
         );
       case ErrorBaseResponse<UserEntity>():
