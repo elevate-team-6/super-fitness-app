@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/cache/secure_cache_helper.dart';
+import 'package:super_fitness/config/services/auth_service.dart';
 import 'package:super_fitness/core/utils/app_keys.dart';
 import 'package:super_fitness/features/auth/data/data_sources/auth_remote_data_source_contract.dart';
 import 'package:super_fitness/features/auth/data/data_sources/forget_password_remote_data_source_contract.dart';
@@ -216,12 +217,16 @@ class AuthRepoImpl implements AuthRepoContract {
   Future<BaseResponse<void>> logout() async {
     await _authRemoteDataSource.logout();
 
-    // Clear authentication related data but keep onboarding status
-    await _secureCacheHelper.deleteData(key: AppKeys.tokenKey);
-    await _secureCacheHelper.deleteData(key: AppKeys.userDataKey);
-    await _secureCacheHelper.deleteData(key: AppKeys.userIdKey);
-    await _secureCacheHelper.deleteData(key: AppKeys.emailKey);
-    await _secureCacheHelper.deleteData(key: AppKeys.rememberMeKey);
+    // Backup onboarding status before clearing all data
+    final isOnboardingDone = await AuthService.isOnboardingCompleted();
+
+    // Clear all authentication and user data
+    await _secureCacheHelper.clearAllData();
+
+    // Restore onboarding status
+    if (isOnboardingDone) {
+      await AuthService.setOnboardingCompleted();
+    }
 
     return const SuccessBaseResponse(null);
   }
