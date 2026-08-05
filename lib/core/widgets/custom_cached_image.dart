@@ -33,33 +33,19 @@ class CustomCachedImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl.isEmpty) {
+      return _buildErrorWidget();
+    }
+
     Widget image = CachedNetworkImage(
       imageUrl: imageUrl,
       width: width,
       height: height,
       fit: fit,
+      fadeInDuration: const Duration(milliseconds: 500),
+      fadeInCurve: Curves.easeIn,
       placeholder: (context, url) => placeholder ?? _buildPlaceholder(),
-
-      // No Expanded here: CachedNetworkImage hands this widget to a SizedBox,
-      // not a Flex, so an Expanded throws a ParentDataWidget assertion on every
-      // failed load. The ColoredBox fills whatever the caller constrained us to.
-      errorWidget: (context, url, error) =>
-          errorWidget ??
-          ColoredBox(
-            color: AppColors.black80,
-            child: Center(
-              child: SvgPicture.asset(
-                placeholderIcon ?? AppIcons.workOut,
-                width: 72.w,
-                height: 72.w,
-                fit: BoxFit.contain,
-                colorFilter: ColorFilter.mode(
-                  AppColors.primary.withValues(alpha: 0.5),
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
+      errorWidget: (context, url, error) => errorWidget ?? _buildErrorWidget(),
     );
 
     if (borderRadius != null) {
@@ -67,6 +53,29 @@ class CustomCachedImage extends StatelessWidget {
     }
 
     return image;
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.black80,
+        borderRadius: borderRadius,
+      ),
+      child: Center(
+        child: SvgPicture.asset(
+          placeholderIcon ?? AppIcons.workOut,
+          width: 60.w,
+          height: 60.w,
+          fit: BoxFit.contain,
+          colorFilter: ColorFilter.mode(
+            AppColors.primary.withValues(alpha: 0.5),
+            BlendMode.srcIn,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildPlaceholder() {
