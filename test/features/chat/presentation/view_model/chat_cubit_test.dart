@@ -4,6 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'package:super_fitness/features/chat/domain/entities/chat_message_entity.dart';
 import 'package:super_fitness/features/chat/domain/use_cases/create_session_use_case.dart';
 import 'package:super_fitness/features/chat/domain/use_cases/delete_session_use_case.dart';
@@ -15,6 +16,7 @@ import 'package:super_fitness/features/chat/domain/use_cases/update_session_titl
 import 'package:super_fitness/features/chat/presentation/view_model/chat_cubit.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_event.dart';
 import 'package:super_fitness/features/chat/presentation/view_model/chat_state.dart';
+import 'package:super_fitness/features/profile/domain/repo/profile_repo_contract.dart';
 
 import 'chat_cubit_test.mocks.dart';
 
@@ -26,6 +28,7 @@ import 'chat_cubit_test.mocks.dart';
   DeleteSessionUseCase,
   UpdateSessionTitleUseCase,
   GetChatUserUseCase,
+  ProfileRepoContract,
 ])
 void main() {
   late ChatCubit cubit;
@@ -35,6 +38,7 @@ void main() {
   late MockCreateSessionUseCase mockCreateSession;
   late MockDeleteSessionUseCase mockDeleteSession;
   late MockGetChatUserUseCase mockGetUser;
+  late MockProfileRepoContract mockProfileRepo;
 
   setUp(() {
     mockGetHistory = MockGetChatHistoryUseCase();
@@ -43,6 +47,7 @@ void main() {
     mockCreateSession = MockCreateSessionUseCase();
     mockDeleteSession = MockDeleteSessionUseCase();
     mockGetUser = MockGetChatUserUseCase();
+    mockProfileRepo = MockProfileRepoContract();
 
     provideDummy<BaseResponse<List<Map<String, String>>>>(
       const SuccessBaseResponse([]),
@@ -54,6 +59,7 @@ void main() {
     provideDummy<BaseResponse<ChatMessageEntity>>(ErrorBaseResponse('dummy'));
 
     when(mockGetUser()).thenAnswer((_) async => null);
+    when(mockProfileRepo.userStream).thenAnswer((_) => const Stream.empty());
 
     cubit = ChatCubit(
       mockGetHistory,
@@ -62,6 +68,39 @@ void main() {
       mockCreateSession,
       mockDeleteSession,
       mockGetUser,
+      mockProfileRepo,
+    );
+  });
+
+  group('Reactive Profile Updates', () {
+    const tUser = UserEntity(id: '1', firstName: 'Updated', lastName: 'Name');
+
+    blocTest<ChatCubit, ChatState>(
+      'updates user state when profileRepo.userStream emits a new user',
+      build: () {
+        when(mockProfileRepo.userStream).thenAnswer((_) => Stream.value(tUser));
+        return ChatCubit(
+          mockGetHistory,
+          mockGetMessages,
+          mockSendMessage,
+          mockCreateSession,
+          mockDeleteSession,
+          mockGetUser,
+          mockProfileRepo,
+        );
+      },
+      expect: () => [
+        isA<ChatState>().having(
+          (s) => s.user,
+          'initial user from load',
+          isNull,
+        ),
+        isA<ChatState>().having(
+          (s) => s.user,
+          'updated user from stream',
+          tUser,
+        ),
+      ],
     );
   });
 

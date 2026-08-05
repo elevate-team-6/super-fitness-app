@@ -19,6 +19,8 @@ import 'package:super_fitness/features/home/presentation/view_models/home_view_m
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
 
+import 'package:super_fitness/features/profile/domain/repo/profile_repo_contract.dart';
+import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
 import 'home_cubit_test.mocks.dart';
 
 @GenerateMocks([
@@ -28,6 +30,7 @@ import 'home_cubit_test.mocks.dart';
   GetMealsCategoriesUseCase,
   GetPopularTrainingExercisesUseCase,
   GetCachedUserDataUseCase,
+  ProfileRepoContract,
 ])
 void main() {
   provideDummy<BaseResponse<HomeUserEntity>>(
@@ -48,6 +51,7 @@ void main() {
   late MockGetMealsCategoriesUseCase mockGetMealsCategories;
   late MockGetPopularTrainingExercisesUseCase mockGetPopularExercises;
   late MockGetCachedUserDataUseCase mockGetCachedUserData;
+  late MockProfileRepoContract mockProfileRepo;
 
   setUp(() {
     mockGetRandomMuscles = MockGetRandomMusclesUseCase();
@@ -56,6 +60,9 @@ void main() {
     mockGetMealsCategories = MockGetMealsCategoriesUseCase();
     mockGetPopularExercises = MockGetPopularTrainingExercisesUseCase();
     mockGetCachedUserData = MockGetCachedUserDataUseCase();
+    mockProfileRepo = MockProfileRepoContract();
+
+    when(mockProfileRepo.userStream).thenAnswer((_) => const Stream.empty());
 
     cubit = HomeCubit(
       mockGetRandomMuscles,
@@ -64,6 +71,37 @@ void main() {
       mockGetMealsCategories,
       mockGetPopularExercises,
       mockGetCachedUserData,
+      mockProfileRepo,
+    );
+  });
+
+  group('Reactive Profile Updates', () {
+    const tUser = UserEntity(
+      id: '1',
+      firstName: 'Updated',
+      lastName: 'Name',
+      photo: 'new_photo',
+    );
+
+    blocTest<HomeCubit, HomeState>(
+      'updates homeUserStatus when profileRepo.userStream emits a new user',
+      build: () {
+        when(mockProfileRepo.userStream).thenAnswer((_) => Stream.value(tUser));
+        return HomeCubit(
+          mockGetRandomMuscles,
+          mockGetMuscleGroups,
+          mockGetMusclesByGroupId,
+          mockGetMealsCategories,
+          mockGetPopularExercises,
+          mockGetCachedUserData,
+          mockProfileRepo,
+        );
+      },
+      expect: () => [
+        isA<HomeState>()
+            .having((s) => s.homeUserStatus.data?.name, 'name', 'Updated Name')
+            .having((s) => s.homeUserStatus.data?.image, 'image', 'new_photo'),
+      ],
     );
   });
 

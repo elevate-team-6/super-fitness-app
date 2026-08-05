@@ -17,6 +17,7 @@ import 'package:super_fitness/features/home/presentation/view_models/home_view_m
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_event.dart';
 import 'package:super_fitness/features/home/presentation/view_models/home_view_model/home_state.dart';
 import 'package:super_fitness/features/main_layout/presentation/screens/main_layout_screen.dart';
+import 'package:super_fitness/features/profile/domain/repo/profile_repo_contract.dart';
 import 'package:super_fitness/features/profile/domain/use_cases/get_profile_data_use_case.dart';
 import 'package:super_fitness/features/profile/presentation/screens/profile_screen.dart';
 import 'package:super_fitness/features/profile/presentation/view_model/profile_view_model/profile_cubit.dart';
@@ -139,6 +140,14 @@ class FakeGetProfileDataUseCase implements GetProfileDataUseCase {
 class FakeLogoutUseCase implements LogoutUseCase {
   @override
   Future<BaseResponse<void>> call() async => const SuccessBaseResponse(null);
+}
+
+class FakeProfileRepo implements ProfileRepoContract {
+  @override
+  Stream<UserEntity?> get userStream => const Stream.empty();
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {

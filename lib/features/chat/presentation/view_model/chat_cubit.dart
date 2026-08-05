@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -8,6 +10,7 @@ import '../../../../../config/base_response/base_response.dart';
 import '../../../../../config/base_state/base_state.dart';
 import '../../../../../config/base_ui_event/base_ui_event.dart';
 import '../../../../../core/utils/app_strings.dart';
+import '../../../profile/domain/repo/profile_repo_contract.dart';
 import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/use_cases/create_session_use_case.dart';
 import '../../domain/use_cases/delete_session_use_case.dart';
@@ -26,6 +29,9 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
   final CreateSessionUseCase _createSessionUseCase;
   final DeleteSessionUseCase _deleteSessionUseCase;
   final GetChatUserUseCase _getChatUserUseCase;
+  final ProfileRepoContract _profileRepo;
+
+  StreamSubscription? _userSubscription;
 
   ChatCubit(
     this._getChatHistoryUseCase,
@@ -34,8 +40,24 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     this._createSessionUseCase,
     this._deleteSessionUseCase,
     this._getChatUserUseCase,
+    this._profileRepo,
   ) : super(const ChatState()) {
     _loadUserData();
+    _subscribeToUserChanges();
+  }
+
+  void _subscribeToUserChanges() {
+    _userSubscription = _profileRepo.userStream.listen((user) {
+      if (user != null) {
+        emit(state.copyWith(user: user));
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
   }
 
   void doEvent(ChatEvent event) {

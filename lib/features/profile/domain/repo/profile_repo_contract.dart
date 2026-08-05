@@ -13,4 +13,7 @@ abstract class ProfileRepoContract {
   Future<BaseResponse<UserEntity>> getRemoteProfileData();
 
   Future<BaseResponse<UserEntity>> getLocalProfileData();
+
+  /// Stream to notify listeners when user data changes (e.g., after an edit)
+  Stream<UserEntity?> get userStream;
 }

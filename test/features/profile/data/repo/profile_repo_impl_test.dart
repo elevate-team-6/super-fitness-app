@@ -9,14 +9,11 @@ import 'package:super_fitness/features/profile/data/data_sources/profile_remote_
 import 'package:super_fitness/features/profile/data/models/response/profile_data_response.dart';
 import 'package:super_fitness/features/profile/data/repo/profile_repo_impl.dart';
 
-import 'package:super_fitness/config/cache/secure_cache_helper.dart';
-
 import 'profile_repo_impl_test.mocks.dart';
 
 @GenerateMocks([
   ProfileLocalDataSourceContract,
   ProfileRemoteDataSourceContract,
-  SecureCacheHelper,
 ])
 void main() {
   late MockProfileLocalDataSourceContract local;
@@ -42,6 +39,9 @@ void main() {
     repo = ProfileRepoImpl(remote, local);
 
     when(local.cacheUser(any)).thenAnswer((_) async {});
+    when(
+      remote.getProfileData(),
+    ).thenAnswer((_) async => const ErrorBaseResponse('dummy'));
   });
 
   void stubRemote(BaseResponse<ProfileDataResponse> response) {
@@ -122,6 +122,31 @@ void main() {
         'no internet',
       );
       verifyNever(local.cacheUser(any));
+    });
+  });
+
+  group('userStream', () {
+    test('emits user when remote data is fetched successfully', () async {
+      stubRemote(
+        const SuccessBaseResponse(ProfileDataResponse(user: userModel)),
+      );
+
+      final expectation = expectLater(
+        repo.userStream,
+        emits(userModel.toEntity()),
+      );
+
+      await repo.getRemoteProfileData();
+      await expectation;
+    });
+
+    test('emits user when local data is found', () async {
+      when(local.getCachedUser()).thenAnswer((_) async => cachedUser);
+
+      final expectation = expectLater(repo.userStream, emits(cachedUser));
+
+      await repo.getLocalProfileData();
+      await expectation;
     });
   });
 }

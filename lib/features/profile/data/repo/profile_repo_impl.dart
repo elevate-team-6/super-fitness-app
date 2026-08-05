@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -16,7 +17,12 @@ class ProfileRepoImpl implements ProfileRepoContract {
   final ProfileRemoteDataSourceContract _remoteDataSource;
   final ProfileLocalDataSourceContract _localDataSource;
 
-  const ProfileRepoImpl(this._remoteDataSource, this._localDataSource);
+  final _userStreamController = StreamController<UserEntity?>.broadcast();
+
+  ProfileRepoImpl(this._remoteDataSource, this._localDataSource);
+
+  @override
+  Stream<UserEntity?> get userStream => _userStreamController.stream;
 
   @override
   Future<BaseResponse<String>> uploadPhoto(File photo) =>
@@ -42,7 +48,10 @@ class ProfileRepoImpl implements ProfileRepoContract {
 
         await _localDataSource.cacheUser(user);
 
-        return SuccessBaseResponse(user.toEntity());
+        final entity = user.toEntity();
+        _userStreamController.add(entity); // Notify listeners
+
+        return SuccessBaseResponse(entity);
 
       case ErrorBaseResponse<ProfileDataResponse>():
         return ErrorBaseResponse(response.errorMessage);
@@ -56,6 +65,8 @@ class ProfileRepoImpl implements ProfileRepoContract {
     if (cachedUser == null) {
       return await getRemoteProfileData();
     }
+
+    _userStreamController.add(cachedUser); // Initial notification
 
     return SuccessBaseResponse(cachedUser);
   }
