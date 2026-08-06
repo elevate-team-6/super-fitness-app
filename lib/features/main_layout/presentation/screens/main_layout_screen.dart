@@ -30,11 +30,38 @@ class MainLayoutScreen extends StatelessWidget {
       (_) => ProfileScreen(),
     ];
 
-    return BlocProvider(
-      create: (context) => MainLayoutCubit(),
-      child: BlocBuilder<MainLayoutCubit, MainLayoutState>(
-        builder: (context, state) {
-          return Scaffold(
+    return BlocBuilder<MainLayoutCubit, MainLayoutState>(
+      builder: (context, state) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          switchInCurve: Curves.easeInOutQuart,
+          switchOutCurve: Curves.easeOutQuart,
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            final isEntering = child.key == ValueKey(context.locale);
+            final isArabic = context.locale.languageCode == 'ar';
+
+            // Calculate slide direction based on locale and entry state
+            final double slideX = isArabic ? 0.08 : -0.08;
+
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: isEntering ? Offset(slideX, 0) : Offset(-slideX, 0),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: ScaleTransition(
+                  scale: Tween<double>(
+                    begin: 0.96,
+                    end: 1.0,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+            );
+          },
+          child: Scaffold(
+            key: ValueKey(context.locale),
             body: _LazyIndexedStack(
               index: state.currentIndex,
               builders: screens,
@@ -106,9 +133,9 @@ class MainLayoutScreen extends StatelessWidget {
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -128,7 +155,18 @@ class _LazyIndexedStack extends StatefulWidget {
 }
 
 class _LazyIndexedStackState extends State<_LazyIndexedStack> {
-  late final List<Widget?> _screens = List.filled(widget.builders.length, null);
+  late List<Widget?> _screens = List.filled(widget.builders.length, null);
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = context.locale;
+    if (_lastLocale != currentLocale) {
+      _screens = List.filled(widget.builders.length, null);
+      _lastLocale = currentLocale;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

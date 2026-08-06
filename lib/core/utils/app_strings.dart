@@ -16,6 +16,9 @@ abstract class AppStrings {
   static const String noInternetConnection = 'noInternetConnection';
   static const String unexpectedError = 'unexpectedError';
   static const String unknownError = 'unknownError';
+  static const String firestorePermissionDenied = 'firestorePermissionDenied';
+  static const String firestoreUnavailable = 'firestoreUnavailable';
+  static const String firestoreNotFound = 'firestoreNotFound';
   static const String invalidRequest = 'invalidRequest';
   static const String authFailed = 'authFailed';
   static const String forbidden = 'forbidden';
@@ -134,6 +137,7 @@ abstract class AppStrings {
   static const String howCanIAssistYouToday = 'howCanIAssistYouToday';
   static const String getStarted = 'getStarted';
   static const String previousConversations = 'previousConversations';
+  static const String noPreviousConversations = 'noPreviousConversations';
   static const String typeAMessage = 'typeAMessage';
   static const String coachIsBusy = 'coachIsBusy';
   static const String chatConnectionError = 'chatConnectionError';

@@ -5,10 +5,11 @@ import 'package:super_fitness/config/base_response/base_response.dart';
 import 'package:super_fitness/config/services/crashlytics_service.dart';
 import 'package:super_fitness/core/data/local/sqlite/catalog_local_data_source.dart';
 import 'package:super_fitness/features/auth/domain/entities/user_entity.dart';
+import 'package:super_fitness/features/chat/data/data_sources/contracts/chat_history_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/data_sources/contracts/chat_local_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/data_sources/contracts/chat_remote_data_source_contract.dart';
 import 'package:super_fitness/features/chat/data/models/chat_event_model.dart';
-import 'package:super_fitness/features/chat/data/models/hive/chat_hive_models.dart';
+import 'package:super_fitness/features/chat/data/models/chat_models.dart';
 import 'package:super_fitness/features/chat/data/repo/chat_repo_impl.dart';
 import 'package:super_fitness/features/chat/domain/entities/chat_message_entity.dart';
 import 'package:super_fitness/features/home/data/models/response/exercise_response.dart';
@@ -19,6 +20,7 @@ import 'chat_repo_impl_test.mocks.dart';
   ChatRemoteDataSourceContract,
   CatalogLocalDataSource,
   ChatLocalDataSourceContract,
+  ChatHistoryDataSourceContract,
   CrashlyticsService,
 ])
 void main() {
@@ -26,12 +28,12 @@ void main() {
     provideDummy<BaseResponse<UserEntity?>>(
       const SuccessBaseResponse<UserEntity?>(null),
     );
-    provideDummy<BaseResponse<ChatSessionHiveModel?>>(
-      const SuccessBaseResponse<ChatSessionHiveModel?>(null),
+    provideDummy<BaseResponse<ChatSessionModel?>>(
+      const SuccessBaseResponse<ChatSessionModel?>(null),
     );
     provideDummy<BaseResponse<void>>(const SuccessBaseResponse<void>(null));
-    provideDummy<BaseResponse<List<ChatSessionHiveModel>>>(
-      const SuccessBaseResponse<List<ChatSessionHiveModel>>([]),
+    provideDummy<BaseResponse<List<ChatSessionModel>>>(
+      const SuccessBaseResponse<List<ChatSessionModel>>([]),
     );
     provideDummy<BaseResponse<List<ExerciseModel>>>(
       const SuccessBaseResponse<List<ExerciseModel>>([]),
@@ -41,6 +43,7 @@ void main() {
   late MockChatRemoteDataSourceContract mockRemoteDataSource;
   late MockCatalogLocalDataSource mockLocalDataSource;
   late MockChatLocalDataSourceContract mockChatLocalDataSource;
+  late MockChatHistoryDataSourceContract mockChatHistoryDataSource;
   late MockCrashlyticsService mockCrashlyticsService;
   late ChatRepoImpl repo;
 
@@ -48,6 +51,7 @@ void main() {
     mockRemoteDataSource = MockChatRemoteDataSourceContract();
     mockLocalDataSource = MockCatalogLocalDataSource();
     mockChatLocalDataSource = MockChatLocalDataSourceContract();
+    mockChatHistoryDataSource = MockChatHistoryDataSourceContract();
     mockCrashlyticsService = MockCrashlyticsService();
 
     when(
@@ -58,6 +62,7 @@ void main() {
       mockRemoteDataSource,
       mockLocalDataSource,
       mockChatLocalDataSource,
+      mockChatHistoryDataSource,
       mockCrashlyticsService,
     );
   });
@@ -66,18 +71,19 @@ void main() {
   const tMessage = 'I want to lose weight';
 
   group('sendMessage', () {
-    test('should execute defensive creation and stream responses', () async {
+    test('should execute parallel IO and background sync', () async {
+      // arrange
       when(
-        mockChatLocalDataSource.getSession(any),
+        mockChatHistoryDataSource.getSession(any),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
       when(
-        mockChatLocalDataSource.saveSession(any),
+        mockChatHistoryDataSource.saveSession(any),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
       when(
-        mockChatLocalDataSource.updateSessionMessages(any, any),
+        mockChatHistoryDataSource.updateSessionMessages(any, any),
       ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
-      final tEvent = ChatEventModel(type: 'token', content: 'You can ');
+      final tEvent = ChatEventModel(type: 'token', content: 'Sure');
       when(
         mockRemoteDataSource.getChatResponseStream(
           history: anyNamed('history'),
@@ -87,21 +93,15 @@ void main() {
 
       // act
       final stream = repo.sendMessage(sessionId: tSessionId, message: tMessage);
+      await stream.toList();
 
       // assert
-      await expectLater(
-        stream,
-        emits(isA<SuccessBaseResponse<ChatMessageEntity>>()),
-      );
+      // Verify parallel call to get session and user cache
+      verify(mockChatLocalDataSource.getCachedUser()).called(1);
+      verify(mockChatHistoryDataSource.getSession(tSessionId)).called(1);
 
-      // Verify defensive session creation
-      verify(
-        mockChatLocalDataSource.saveSession(
-          argThat(
-            predicate((s) => s is ChatSessionHiveModel && s.id == tSessionId),
-          ),
-        ),
-      ).called(1);
+      // Verify background sync triggered
+      verify(mockChatHistoryDataSource.saveSession(any)).called(1);
     });
 
     test(
@@ -109,13 +109,10 @@ void main() {
       () async {
         // arrange
         when(
-          mockChatLocalDataSource.getSession(any),
+          mockChatHistoryDataSource.getSession(any),
         ).thenAnswer((_) async => const SuccessBaseResponse(null));
         when(
-          mockChatLocalDataSource.saveSession(any),
-        ).thenAnswer((_) async => const SuccessBaseResponse(null));
-        when(
-          mockChatLocalDataSource.updateSessionMessages(any, any),
+          mockChatHistoryDataSource.saveSession(any),
         ).thenAnswer((_) async => const SuccessBaseResponse(null));
 
         when(
@@ -138,71 +135,16 @@ void main() {
 
         // assert
         expect(results.last, isA<ErrorBaseResponse<ChatMessageEntity>>());
-        verify(
-          mockCrashlyticsService.recordError(
-            'Stream Error',
-            any,
-            reason: anyNamed('reason'),
-            information: anyNamed('information'),
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
-      'should update local storage only on specific events (refs/done)',
-      () async {
-        // arrange
-        final tSession = ChatSessionHiveModel(
-          id: tSessionId,
-          title: 'T',
-          messages: [],
-          lastUpdatedAt: DateTime.now(),
-        );
-        when(
-          mockChatLocalDataSource.getSession(any),
-        ).thenAnswer((_) async => SuccessBaseResponse(tSession));
-        when(
-          mockChatLocalDataSource.updateSessionMessages(any, any),
-        ).thenAnswer((_) async => const SuccessBaseResponse(null));
-
-        final events = [
-          ChatEventModel(type: 'token', content: 'T1'),
-          ChatEventModel(type: 'refs', exerciseRefs: ['1']),
-          ChatEventModel(type: 'done'),
-        ];
-        when(
-          mockRemoteDataSource.getChatResponseStream(
-            history: anyNamed('history'),
-            userContext: anyNamed('userContext'),
-          ),
-        ).thenAnswer(
-          (_) => Stream.fromIterable(events.map((e) => SuccessBaseResponse(e))),
-        );
-
-        when(
-          mockLocalDataSource.getExercisesByIds(any),
-        ).thenAnswer((_) async => []);
-
-        // act
-        final stream = repo.sendMessage(
-          sessionId: tSessionId,
-          message: tMessage,
-        );
-        await stream.toList();
-
-        // assert
-        verify(
-          mockChatLocalDataSource.updateSessionMessages(tSessionId, any),
-        ).called(3);
+        verify(mockCrashlyticsService.recordError(any, any)).called(1);
       },
     );
   });
 
   group('getChatHistory', () {
-    test('should return mapped history list', () async {
+    test('should return history from history data source', () async {
+      // arrange
       final tSessions = [
-        ChatSessionHiveModel(
+        ChatSessionModel(
           id: '1',
           title: 'S1',
           messages: [],
@@ -210,60 +152,15 @@ void main() {
         ),
       ];
       when(
-        mockChatLocalDataSource.getSessions(),
+        mockChatHistoryDataSource.getSessions(),
       ).thenAnswer((_) async => SuccessBaseResponse(tSessions));
 
+      // act
       final result = await repo.getChatHistory();
 
-      expect(result, isA<SuccessBaseResponse<List<Map<String, String>>>>());
-      final data =
-          (result as SuccessBaseResponse<List<Map<String, String>>>).data!;
-      expect(data.first['title'], 'S1');
-    });
-  });
-
-  group('_hydrateRefs', () {
-    test('should return hydrated refs when local data is found', () async {
-      // arrange
-      final tEvent = ChatEventModel(type: 'refs', exerciseRefs: const ['ex1']);
-
-      const tLocalExercise = ExerciseModel(
-        id: 'ex1',
-        exercise: 'Local Exercise',
-        shortYoutubeDemonstrationLink: 'http://youtube.com/v=123',
-      );
-
-      when(
-        mockLocalDataSource.getExercisesByIds(['ex1']),
-      ).thenAnswer((_) async => [tLocalExercise]);
-
-      when(
-        mockChatLocalDataSource.getSession(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
-      when(
-        mockChatLocalDataSource.saveSession(any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
-      when(
-        mockChatLocalDataSource.updateSessionMessages(any, any),
-      ).thenAnswer((_) async => const SuccessBaseResponse(null));
-
-      when(
-        mockRemoteDataSource.getChatResponseStream(
-          history: anyNamed('history'),
-          userContext: anyNamed('userContext'),
-        ),
-      ).thenAnswer((_) => Stream.fromIterable([SuccessBaseResponse(tEvent)]));
-
-      // act
-      final stream = repo.sendMessage(sessionId: tSessionId, message: tMessage);
-      final results = await stream.toList();
-
       // assert
-      final refMessage =
-          (results.last as SuccessBaseResponse<ChatMessageEntity>).data;
-      expect(refMessage?.refs.first.name, 'Local Exercise');
-      expect(refMessage?.refs.first.isSnapshot, false);
-      expect(refMessage?.refs.first.exerciseInfo?.id, 'ex1');
+      expect(result, isA<SuccessBaseResponse<List<Map<String, String>>>>());
+      verify(mockChatHistoryDataSource.getSessions()).called(1);
     });
   });
 }

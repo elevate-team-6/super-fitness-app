@@ -9,19 +9,15 @@ import 'package:super_fitness/features/profile/data/data_sources/profile_remote_
 import 'package:super_fitness/features/profile/data/models/response/profile_data_response.dart';
 import 'package:super_fitness/features/profile/data/repo/profile_repo_impl.dart';
 
-import 'package:super_fitness/config/cache/secure_cache_helper.dart';
-
 import 'profile_repo_impl_test.mocks.dart';
 
 @GenerateMocks([
   ProfileLocalDataSourceContract,
   ProfileRemoteDataSourceContract,
-  SecureCacheHelper,
 ])
 void main() {
   late MockProfileLocalDataSourceContract local;
   late MockProfileRemoteDataSourceContract remote;
-  late MockSecureCacheHelper secureCache;
   late ProfileRepoImpl repo;
 
   const userModel = UserModel(
@@ -40,48 +36,53 @@ void main() {
   setUp(() {
     local = MockProfileLocalDataSourceContract();
     remote = MockProfileRemoteDataSourceContract();
-    secureCache = MockSecureCacheHelper();
-    repo = ProfileRepoImpl(remote, local, secureCache);
+    repo = ProfileRepoImpl(remote, local);
 
     when(local.cacheUser(any)).thenAnswer((_) async {});
+    when(
+      remote.getProfileData(),
+    ).thenAnswer((_) async => const ErrorBaseResponse('dummy'));
   });
 
   void stubRemote(BaseResponse<ProfileDataResponse> response) {
     when(remote.getProfileData()).thenAnswer((_) async => response);
   }
 
-  group('getCachedUser', () {
+  group('getLocalProfileData', () {
     test('serves the cached user from the local source', () async {
       when(local.getCachedUser()).thenAnswer((_) async => cachedUser);
 
-      expect(await repo.getCachedUser(), cachedUser);
+      final result = await repo.getLocalProfileData();
+      expect((result as SuccessBaseResponse<UserEntity>).data, cachedUser);
       verify(local.getCachedUser()).called(1);
     });
 
-    test('passes an empty cache straight through', () async {
+    test('falls back to remote when cache is empty', () async {
       when(local.getCachedUser()).thenAnswer((_) async => null);
+      stubRemote(
+        const SuccessBaseResponse(ProfileDataResponse(user: userModel)),
+      );
 
-      expect(await repo.getCachedUser(), isNull);
-    });
+      final result = await repo.getLocalProfileData();
 
-    // Reading the cache is what every visit after the first one does; a stray
-    // call here would put a request behind each of them.
-    test('does not touch the remote source', () async {
-      when(local.getCachedUser()).thenAnswer((_) async => cachedUser);
-
-      await repo.getCachedUser();
-
-      verifyZeroInteractions(remote);
+      expect(result, isA<SuccessBaseResponse<UserEntity>>());
+      expect(
+        (result as SuccessBaseResponse<UserEntity>).data?.id,
+        userModel.id,
+      );
+      verify(local.getCachedUser()).called(1);
+      verify(remote.getProfileData()).called(1);
+      verify(local.cacheUser(userModel)).called(1);
     });
   });
 
-  group('getProfileData', () {
+  group('getRemoteProfileData', () {
     test('maps the fetched user to an entity', () async {
       stubRemote(
         const SuccessBaseResponse(ProfileDataResponse(user: userModel)),
       );
 
-      final result = await repo.getProfileData();
+      final result = await repo.getRemoteProfileData();
 
       expect(result, isA<SuccessBaseResponse<UserEntity>>());
       expect(
@@ -91,13 +92,12 @@ void main() {
       verify(remote.getProfileData()).called(1);
     });
 
-    // The write is what keeps the next visit off the network.
     test('writes the fetched user to the cache', () async {
       stubRemote(
         const SuccessBaseResponse(ProfileDataResponse(user: userModel)),
       );
 
-      await repo.getProfileData();
+      await repo.getRemoteProfileData();
 
       verify(local.cacheUser(userModel)).called(1);
     });
@@ -105,21 +105,48 @@ void main() {
     test('fails when the response carries no user', () async {
       stubRemote(const SuccessBaseResponse(ProfileDataResponse(message: 'ok')));
 
-      expect(await repo.getProfileData(), isA<ErrorBaseResponse<UserEntity>>());
+      expect(
+        await repo.getRemoteProfileData(),
+        isA<ErrorBaseResponse<UserEntity>>(),
+      );
       verifyNever(local.cacheUser(any));
     });
 
-    // A failed fetch must not overwrite the cache with nothing.
     test('surfaces the error and leaves the cache alone', () async {
       stubRemote(const ErrorBaseResponse('no internet'));
 
-      final result = await repo.getProfileData();
+      final result = await repo.getRemoteProfileData();
 
       expect(
         (result as ErrorBaseResponse<UserEntity>).errorMessage,
         'no internet',
       );
       verifyNever(local.cacheUser(any));
+    });
+  });
+
+  group('userStream', () {
+    test('emits user when remote data is fetched successfully', () async {
+      stubRemote(
+        const SuccessBaseResponse(ProfileDataResponse(user: userModel)),
+      );
+
+      final expectation = expectLater(
+        repo.userStream,
+        emits(userModel.toEntity()),
+      );
+
+      await repo.getRemoteProfileData();
+      await expectation;
+    });
+
+    test('emits user when local data is found', () async {
+      when(local.getCachedUser()).thenAnswer((_) async => cachedUser);
+
+      final expectation = expectLater(repo.userStream, emits(cachedUser));
+
+      await repo.getLocalProfileData();
+      await expectation;
     });
   });
 }

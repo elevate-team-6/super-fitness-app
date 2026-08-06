@@ -3,18 +3,23 @@ import 'package:flutter/material.dart';
 class AppPageTransitionsBuilder extends PageTransitionsBuilder {
   const AppPageTransitionsBuilder();
 
-  static final Animatable<Offset> _rise = Tween<Offset>(
-    begin: const Offset(0, 0.04),
+  static final Animatable<Offset> _slideUp = Tween<Offset>(
+    begin: const Offset(0, 0.05),
     end: Offset.zero,
-  ).chain(CurveTween(curve: Curves.easeOutCubic));
+  ).chain(CurveTween(curve: Curves.fastOutSlowIn));
 
-  static final Animatable<double> _fadeIn = CurveTween(curve: Curves.easeOut);
+  static final Animatable<double> _scaleIn = Tween<double>(
+    begin: 0.92,
+    end: 1.0,
+  ).chain(CurveTween(curve: Curves.fastOutSlowIn));
+
+  static final Animatable<double> _fadeIn = CurveTween(curve: Curves.easeIn);
 
   @override
-  Duration get transitionDuration => const Duration(milliseconds: 260);
+  Duration get transitionDuration => const Duration(milliseconds: 350);
 
   @override
-  Duration get reverseTransitionDuration => const Duration(milliseconds: 200);
+  Duration get reverseTransitionDuration => const Duration(milliseconds: 250);
 
   @override
   Widget buildTransitions<T>(
@@ -26,7 +31,13 @@ class AppPageTransitionsBuilder extends PageTransitionsBuilder {
   ) {
     return FadeTransition(
       opacity: animation.drive(_fadeIn),
-      child: SlideTransition(position: animation.drive(_rise), child: child),
+      child: ScaleTransition(
+        scale: animation.drive(_scaleIn),
+        child: SlideTransition(
+          position: animation.drive(_slideUp),
+          child: child,
+        ),
+      ),
     );
   }
 }

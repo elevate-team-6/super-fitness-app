@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 
 import '../../../../../config/base_cubit/base_cubit.dart';
@@ -14,6 +16,7 @@ import '../../../domain/use_cases/get_muscle_groups_use_case.dart';
 import '../../../domain/use_cases/get_muscles_by_group_id_use_case.dart';
 import '../../../domain/use_cases/get_popular_training_exercises_use_case.dart';
 import '../../../domain/use_cases/get_random_muscles_use_case.dart';
+import 'package:super_fitness/features/profile/domain/repo/profile_repo_contract.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -25,6 +28,9 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
   final GetMealsCategoriesUseCase _getMealsCategoriesUseCase;
   final GetPopularTrainingExercisesUseCase _getPopularTrainingExercisesUseCase;
   final GetCachedUserDataUseCase _getCachedUserDataUseCase;
+  final ProfileRepoContract _profileRepo;
+
+  StreamSubscription? _userSubscription;
 
   HomeCubit(
     this._getRandomMusclesUseCase,
@@ -33,7 +39,42 @@ class HomeCubit extends BaseCubit<HomeState, BaseUiEvent> {
     this._getMealsCategoriesUseCase,
     this._getPopularTrainingExercisesUseCase,
     this._getCachedUserDataUseCase,
-  ) : super(const HomeState());
+    this._profileRepo,
+  ) : super(
+        const HomeState(
+          homeUserStatus: BaseState(isLoading: true),
+          recommendationTodayStatus: BaseState(isLoading: true),
+          upcomingWorkoutsTabsStatus: BaseState(isLoading: true),
+          upcomingWorkoutsStatus: BaseState(isLoading: true),
+          recommendationForYouTabsStatus: BaseState(isLoading: true),
+          popularTrainingStatus: BaseState(isLoading: true),
+        ),
+      ) {
+    _subscribeToUserChanges();
+  }
+
+  void _subscribeToUserChanges() {
+    _userSubscription = _profileRepo.userStream.listen((user) {
+      if (user != null) {
+        emit(
+          state.copyWith(
+            homeUserStatus: BaseState(
+              data: HomeUserEntity(
+                name: "${user.firstName} ${user.lastName}",
+                image: user.photo,
+              ),
+            ),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
+  }
 
   void doEvent(HomeEvent event) {
     switch (event) {

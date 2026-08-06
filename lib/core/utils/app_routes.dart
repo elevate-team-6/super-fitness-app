@@ -142,18 +142,21 @@ abstract class AppRoutes {
 
         case mainLayout:
           return MaterialPageRoute(
-            builder: (_) => MultiBlocProvider(
-              providers: [
-                BlocProvider(create: (_) => getIt<MainLayoutCubit>()),
-                BlocProvider(
-                  create: (_) =>
-                      getIt<HomeCubit>()
-                        ..doEvent(const FetchAllHomeDataEvent()),
-                ),
-                BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
-                BlocProvider.value(value: getIt<ChatCubit>()),
-              ],
-              child: const MainLayoutScreen(),
+            builder: (context) => BlocProvider(
+              create: (_) => getIt<MainLayoutCubit>(),
+              child: MultiBlocProvider(
+                key: ValueKey(Localizations.localeOf(context).languageCode),
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        getIt<HomeCubit>()
+                          ..doEvent(const FetchAllHomeDataEvent()),
+                  ),
+                  BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
+                  BlocProvider.value(value: getIt<ChatCubit>()),
+                ],
+                child: const MainLayoutScreen(),
+              ),
             ),
           );
 

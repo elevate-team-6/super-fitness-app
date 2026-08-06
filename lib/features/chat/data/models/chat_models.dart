@@ -1,7 +1,7 @@
-import '../../../domain/entities/chat_message_entity.dart';
-import '../../../domain/entities/chat_ref_entity.dart';
+import '../../domain/entities/chat_message_entity.dart';
+import '../../domain/entities/chat_ref_entity.dart';
 
-class ChatRefHiveModel {
+class ChatRefModel {
   final String id;
   final String name;
   final String? image;
@@ -11,7 +11,7 @@ class ChatRefHiveModel {
   final String type;
   final bool isSnapshot;
 
-  ChatRefHiveModel({
+  ChatRefModel({
     required this.id,
     required this.name,
     this.image,
@@ -33,19 +33,18 @@ class ChatRefHiveModel {
     'isSnapshot': isSnapshot,
   };
 
-  factory ChatRefHiveModel.fromJson(Map<dynamic, dynamic> json) =>
-      ChatRefHiveModel(
-        id: json['id'],
-        name: json['name'],
-        image: json['image'],
-        videoUrl: json['videoUrl'],
-        muscleGroup: json['muscleGroup'],
-        difficulty: json['difficulty'],
-        type: json['type'],
-        isSnapshot: json['isSnapshot'] ?? false,
-      );
+  factory ChatRefModel.fromJson(Map<dynamic, dynamic> json) => ChatRefModel(
+    id: json['id'],
+    name: json['name'],
+    image: json['image'],
+    videoUrl: json['videoUrl'],
+    muscleGroup: json['muscleGroup'],
+    difficulty: json['difficulty'],
+    type: json['type'],
+    isSnapshot: json['isSnapshot'] ?? false,
+  );
 
-  factory ChatRefHiveModel.fromEntity(ChatRefEntity entity) => ChatRefHiveModel(
+  factory ChatRefModel.fromEntity(ChatRefEntity entity) => ChatRefModel(
     id: entity.id,
     name: entity.name,
     image: entity.image,
@@ -68,16 +67,16 @@ class ChatRefHiveModel {
   );
 }
 
-class ChatMessageHiveModel {
+class ChatMessageModel {
   final String id;
   final String text;
   final String sender;
-  final List<ChatRefHiveModel> refs;
+  final List<ChatRefModel> refs;
   final bool isDegraded;
   final DateTime timestamp;
   final String? action;
 
-  ChatMessageHiveModel({
+  ChatMessageModel({
     required this.id,
     required this.text,
     required this.sender,
@@ -97,25 +96,25 @@ class ChatMessageHiveModel {
     'action': action,
   };
 
-  factory ChatMessageHiveModel.fromJson(Map<dynamic, dynamic> json) =>
-      ChatMessageHiveModel(
+  factory ChatMessageModel.fromJson(Map<dynamic, dynamic> json) =>
+      ChatMessageModel(
         id: json['id'],
         text: json['text'],
         sender: json['sender'],
         refs: (json['refs'] as List)
-            .map((e) => ChatRefHiveModel.fromJson(Map<String, dynamic>.from(e)))
+            .map((e) => ChatRefModel.fromJson(Map<String, dynamic>.from(e)))
             .toList(),
         isDegraded: json['isDegraded'] ?? false,
         timestamp: DateTime.parse(json['timestamp']),
         action: json['action'],
       );
 
-  factory ChatMessageHiveModel.fromEntity(ChatMessageEntity entity) =>
-      ChatMessageHiveModel(
+  factory ChatMessageModel.fromEntity(ChatMessageEntity entity) =>
+      ChatMessageModel(
         id: entity.id,
         text: entity.text,
         sender: entity.sender.name,
-        refs: entity.refs.map((e) => ChatRefHiveModel.fromEntity(e)).toList(),
+        refs: entity.refs.map((e) => ChatRefModel.fromEntity(e)).toList(),
         isDegraded: entity.isDegraded,
         timestamp: entity.timestamp,
         action: entity.action,
@@ -132,13 +131,13 @@ class ChatMessageHiveModel {
   );
 }
 
-class ChatSessionHiveModel {
+class ChatSessionModel {
   final String id;
   final String title;
-  final List<ChatMessageHiveModel> messages;
+  final List<ChatMessageModel> messages;
   final DateTime lastUpdatedAt;
 
-  ChatSessionHiveModel({
+  ChatSessionModel({
     required this.id,
     required this.title,
     required this.messages,
@@ -152,15 +151,12 @@ class ChatSessionHiveModel {
     'lastUpdatedAt': lastUpdatedAt.toIso8601String(),
   };
 
-  factory ChatSessionHiveModel.fromJson(Map<dynamic, dynamic> json) =>
-      ChatSessionHiveModel(
+  factory ChatSessionModel.fromJson(Map<dynamic, dynamic> json) =>
+      ChatSessionModel(
         id: json['id'],
         title: json['title'],
         messages: (json['messages'] as List)
-            .map(
-              (e) =>
-                  ChatMessageHiveModel.fromJson(Map<String, dynamic>.from(e)),
-            )
+            .map((e) => ChatMessageModel.fromJson(Map<String, dynamic>.from(e)))
             .toList(),
         lastUpdatedAt: DateTime.parse(json['lastUpdatedAt']),
       );

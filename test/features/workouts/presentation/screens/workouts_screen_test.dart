@@ -12,6 +12,7 @@ import 'package:super_fitness/config/base_state/base_state.dart';
 import 'package:super_fitness/config/base_ui_event/base_ui_event.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_group_entity.dart';
+import 'package:super_fitness/core/widgets/app_shimmer.dart';
 import 'package:super_fitness/features/workouts/presentation/screens/workouts_screen.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_cubit.dart';
 import 'package:super_fitness/features/workouts/presentation/view_models/workouts_view_model/workouts_events.dart';
@@ -102,13 +103,18 @@ void main() {
       tester,
     ) async {
       when(mockCubit.state).thenReturn(
-        const WorkoutsState(muscleGroupsState: BaseState(isLoading: true)),
+        const WorkoutsState(
+          muscleGroupsState: BaseState<List<MuscleGroupEntity>>(
+            isLoading: true,
+          ),
+        ),
       );
 
       await pumpWorkoutsScreen(tester);
-      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump();
 
-      expect(find.text('Loading'), findsWidgets);
+      // Should show shimmer in tabs
+      expect(find.byType(AppShimmer), findsWidgets);
     });
 
     testWidgets(

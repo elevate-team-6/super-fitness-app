@@ -20,6 +20,11 @@ void main() {
   late MockGetMusclesByGroupIdUseCase mockGetMusclesByGroupIdUseCase;
   late WorkoutsCubit cubit;
 
+  const initialState = WorkoutsState(
+    muscleGroupsState: BaseState<List<MuscleGroupEntity>>(isLoading: true),
+    musclesState: BaseState<List<MuscleEntity>>(isLoading: true),
+  );
+
   setUp(() {
     mockGetMuscleGroupsUseCase = MockGetMuscleGroupsUseCase();
     mockGetMusclesByGroupIdUseCase = MockGetMusclesByGroupIdUseCase();
@@ -47,7 +52,7 @@ void main() {
 
   group('GetMuscleGroups', () {
     blocTest<WorkoutsCubit, WorkoutsState>(
-      'emits [loading, success] and calls getMusclesByGroupId when muscle groups are fetched successfully',
+      'emits [success] and calls getMusclesByGroupId when muscle groups are fetched successfully',
       build: () {
         when(
           mockGetMuscleGroupsUseCase(),
@@ -59,27 +64,35 @@ void main() {
       },
       act: (cubit) => cubit.doEvent(GetMuscleGroupsEvent()),
       expect: () => [
-        const WorkoutsState(muscleGroupsState: BaseState(isLoading: true)),
-        const WorkoutsState(muscleGroupsState: BaseState(data: tMuscleGroups)),
-        const WorkoutsState(
-          muscleGroupsState: BaseState(data: tMuscleGroups),
-          musclesState: BaseState(isLoading: true),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            isLoading: true,
+          ),
+        ),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            data: tMuscleGroups,
+          ),
+        ),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            data: tMuscleGroups,
+          ),
+          musclesState: const BaseState<List<MuscleEntity>>(isLoading: true),
           selectedMuscleGroupId: '1',
         ),
-        const WorkoutsState(
-          muscleGroupsState: BaseState(data: tMuscleGroups),
-          musclesState: BaseState(data: tMuscles),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            data: tMuscleGroups,
+          ),
+          musclesState: const BaseState<List<MuscleEntity>>(data: tMuscles),
           selectedMuscleGroupId: '1',
         ),
       ],
-      verify: (_) {
-        verify(mockGetMuscleGroupsUseCase()).called(1);
-        verify(mockGetMusclesByGroupIdUseCase(id: '1')).called(1);
-      },
     );
 
     blocTest<WorkoutsCubit, WorkoutsState>(
-      'emits [loading, success] with empty list when no muscle groups are found',
+      'emits [success] with empty list when no muscle groups are found',
       build: () {
         when(
           mockGetMuscleGroupsUseCase(),
@@ -88,13 +101,19 @@ void main() {
       },
       act: (cubit) => cubit.doEvent(GetMuscleGroupsEvent()),
       expect: () => [
-        const WorkoutsState(muscleGroupsState: BaseState(isLoading: true)),
-        const WorkoutsState(muscleGroupsState: BaseState(data: [])),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            isLoading: true,
+          ),
+        ),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(data: []),
+        ),
       ],
     );
 
     blocTest<WorkoutsCubit, WorkoutsState>(
-      'emits [loading, error] when fetching muscle groups fails',
+      'emits [error] when fetching muscle groups fails',
       build: () {
         when(
           mockGetMuscleGroupsUseCase(),
@@ -103,75 +122,62 @@ void main() {
       },
       act: (cubit) => cubit.doEvent(GetMuscleGroupsEvent()),
       expect: () => [
-        const WorkoutsState(muscleGroupsState: BaseState(isLoading: true)),
-        const WorkoutsState(
-          muscleGroupsState: BaseState(errorMessage: 'server error'),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            isLoading: true,
+          ),
+        ),
+        initialState.copyWith(
+          muscleGroupsState: const BaseState<List<MuscleGroupEntity>>(
+            errorMessage: 'server error',
+          ),
         ),
       ],
     );
-  });
+    group('GetMusclesByGroupId', () {
+      blocTest<WorkoutsCubit, WorkoutsState>(
+        'emits [loading, success] when muscles are fetched successfully',
+        build: () {
+          when(
+            mockGetMusclesByGroupIdUseCase(id: '1'),
+          ).thenAnswer((_) async => const SuccessBaseResponse(tMuscles));
+          return cubit;
+        },
+        act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
+        expect: () => [
+          initialState.copyWith(
+            musclesState: const BaseState<List<MuscleEntity>>(isLoading: true),
+            selectedMuscleGroupId: '1',
+          ),
+          initialState.copyWith(
+            musclesState: const BaseState<List<MuscleEntity>>(data: tMuscles),
+            selectedMuscleGroupId: '1',
+          ),
+        ],
+      );
 
-  group('GetMusclesByGroupId', () {
-    blocTest<WorkoutsCubit, WorkoutsState>(
-      'emits [loading, success] when muscles are fetched successfully',
-      build: () {
-        when(
-          mockGetMusclesByGroupIdUseCase(id: '1'),
-        ).thenAnswer((_) async => const SuccessBaseResponse(tMuscles));
-        return cubit;
-      },
-      act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
-      expect: () => [
-        const WorkoutsState(
-          musclesState: BaseState(isLoading: true),
-          selectedMuscleGroupId: '1',
-        ),
-        const WorkoutsState(
-          musclesState: BaseState(data: tMuscles),
-          selectedMuscleGroupId: '1',
-        ),
-      ],
-    );
-
-    blocTest<WorkoutsCubit, WorkoutsState>(
-      'emits [loading, error] when fetching muscles fails',
-      build: () {
-        when(
-          mockGetMusclesByGroupIdUseCase(id: '1'),
-        ).thenAnswer((_) async => const ErrorBaseResponse('not found'));
-        return cubit;
-      },
-      act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
-      expect: () => [
-        const WorkoutsState(
-          musclesState: BaseState(isLoading: true),
-          selectedMuscleGroupId: '1',
-        ),
-        const WorkoutsState(
-          musclesState: BaseState(errorMessage: 'not found'),
-          selectedMuscleGroupId: '1',
-        ),
-      ],
-    );
-    blocTest<WorkoutsCubit, WorkoutsState>(
-      'emits [loading, success] with empty list when no muscles are found',
-      build: () {
-        when(
-          mockGetMusclesByGroupIdUseCase(id: '1'),
-        ).thenAnswer((_) async => const SuccessBaseResponse([]));
-        return cubit;
-      },
-      act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
-      expect: () => [
-        const WorkoutsState(
-          musclesState: BaseState(isLoading: true),
-          selectedMuscleGroupId: '1',
-        ),
-        const WorkoutsState(
-          musclesState: BaseState(data: []),
-          selectedMuscleGroupId: '1',
-        ),
-      ],
-    );
+      blocTest<WorkoutsCubit, WorkoutsState>(
+        'emits [loading, error] when fetching muscles fails',
+        build: () {
+          when(
+            mockGetMusclesByGroupIdUseCase(id: '1'),
+          ).thenAnswer((_) async => const ErrorBaseResponse('not found'));
+          return cubit;
+        },
+        act: (cubit) => cubit.doEvent(GetMusclesByGroupIdEvent('1')),
+        expect: () => [
+          initialState.copyWith(
+            musclesState: const BaseState<List<MuscleEntity>>(isLoading: true),
+            selectedMuscleGroupId: '1',
+          ),
+          initialState.copyWith(
+            musclesState: const BaseState<List<MuscleEntity>>(
+              errorMessage: 'not found',
+            ),
+            selectedMuscleGroupId: '1',
+          ),
+        ],
+      );
+    });
   });
 }

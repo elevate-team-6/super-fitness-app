@@ -32,7 +32,7 @@ class CustomHorizontalWheelPicker extends StatelessWidget {
           child: RotatedBox(
             quarterTurns: -1,
             child: ListWheelScrollView.useDelegate(
-              itemExtent: 70,
+              itemExtent: 80,
               diameterRatio: 3,
               perspective: 0.003,
               physics: const FixedExtentScrollPhysics(),

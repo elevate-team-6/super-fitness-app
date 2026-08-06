@@ -15,23 +15,26 @@ import '../../../workouts/domain/entities/exercise_entity.dart' as workout;
 import '../../domain/entities/chat_message_entity.dart';
 import '../../domain/entities/chat_ref_entity.dart';
 import '../../domain/repo/chat_repo_contract.dart';
+import '../data_sources/contracts/chat_history_data_source_contract.dart';
 import '../data_sources/contracts/chat_local_data_source_contract.dart';
 import '../data_sources/contracts/chat_remote_data_source_contract.dart';
 import '../mappers/user_context_mapper.dart';
 import '../models/chat_event_model.dart';
-import '../models/hive/chat_hive_models.dart';
+import '../models/chat_models.dart';
 
 @LazySingleton(as: ChatRepoContract)
 class ChatRepoImpl implements ChatRepoContract {
   final ChatRemoteDataSourceContract _remoteDataSource;
   final CatalogLocalDataSource _localDataSource;
   final ChatLocalDataSourceContract _chatLocalDataSource;
+  final ChatHistoryDataSourceContract _chatHistoryDataSource;
   final CrashlyticsService _crashlyticsService;
 
   ChatRepoImpl(
     this._remoteDataSource,
     this._localDataSource,
     this._chatLocalDataSource,
+    this._chatHistoryDataSource,
     this._crashlyticsService,
   );
 
@@ -45,118 +48,107 @@ class ChatRepoImpl implements ChatRepoContract {
     required String sessionId,
     required String message,
   }) async* {
-    // 1. Save User Message Locally
+    final userMessageId = const Uuid().v4();
     final userMessage = ChatMessageEntity(
-      id: const Uuid().v4(),
+      id: userMessageId,
       text: message,
       sender: MessageSender.user,
       timestamp: DateTime.now(),
     );
 
-    final sessionResult = await _chatLocalDataSource.getSession(sessionId);
-    ChatSessionHiveModel? session;
+    // Senior Optimization: Parallel IO
+    final results = await Future.wait([
+      getCachedUser(),
+      _chatHistoryDataSource.getSession(sessionId),
+    ]);
 
-    if (sessionResult is SuccessBaseResponse<ChatSessionHiveModel?>) {
+    final userResult = results[0] as BaseResponse<UserEntity?>;
+    final sessionResult = results[1] as BaseResponse<ChatSessionModel?>;
+
+    UserEntity? currentUser;
+    if (userResult is SuccessBaseResponse<UserEntity?>) {
+      currentUser = userResult.data;
+    }
+
+    ChatSessionModel? session;
+    if (sessionResult is SuccessBaseResponse<ChatSessionModel?>) {
       session = sessionResult.data;
     }
 
-    // Defensive: If session doesn't exist yet, create it to avoid losing messages
-    if (session == null) {
-      final newSession = ChatSessionHiveModel(
+    // 1. Prepare Session Data in Memory
+    bool isNewSession = session == null;
+    if (isNewSession) {
+      session = ChatSessionModel(
         id: sessionId,
         title: message.length > 30 ? "${message.substring(0, 30)}..." : message,
         messages: [],
         lastUpdatedAt: DateTime.now(),
       );
-      await _chatLocalDataSource.saveSession(newSession);
-      session = newSession;
     }
 
-    final updatedMessages = List<ChatMessageHiveModel>.from(session.messages)
-      ..add(ChatMessageHiveModel.fromEntity(userMessage));
-    await _chatLocalDataSource.updateSessionMessages(
-      sessionId,
-      updatedMessages,
-    );
+    final updatedMessages = List<ChatMessageModel>.from(session.messages)
+      ..add(ChatMessageModel.fromEntity(userMessage));
 
-    final messageId = const Uuid().v4();
-    String currentText = "";
-    List<ChatRefEntity> currentRefs = [];
-    bool isDegraded = false;
-    String? action;
+    // 2. Background Sync
+    final saveTask = isNewSession
+        ? _chatHistoryDataSource.saveSession(
+            ChatSessionModel(
+              id: session.id,
+              title: session.title,
+              messages: updatedMessages,
+              lastUpdatedAt: DateTime.now(),
+            ),
+          )
+        : _chatHistoryDataSource.updateSessionMessages(
+            sessionId,
+            updatedMessages,
+          );
 
-    // Senior Optimization: Parallel IO
-    final results = await Future.wait([
-      getCachedUser(),
-      _chatLocalDataSource.getSession(sessionId),
-    ]);
-
-    final userResult = results[0] as BaseResponse<UserEntity?>;
-    final sessionQueryResult =
-        results[1] as BaseResponse<ChatSessionHiveModel?>;
-
-    final Map<String, dynamic>? userContext =
-        (userResult is SuccessBaseResponse<UserEntity?>)
-        ? userResult.data?.toUserContextJson()
-        : null;
-
-    if (kDebugMode) {
-      debugPrint('ChatRepoImpl: User Context for Ollama: $userContext');
-    }
-
-    // Build History Map for Ollama
-    List<Map<String, String>> history = [];
-    if (sessionQueryResult is SuccessBaseResponse<ChatSessionHiveModel?>) {
-      final sessionData = sessionQueryResult.data;
-      if (sessionData != null) {
-        history = sessionData.messages
-            .map(
-              (m) => {
-                "role": m.sender == MessageSender.user.name
-                    ? "user"
-                    : "assistant",
-                "content": m.text,
-              },
-            )
-            .toList();
-      }
-    }
+    // 3. Start AI Request
+    final Map<String, dynamic>? userContext = currentUser?.toUserContextJson();
+    final List<Map<String, String>> history = updatedMessages
+        .map(
+          (m) => {
+            "role": m.sender == MessageSender.user.name ? "user" : "assistant",
+            "content": m.text,
+          },
+        )
+        .toList();
 
     final eventStream = _remoteDataSource.getChatResponseStream(
       history: history,
       userContext: userContext,
     );
 
+    final assistantMessageId = const Uuid().v4();
+    String currentText = "";
+    List<ChatRefEntity> currentRefs = [];
+    bool isDegraded = false;
+    String? action;
+
     await for (final result in eventStream) {
+      // ignore: unawaited_futures
+      saveTask.catchError((e) {
+        debugPrint('ChatRepoImpl: Sync Error: $e');
+        return ErrorBaseResponse<void>(e.toString());
+      });
+
       switch (result) {
         case SuccessBaseResponse<ChatEventModel>():
           final event = result.data!;
-          if (kDebugMode) {
-            debugPrint(
-              'ChatRepoImpl: Received SuccessBaseResponse with event type: ${event.type}',
-            );
-          }
 
-          // Handle text content: append if token-based, replace if consolidated
           if (event.content != null) {
             if (event.type == "token") {
               currentText += event.content!;
             } else {
               currentText = event.content!;
             }
-            if (kDebugMode) {
-              debugPrint(
-                'ChatRepoImpl: Updated currentText (length: ${currentText.length})',
-              );
-            }
           }
 
-          // Handle references: triggered on 'refs' or consolidated 'done'
           if (event.type == "refs" || event.type == "done") {
             action =
                 event.action?.label ??
                 (event.action?.type != "none" ? event.action?.type : null);
-
             if (event.exerciseRefs != null || event.mealRefs != null) {
               currentRefs = await _hydrateRefs(event);
             }
@@ -172,7 +164,7 @@ class ChatRepoImpl implements ChatRepoContract {
           }
 
           final assistantMessage = ChatMessageEntity(
-            id: messageId,
+            id: assistantMessageId,
             text: currentText,
             sender: MessageSender.assistant,
             timestamp: DateTime.now(),
@@ -183,47 +175,21 @@ class ChatRepoImpl implements ChatRepoContract {
 
           yield SuccessBaseResponse(assistantMessage);
 
-          // Senior-Level Optimization: Only update local storage on critical events or end of stream
-          // to avoid overwhelming Hive during fast token streaming.
           if (event.type == "done" ||
               event.type == "refs" ||
               event.type == "error") {
-            final currentSessionResult = await _chatLocalDataSource.getSession(
+            final finalMessages = List<ChatMessageModel>.from(updatedMessages);
+            finalMessages.add(ChatMessageModel.fromEntity(assistantMessage));
+            await _chatHistoryDataSource.updateSessionMessages(
               sessionId,
+              finalMessages,
             );
-            if (currentSessionResult
-                is SuccessBaseResponse<ChatSessionHiveModel?>) {
-              final currentSession = currentSessionResult.data;
-              if (currentSession != null) {
-                final messages = List<ChatMessageHiveModel>.from(
-                  currentSession.messages,
-                );
-                final existingIndex = messages.indexWhere(
-                  (m) => m.id == messageId,
-                );
-                if (existingIndex != -1) {
-                  messages[existingIndex] = ChatMessageHiveModel.fromEntity(
-                    assistantMessage,
-                  );
-                } else {
-                  messages.add(
-                    ChatMessageHiveModel.fromEntity(assistantMessage),
-                  );
-                }
-                await _chatLocalDataSource.updateSessionMessages(
-                  sessionId,
-                  messages,
-                );
-              }
-            }
           }
 
         case ErrorBaseResponse<ChatEventModel>():
           await _crashlyticsService.recordError(
             result.errorMessage,
             StackTrace.current,
-            reason: "Chat Remote Error",
-            information: ["SessionID: $sessionId"],
           );
           yield ErrorBaseResponse(result.errorMessage);
       }
@@ -234,40 +200,40 @@ class ChatRepoImpl implements ChatRepoContract {
   Future<BaseResponse<List<ChatMessageEntity>>> getSessionMessages(
     String sessionId,
   ) async {
-    final result = await _chatLocalDataSource.getSession(sessionId);
+    final result = await _chatHistoryDataSource.getSession(sessionId);
     switch (result) {
-      case SuccessBaseResponse<ChatSessionHiveModel?>():
+      case SuccessBaseResponse<ChatSessionModel?>():
         final messages =
             result.data?.messages.map((e) => e.toEntity()).toList() ?? [];
         return SuccessBaseResponse(messages);
-      case ErrorBaseResponse<ChatSessionHiveModel?>():
+      case ErrorBaseResponse<ChatSessionModel?>():
         return ErrorBaseResponse(result.errorMessage);
     }
   }
 
   @override
   Future<BaseResponse<List<Map<String, String>>>> getChatHistory() async {
-    final result = await _chatLocalDataSource.getSessions();
+    final result = await _chatHistoryDataSource.getSessions();
     switch (result) {
-      case SuccessBaseResponse<List<ChatSessionHiveModel>>():
+      case SuccessBaseResponse<List<ChatSessionModel>>():
         final history = result.data!
             .map((e) => {'id': e.id, 'title': e.title})
             .toList();
         return SuccessBaseResponse(history);
-      case ErrorBaseResponse<List<ChatSessionHiveModel>>():
+      case ErrorBaseResponse<List<ChatSessionModel>>():
         return ErrorBaseResponse(result.errorMessage);
     }
   }
 
   @override
   Future<BaseResponse<void>> deleteSession(String id) async {
-    return _chatLocalDataSource.deleteSession(id);
+    return _chatHistoryDataSource.deleteSession(id);
   }
 
   @override
   Future<BaseResponse<void>> createSession(String id, String title) async {
-    return _chatLocalDataSource.saveSession(
-      ChatSessionHiveModel(
+    return _chatHistoryDataSource.saveSession(
+      ChatSessionModel(
         id: id,
         title: title,
         messages: [],
@@ -278,7 +244,7 @@ class ChatRepoImpl implements ChatRepoContract {
 
   @override
   Future<BaseResponse<void>> updateSessionTitle(String id, String title) async {
-    return _chatLocalDataSource.updateSessionTitle(id, title);
+    return _chatHistoryDataSource.updateSessionTitle(id, title);
   }
 
   Future<List<ChatRefEntity>> _hydrateRefs(ChatEventModel event) async {

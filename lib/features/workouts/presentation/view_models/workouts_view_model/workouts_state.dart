@@ -9,8 +9,8 @@ class WorkoutsState extends Equatable {
   final String? selectedMuscleGroupId;
 
   const WorkoutsState({
-    this.muscleGroupsState = const BaseState(),
-    this.musclesState = const BaseState(),
+    this.muscleGroupsState = const BaseState<List<MuscleGroupEntity>>(),
+    this.musclesState = const BaseState<List<MuscleEntity>>(),
     this.selectedMuscleGroupId,
   });
 

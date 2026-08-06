@@ -31,13 +31,11 @@ class MealCard extends StatelessWidget {
         child: Stack(
           children: [
             Positioned.fill(
-              child: image.isEmpty
-                  ? const ColoredBox(color: AppColors.black80)
-                  : CustomCachedImage(
-                      imageUrl: image,
-                      fit: BoxFit.cover,
-                      placeholderIcon: AppIcons.meal,
-                    ),
+              child: CustomCachedImage(
+                imageUrl: image,
+                fit: BoxFit.cover,
+                placeholderIcon: AppIcons.meal,
+              ),
             ),
             Positioned.fill(
               child: DecoratedBox(

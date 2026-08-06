@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:super_fitness/core/utils/app_colors.dart';
 import 'package:super_fitness/core/utils/app_text_styles.dart';
 import 'package:super_fitness/core/widgets/custom_cached_image.dart';
 import 'package:super_fitness/core/widgets/pressable.dart';
 import 'package:super_fitness/features/workouts/domain/entities/muscle_entity.dart';
+
+import '../../../../core/utils/app_assets.dart';
 
 class MuscleGridItem extends StatelessWidget {
   final MuscleEntity muscle;
@@ -22,12 +23,11 @@ class MuscleGridItem extends StatelessWidget {
           children: [
             // 1. Background Image
             Positioned.fill(
-              child: muscle.image.isEmpty
-                  ? const ColoredBox(color: AppColors.black80)
-                  : CustomCachedImage(
-                      imageUrl: muscle.image,
-                      fit: BoxFit.cover,
-                    ),
+              child: CustomCachedImage(
+                imageUrl: muscle.image,
+                fit: BoxFit.cover,
+                placeholderIcon: AppIcons.workOut,
+              ),
             ),
 
             // 2. Gradient Overlay

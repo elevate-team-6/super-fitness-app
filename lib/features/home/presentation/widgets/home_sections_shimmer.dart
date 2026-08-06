@@ -149,4 +149,12 @@ abstract class HomeSectionsShimmer {
       borderRadius: BorderRadius.circular(20.r),
     );
   }
+
+  static Widget muscleGridItemShimmer() {
+    return AppShimmer(
+      width: double.infinity,
+      height: 180.h,
+      borderRadius: BorderRadius.circular(24.r),
+    );
+  }
 }

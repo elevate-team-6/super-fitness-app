@@ -1,7 +1,4 @@
-import 'dart:convert';
 import '../../core/utils/app_keys.dart';
-import '../../features/auth/data/models/response/user_model.dart';
-import '../../features/auth/domain/entities/user_entity.dart';
 import '../cache/secure_cache_helper.dart';
 import '../di/di.dart';
 
@@ -10,20 +7,6 @@ class AuthService {
     final secureCacheHelper = getIt<SecureCacheHelper>();
     final token = await secureCacheHelper.readData(key: AppKeys.tokenKey);
     return token != null && token.isNotEmpty;
-  }
-
-  static Future<UserEntity?> getCachedUser() async {
-    final secureCacheHelper = getIt<SecureCacheHelper>();
-    final raw = await secureCacheHelper.readData(key: AppKeys.userDataKey);
-
-    if (raw == null || raw.isEmpty) return null;
-
-    try {
-      final json = jsonDecode(raw) as Map<String, dynamic>;
-      return UserModel.fromJson(json).toEntity();
-    } catch (_) {
-      return null;
-    }
   }
 
   static Future<bool> isOnboardingCompleted() async {
@@ -38,12 +21,5 @@ class AuthService {
       key: AppKeys.onboardingKey,
       value: 'true',
     );
-  }
-
-  static Future<void> logout() async {
-    final secureCacheHelper = getIt<SecureCacheHelper>();
-    await secureCacheHelper.deleteData(key: AppKeys.tokenKey);
-    await secureCacheHelper.deleteData(key: AppKeys.userDataKey);
-    await secureCacheHelper.deleteData(key: AppKeys.profileDataKey);
   }
 }

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/utils/app_strings.dart';
 import '../base_response/base_response.dart';
@@ -17,6 +19,14 @@ class ErrorHandler {
   }
 
   static String _handle(dynamic error) {
+    if (kDebugMode) {
+      debugPrint('ErrorHandler: Handling error: $error');
+    }
+
+    if (error is FirebaseException) {
+      return _handleFirebaseException(error);
+    }
+
     if (error is DioException) {
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
@@ -38,6 +48,19 @@ class ErrorHandler {
       }
     } else {
       return AppStrings.unknownError.tr();
+    }
+  }
+
+  static String _handleFirebaseException(FirebaseException error) {
+    switch (error.code) {
+      case 'permission-denied':
+        return AppStrings.firestorePermissionDenied.tr();
+      case 'not-found':
+        return AppStrings.firestoreNotFound.tr();
+      case 'unavailable':
+        return AppStrings.firestoreUnavailable.tr();
+      default:
+        return error.message ?? AppStrings.unknownError.tr();
     }
   }
 
