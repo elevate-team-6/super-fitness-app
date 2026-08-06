@@ -12,7 +12,7 @@ import 'package:super_fitness/features/profile/data/models/request/edit_profile_
 import 'package:super_fitness/features/profile/data/models/response/profile_data_response.dart';
 import 'package:super_fitness/features/profile/domain/repo/profile_repo_contract.dart';
 
-@Injectable(as: ProfileRepoContract)
+@LazySingleton(as: ProfileRepoContract)
 class ProfileRepoImpl implements ProfileRepoContract {
   final ProfileRemoteDataSourceContract _remoteDataSource;
   final ProfileLocalDataSourceContract _localDataSource;
@@ -32,7 +32,21 @@ class ProfileRepoImpl implements ProfileRepoContract {
   Future<BaseResponse<UserEntity>> editProfile(
     EditProfileRequest request,
   ) async {
-    return await _remoteDataSource.editProfile(request);
+    final response = await _remoteDataSource.editProfile(request);
+
+    if (response is SuccessBaseResponse<UserEntity>) {
+      final user = response.data;
+      if (user != null) {
+        // Build a UserModel for caching (since cacheUser expects UserModel)
+        // Note: Assuming UserEntity can be mapped back or the cache handles it.
+        // For simplicity and consistency with getRemoteProfileData:
+        // We'll rely on the next fetch or manually update cache if we had the model.
+        // However, notifying the stream with the entity is the primary goal.
+        _userStreamController.add(user);
+      }
+    }
+
+    return response;
   }
 
   @override
