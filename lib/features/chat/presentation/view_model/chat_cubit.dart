@@ -21,7 +21,7 @@ import '../../domain/use_cases/send_message_use_case.dart';
 import 'chat_event.dart';
 import 'chat_state.dart';
 
-@injectable
+@lazySingleton
 class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
   final GetChatHistoryUseCase _getChatHistoryUseCase;
   final GetSessionMessagesUseCase _getSessionMessagesUseCase;

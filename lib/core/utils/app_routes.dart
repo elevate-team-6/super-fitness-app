@@ -153,7 +153,7 @@ abstract class AppRoutes {
                           ..doEvent(const FetchAllHomeDataEvent()),
                   ),
                   BlocProvider(create: (context) => getIt<WorkoutsCubit>()),
-                  BlocProvider(create: (_) => getIt<ChatCubit>()),
+                  BlocProvider.value(value: getIt<ChatCubit>()),
                 ],
                 child: const MainLayoutScreen(),
               ),
