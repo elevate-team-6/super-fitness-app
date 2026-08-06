@@ -60,10 +60,20 @@ class _ChatDrawerState extends State<ChatDrawer> {
                 child: BlocBuilder<ChatCubit, ChatState>(
                   builder: (context, state) {
                     final history = state.history;
+                    final isLoading = state.historyStatus.isLoading;
+
+                    if (isLoading && history.isEmpty) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      );
+                    }
+
                     if (history.isEmpty) {
                       return Center(
                         child: Text(
-                          'No previous conversations',
+                          AppStrings.noPreviousConversations.tr(),
                           style: AppTextStyles.white13400.copyWith(
                             color: AppColors.white20,
                           ),

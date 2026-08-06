@@ -12,7 +12,6 @@ import '../../../../../config/base_ui_event/base_ui_event.dart';
 import '../../../../../core/utils/app_strings.dart';
 import '../../../profile/domain/repo/profile_repo_contract.dart';
 import '../../domain/entities/chat_message_entity.dart';
-import '../../domain/use_cases/create_session_use_case.dart';
 import '../../domain/use_cases/delete_session_use_case.dart';
 import '../../domain/use_cases/get_chat_history_use_case.dart';
 import '../../domain/use_cases/get_chat_user_use_case.dart';
@@ -26,7 +25,6 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
   final GetChatHistoryUseCase _getChatHistoryUseCase;
   final GetSessionMessagesUseCase _getSessionMessagesUseCase;
   final SendMessageUseCase _sendMessageUseCase;
-  final CreateSessionUseCase _createSessionUseCase;
   final DeleteSessionUseCase _deleteSessionUseCase;
   final GetChatUserUseCase _getChatUserUseCase;
   final ProfileRepoContract _profileRepo;
@@ -37,7 +35,6 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     this._getChatHistoryUseCase,
     this._getSessionMessagesUseCase,
     this._sendMessageUseCase,
-    this._createSessionUseCase,
     this._deleteSessionUseCase,
     this._getChatUserUseCase,
     this._profileRepo,
@@ -88,7 +85,15 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
   }
 
   Future<void> _loadHistory() async {
-    emit(state.copyWith(historyStatus: const BaseState(isLoading: true)));
+    // Preserve existing data while loading to avoid UI flicker
+    emit(
+      state.copyWith(
+        historyStatus: BaseState(
+          isLoading: true,
+          data: state.historyStatus.data,
+        ),
+      ),
+    );
     final result = await _getChatHistoryUseCase();
     switch (result) {
       case SuccessBaseResponse<List<Map<String, String>>>():
@@ -96,7 +101,10 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
       case ErrorBaseResponse<List<Map<String, String>>>():
         emit(
           state.copyWith(
-            historyStatus: BaseState(errorMessage: result.errorMessage),
+            historyStatus: BaseState(
+              errorMessage: result.errorMessage,
+              data: state.historyStatus.data,
+            ),
           ),
         );
         emitUiEvent(DisplayErrorEvent(result.errorMessage));
@@ -169,14 +177,22 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
     final cleanText = text.trim();
     if (cleanText.isEmpty) return;
 
-    // 1. Ensure we have an active session
-    final sessionId = await _ensureActiveSession(cleanText);
-    if (sessionId == null) return;
-
-    // 2. Emit user message immediately for UX
+    // 1. Instant User Message Emit (UX Priority)
+    // We emit the UI state BEFORE any network or async logic
     _emitUserMessageState(cleanText);
 
-    // 3. Listen to the assistant stream and wait for it (Await this)
+    // 2. Optimistic Session Handling
+    String? sessionId = state.currentSessionId;
+    if (sessionId == null) {
+      sessionId = const Uuid().v4();
+      emit(state.copyWith(currentSessionId: sessionId));
+
+      // Load history in background WITHOUT blocking the message flow
+      // This ensures the new session appears in the sidebar eventually
+      unawaited(_loadHistory());
+    }
+
+    // 3. Listen to the assistant stream
     try {
       await _listenToAssistantStream(sessionId, cleanText);
     } catch (e) {
@@ -185,25 +201,6 @@ class ChatCubit extends BaseCubit<ChatState, BaseUiEvent> {
       );
       emitUiEvent(DisplayErrorEvent(e.toString()));
     }
-  }
-
-  Future<String?> _ensureActiveSession(String firstMessage) async {
-    if (state.currentSessionId != null) return state.currentSessionId;
-
-    final newId = const Uuid().v4();
-    final title = firstMessage.length > 30
-        ? "${firstMessage.substring(0, 30)}..."
-        : firstMessage;
-
-    final result = await _createSessionUseCase(newId, title);
-    if (result is ErrorBaseResponse) {
-      emitUiEvent(DisplayErrorEvent(result.errorMessage));
-      return null;
-    }
-
-    emit(state.copyWith(currentSessionId: newId));
-    await _loadHistory();
-    return newId;
   }
 
   void _emitUserMessageState(String text) {
