@@ -20,7 +20,7 @@
 
 Below are the app's screenshots that highlight its functionality:
 
-<img width="1881" height="836" alt="Image" src="https://github.com/user-attachments/assets/70145bd4-e57e-469e-8385-72cca3762079" />
+<img width="1983" height="793" alt="Image" src="https://github.com/user-attachments/assets/a5459daf-d9e2-4ef2-8a8d-0f6e7325acdc" />
 
 ---
 
