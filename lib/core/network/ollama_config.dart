@@ -1,19 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:super_fitness/config/services/crashlytics_service.dart';
+import 'package:super_fitness/config/services/remote_config_service.dart';
+import 'package:super_fitness/core/utils/remote_config_keys.dart';
 
 @lazySingleton
 class OllamaConfig {
   final CrashlyticsService _crashlyticsService;
+  final RemoteConfigService _remoteConfigService;
 
-  OllamaConfig(this._crashlyticsService);
+  OllamaConfig(this._crashlyticsService, this._remoteConfigService);
 
   static const String baseUrl = "https://api.ollama.com";
   static const String model = "gemma4:31b";
 
-  /// Reads API Key from environment variables at compile time.
-  /// Use --dart-define=OLLAMA_API_KEY=your_key when building/running.
-  static const String apiKey = String.fromEnvironment('OLLAMA_API_KEY');
+  /// Reads API Key from Firebase Remote Config.
+  String get apiKey =>
+      _remoteConfigService.getString(RemoteConfigKeys.ollamaApiKey);
 
   bool get isConfigured => apiKey.isNotEmpty;
 
@@ -28,9 +31,9 @@ class OllamaConfig {
   void validateConfig() {
     if (!isConfigured) {
       if (kDebugMode) {
-        debugPrint('WARNING: OLLAMA_API_KEY is not defined!');
+        debugPrint('WARNING: OLLAMA_API_KEY is not defined in Remote Config!');
         debugPrint(
-          'Please run the app with --dart-define=OLLAMA_API_KEY=your_actual_key',
+          'Please add "OLLAMA_API_KEY" to your Firebase Remote Config console.',
         );
       } else {
         _crashlyticsService.recordError(

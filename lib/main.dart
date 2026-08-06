@@ -11,6 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'config/di/di.dart';
 import 'config/services/auth_service.dart';
 import 'config/services/google_auth_service.dart';
+import 'config/services/remote_config_service.dart';
 import 'core/data/local/sqlite/asset_installer.dart';
 import 'core/network/ollama_config.dart';
 import 'core/utils/app_constants.dart';
@@ -36,6 +37,10 @@ Future<void> main() async {
   );
 
   configureDependencies();
+
+  // Initialize Remote Config before starting the app.
+  // This makes it safe for all other singletons to access it synchronously.
+  await getIt<RemoteConfigService>().initialize();
 
   // Validate Ollama Configuration
   getIt<OllamaConfig>().validateConfig();

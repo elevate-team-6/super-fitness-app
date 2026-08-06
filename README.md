@@ -240,52 +240,43 @@ During active development you can keep it watching:
 dart run build_runner watch --delete-conflicting-outputs
 ```
 
-### 4. Environment variables
+### 4. Remote Configuration (Secrets)
 
-The AI coach reads its API key from a **compile-time** environment variable. Copy the template and fill it in:
+This project uses **Firebase Remote Config** to manage sensitive API keys (like Ollama) securely at runtime. This avoids embedding secrets in the binary and allows for instant key rotation without redeploying the app.
 
-```bash
-cp env.example.json env.json
-```
-
-```json
-{
-  "OLLAMA_API_KEY": "your_key_here"
-}
-```
-
-`env.json` is gitignored. CI restores it from the `ENV_JSON_BASE64` repository secret.
+1.  Ensure you have your `google-services.json` (Android) and `firebase_options.dart` (Shared) restored.
+2.  In the **Firebase Console**, go to **Remote Config** and add the following key:
+    *   `OLLAMA_API_KEY`: Your actual Ollama API key.
+3.  Publish the changes.
 
 ### 5. Run
 
 ```bash
-flutter run --dart-define-from-file=env.json
+flutter run
 ```
-
-The app runs fine without a key — the chat feature simply reports that it isn't configured.
 
 ### 6. Build a release
 
 ```bash
 # Android
-flutter build apk --release --dart-define-from-file=env.json
-flutter build appbundle --release --dart-define-from-file=env.json
+flutter build apk --release
+flutter build appbundle --release
 
 # iOS
-flutter build ipa --release --dart-define-from-file=env.json
+flutter build ipa --release
 ```
 
-> The `distribution.yml` workflow builds through Shorebird with the same flag, so anything you add to `env.json` must also be added to the `ENV_JSON_BASE64` secret.
+The app runs fine without a key — the chat feature simply reports that it isn't configured in Remote Config.
 
 ### 🔑 Secrets
 
 | Secret | Where it lives | Committed? |
 |---|---|---|
-| `OLLAMA_API_KEY` | `env.json`, injected via `--dart-define-from-file` | ❌ (gitignored; CI secret `ENV_JSON_BASE64`) |
+| `OLLAMA_API_KEY` | **Firebase Remote Config** | ❌ (Managed via Firebase Console) |
 | Firebase configs | `google-services.json`, `firebase_options.dart` | ❌ (CI secrets `GOOGLE_SERVICES_JSON_BASE64`, `FIREBASE_OPTIONS_BASE64`) |
 | Android keystore | `android/app/upload-keystore.jks`, `android/key.properties` | ❌ (CI secret `ANDROID_KEYSTORE_BASE64`) |
 
-Never commit any of the above. CI restores them from repository secrets at build time.
+Never commit any of the above. CI restores file-based secrets from repository secrets at build time.
 
 ---
 
