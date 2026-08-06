@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/widgets/app_shimmer.dart';
+import '../../../main_layout/presentation/cubit/main_layout_cubit.dart';
 
 class HomeProfileImage extends StatelessWidget {
   final String? userPhoto;
@@ -21,21 +24,27 @@ class HomeProfileImage extends StatelessWidget {
       );
     }
 
-    return Container(
-      width: 40.w,
-      height: 40.w,
-      decoration: const BoxDecoration(
-        color: AppColors.black80,
-        shape: BoxShape.circle,
+    return GestureDetector(
+      onTap: () {
+        context.read<MainLayoutCubit>().changeTab(3);
+      },
+      child: Container(
+        width: 40.w,
+        height: 40.w,
+        decoration: const BoxDecoration(
+          color: AppColors.black80,
+          shape: BoxShape.circle,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: userPhoto != null && userPhoto!.isNotEmpty
+            ? Image.network(
+                userPhoto!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    _buildPlaceholder(),
+              )
+            : _buildPlaceholder(),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: userPhoto != null && userPhoto!.isNotEmpty
-          ? Image.network(
-              userPhoto!,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => _buildPlaceholder(),
-            )
-          : _buildPlaceholder(),
     );
   }
 
