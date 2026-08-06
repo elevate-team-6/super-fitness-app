@@ -16,6 +16,14 @@
 
 ---
 
+## 📸 Screenshots
+
+Below are the app's screenshots that highlight its functionality:
+
+<img width="1881" height="836" alt="Image" src="https://github.com/user-attachments/assets/70145bd4-e57e-469e-8385-72cca3762079" />
+
+---
+
 ## 📖 Overview
 
 Super Fitness is a production-grade Flutter application that combines a **workout catalog**, a **nutrition library**, and an **AI fitness coach** into a single bilingual (English 🇬🇧 / Arabic 🇸🇦) experience.
