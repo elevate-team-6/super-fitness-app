@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
@@ -17,6 +18,11 @@ class AssetInstaller {
     final Map<String, dynamic> manifest =
         json.decode(manifestStr) as Map<String, dynamic>;
     final databases = manifest['databases'] as Map<String, dynamic>;
+
+    if (kIsWeb) {
+      await _initializeWeb(databases);
+      return;
+    }
 
     final dbDirectory = await getDatabasesPath();
 
@@ -40,6 +46,29 @@ class AssetInstaller {
 
       if (needsCopy) {
         await _copyDatabase(dbName, targetPath, expectedSha);
+      }
+    }
+  }
+
+  Future<void> _initializeWeb(Map<String, dynamic> databases) async {
+    for (final entry in databases.entries) {
+      final dbName = entry.key;
+      final dbInfo = entry.value as Map<String, dynamic>;
+      final expectedSha = dbInfo['sha256'] as String;
+      var needsCopy = true;
+
+      if (await databaseFactory.databaseExists(dbName)) {
+        final currentBytes = await databaseFactory.readDatabaseBytes(dbName);
+        needsCopy = sha256.convert(currentBytes).toString() != expectedSha;
+      }
+
+      if (needsCopy) {
+        final data = await rootBundle.load('$_assetPrefix$dbName');
+        final bytes = data.buffer.asUint8List(
+          data.offsetInBytes,
+          data.lengthInBytes,
+        );
+        await databaseFactory.writeDatabaseBytes(dbName, bytes);
       }
     }
   }

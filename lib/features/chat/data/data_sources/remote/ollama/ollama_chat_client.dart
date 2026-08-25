@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
@@ -21,6 +22,14 @@ class OllamaChatClient {
   final OllamaFastPathClassifier _classifier;
   final http.Client _client = http.Client();
 
+  // On web, direct calls to api.ollama.com are blocked by the browser's CORS
+  // policy, and shipping the real API key to the browser would expose it in
+  // the Network tab regardless. This Cloudflare Worker forwards the request
+  // server-to-server (where CORS doesn't apply) and injects the real key
+  // itself. Android/iOS keep calling Ollama directly — no CORS there.
+  static const String _webProxyUrl =
+      'https://ollama-proxy.ahmedemam.workers.dev';
+
   OllamaChatClient(
     this._config,
     this._retrievalService,
@@ -35,7 +44,11 @@ class OllamaChatClient {
     required String locale,
   }) async {
     // 1. Validation & Safety
-    _validateConfiguration();
+    // Skip the API-key check on web — the browser never holds the key,
+    // the proxy function does.
+    if (!kIsWeb) {
+      _validateConfiguration();
+    }
 
     final List<Map<String, dynamic>> messages = await _prepareMessages(
       history,
@@ -139,10 +152,20 @@ class OllamaChatClient {
     List<Map<String, dynamic>> messages,
     int turn,
   ) async {
+    // Web goes through the Firebase proxy (no CORS, no exposed key).
+    // Android/iOS call Ollama directly, same as before.
+    final uri = kIsWeb
+        ? Uri.parse(_webProxyUrl)
+        : Uri.parse('${OllamaConfig.baseUrl}/api/chat');
+
+    final headers = kIsWeb
+        ? {'Content-Type': 'application/json'}
+        : _config.buildHeaders();
+
     final response = await _client
         .post(
-          Uri.parse('${OllamaConfig.baseUrl}/api/chat'),
-          headers: _config.buildHeaders(),
+          uri,
+          headers: headers,
           body: jsonEncode({
             "model": OllamaConfig.model,
             "messages": messages,

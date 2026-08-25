@@ -91,3 +91,11 @@ env.json
 # Service Account Files (Contains credentials!)
 **/service-account*.json
 **/firebase-adminsdk*.json
+
+# AI assistant tooling (Claude Code / Windsurf skills cache)
+# Not part of the app itself — internal reference files the tool
+# downloaded into the project folder by mistake.
+.claude/
+.agents/
+skills-lock.json
+ollama-proxy-worker/

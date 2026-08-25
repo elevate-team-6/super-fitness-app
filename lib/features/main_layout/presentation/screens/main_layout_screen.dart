@@ -206,36 +206,43 @@ class _NavBarItem extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedScale(
-              scale: isSelected ? 1.1 : 1,
-              duration: _transition,
-              curve: Curves.easeOut,
-              child: TweenAnimationBuilder<Color?>(
-                tween: ColorTween(
-                  end: isSelected ? AppColors.primary : AppColors.white,
-                ),
+        child: FittedBox(
+          // Only shrinks the content if it doesn't fit — on mobile, where
+          // it already fits comfortably, this is a no-op and changes
+          // nothing visually. On web, where the bottom bar can end up
+          // slightly shorter than the icon + label need, this prevents the
+          // yellow/black overflow stripes automatically, on any screen
+          // size, without hardcoding a taller bar height that would also
+          // change the mobile layout.
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: isSelected ? 1.1 : 1,
                 duration: _transition,
                 curve: Curves.easeOut,
-                builder: (context, color, _) => CustomSvgIcon(
-                  iconPath: iconPath,
-                  color: color,
-                  size: 40.sp,
+                child: TweenAnimationBuilder<Color?>(
+                  tween: ColorTween(
+                    end: isSelected ? AppColors.primary : AppColors.white,
+                  ),
+                  duration: _transition,
+                  curve: Curves.easeOut,
+                  builder: (context, color, _) => CustomSvgIcon(
+                    iconPath: iconPath,
+                    color: color,
+                    size: 40.sp,
+                  ),
                 ),
               ),
-            ),
-            AnimatedSize(
-              duration: _transition,
-              curve: Curves.easeOut,
-              child: !isSelected
-                  ? const SizedBox.shrink()
-                  : Padding(
-                      padding: EdgeInsets.only(top: 4.h),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
+              AnimatedSize(
+                duration: _transition,
+                curve: Curves.easeOut,
+                child: !isSelected
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: EdgeInsets.only(top: 4.h),
                         child: Text(
                           label,
                           style: AppTextStyles.primary13500.copyWith(
@@ -243,9 +250,9 @@ class _NavBarItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

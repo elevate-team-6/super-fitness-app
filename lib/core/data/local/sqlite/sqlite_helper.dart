@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite/sqflite.dart';
 import 'package:injectable/injectable.dart';
 
@@ -34,8 +35,7 @@ class SqliteHelperImpl implements SqliteHelper {
       return _databases[dbName]!;
     }
 
-    final dbPath = await getDatabasesPath();
-    final path = "$dbPath/$dbName";
+    final path = kIsWeb ? dbName : '${await getDatabasesPath()}/$dbName';
 
     final db = await openDatabase(path, readOnly: true);
     _databases[dbName] = db;
